@@ -46,6 +46,9 @@ public class main : MonoBehaviour {
 		pieceType = PIECE_TYPE.WHITE; putPiece(new Vector2(4,3));
 	
 		TimeLimit = menu.getLimitTime();
+		
+		GameObject.Find("textGuideH").guiText.text = "a    b     c     d     e     f     g     h";
+		GameObject.Find("textGuideV").guiText.text = "1\n2\n3\n4\n5\n6\n7\n8";
 	}
 	
 	// Update is called once per frame
@@ -88,6 +91,9 @@ public class main : MonoBehaviour {
 			return;
 		}
 			
+		Debug.Log("put " + posToCode(key));
+		Vector2 ppp = codeToPos(posToCode(key));
+		Debug.Log("ppp " + posToCode(ppp));
 		board[(int)key.x,(int)key.y] = pieceType;
 		bool changeFlag = updateBoard(key, true);
 	
@@ -148,11 +154,11 @@ public class main : MonoBehaviour {
 			_s = _s + '\n';
 			for (int j=0; j<board.GetLength(1); j++) {
 				if(board[i,j] == PIECE_TYPE.BLACK ) {
-					_s = _s + 'B';
+					_s = _s + 'X';
 				} else if(board[i,j] == PIECE_TYPE.WHITE ) {
-					_s = _s + 'W';
+					_s = _s + 'O';
 				} else {
-					_s = _s + 'E';
+					_s = _s + '&';
 				}
 			}
 		}
@@ -381,6 +387,16 @@ public class main : MonoBehaviour {
 		}
 		white = _white;
 		black = _black;
+	}
+	
+	public static string posToCode(Vector2 pos) {
+		string code = ((char)('a'+pos.x)).ToString() + ((char)('0'+(8-pos.y))).ToString();
+		return code;
+	}
+
+	public static Vector2 codeToPos(string code) {
+		Vector2 pos = new Vector2((int)code[0]-'a', 8-((int)code[1]-'0'));
+		return pos;
 	}
 	
 	void OnGUI() {
