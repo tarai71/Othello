@@ -56,14 +56,13 @@ public class connect : MonoBehaviour
 	
 	void Update ()
 	{
-		for (int i=0, p=rptr; i<MAX_BUFFER; i++) {
-			p--;
-			if (p < 0)
-				p = MAX_BUFFER-1;
+		for (int i=0; i<MAX_BUFFER; i++, rptr++) {
+			if (rptr >= MAX_BUFFER)
+				rptr = 0;
 
-			if (DataList[p] != null) {
-				if (DataList[p].type == "put") {
-					GameObject.FindWithTag("GameController").SendMessage("putPiece", main.codeToPos(DataList[p].place));
+			if (DataList[rptr] != null) {
+				if (DataList[rptr].type == "put") {
+					GameObject.FindWithTag("GameController").SendMessage("putPiece", main.codeToPos(DataList[rptr].place));
 				}
 			}
 		}
