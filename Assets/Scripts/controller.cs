@@ -19,8 +19,8 @@ public class controller : MonoBehaviour {
 			if (key_x < 0 || key_y < 0 || key_x > 7 || key_y > 7) {
 				return;
 			}
-			GameObject.FindWithTag("GameController").SendMessage("putPiece", new Vector2(key_x, key_y));
-			//connect.Send("{\"type\":\"put\",\"place\":\"" + main.posToCode(new Vector2(key_x, key_y)) + "\"}");
+			//GameObject.FindWithTag("GameController").SendMessage("putPiece", new Vector2(key_x, key_y));
+			connect.Send("{\"type\":\"put\",\"place\":\"" + main.posToCode(new Vector2(key_x, key_y)) + "\"}");
 		}
 	
 	}
