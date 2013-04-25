@@ -13,6 +13,11 @@ public class connect : MonoBehaviour
 	
 	private static WebSocket websocket;
 	
+	const int MAX_LINES = 10;
+	private Data[] DataList = new Data[MAX_LINES];
+	private int ptr = 0;
+
+	
 	private void websocket_Opened(object sender, EventArgs e)
 	{
 	    websocket.Send("{\"type\":\"join\",\"user\":\"" + StringTable.PLAYER_NAME + "\"}");
@@ -30,8 +35,9 @@ public class connect : MonoBehaviour
 	private void websocket_MessageReceived(object sender, MessageReceivedEventArgs e)
 	{
 		Debug.Log(e.Message);
-		Data data = JsonMapper.ToObject<Data> (e.Message);
-		GameObject.FindWithTag("GameController").SendMessage("putPiece", main.codeToPos(data.place));
+		DataList[ptr++] = JsonMapper.ToObject<Data> (e.Message );
+		if( ptr >= MAX_LINES )
+			ptr = 0;
 	}
 
 	void Awake ()
@@ -45,6 +51,21 @@ public class connect : MonoBehaviour
 		websocket.Closed += new EventHandler(websocket_Closed);
 		websocket.MessageReceived += new EventHandler<MessageReceivedEventArgs>(websocket_MessageReceived);
 		websocket.Open();
+	}
+	
+	void Update ()
+	{
+		for (int i=0, p=ptr; i<MAX_LINES; i++) {
+			p--;
+			if (p < 0)
+				p = MAX_LINES-1;
+
+			if (DataList[p] != null) {
+				if (DataList[p].type == "put") {
+					GameObject.FindWithTag("GameController").SendMessage("putPiece", main.codeToPos(DataList[p].place));
+				}
+			}
+		}
 	}
 	
 	void OnDestroy ()
@@ -62,6 +83,8 @@ public class connect : MonoBehaviour
 [System.Serializable]
 public class Data {
 		public string type = "";
+		public string user = "";
+		public string text = "";
 		public string place = "";
 		public string time = "";
 }
