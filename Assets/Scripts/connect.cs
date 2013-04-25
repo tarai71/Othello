@@ -7,11 +7,11 @@ using LitJson;
 public class connect : MonoBehaviour
 {
 	public string SERVER_IP = "172.31.8.144";
-	public string PORT = "8888";
+	public string PORT = "3000";
 
 	public string ICON_FILE = "";
 	
-	private WebSocket websocket;
+	private static WebSocket websocket;
 	
 	private void websocket_Opened(object sender, EventArgs e)
 	{
@@ -24,31 +24,21 @@ public class connect : MonoBehaviour
 	
 	private void websocket_Error(object sender, SuperSocket.ClientEngine.ErrorEventArgs e)
 	{
-		Debug.Log("サーバに接続できませんでした");
-	/*
-	  $('#chat-area').empty()
-	    .addClass('alert alert-error')
-	    .append('<button type="button" class="close" data-dismiss="alert">×</button>',
-	      $('<i/>').addClass('icon-warning-sign'),
-	      'サーバに接続できませんでした。'
-	    );
-	 */
+		Debug.Log(StringTable.CANT_CONNECT);
 	}
 	
 	private void websocket_MessageReceived(object sender, MessageReceivedEventArgs e)
 	{
 		Debug.Log(e.Message);
-		// 受信したメッセージを復元
-//		DataList[ptr++] = JsonMapper.ToObject<Data> (e.Message );
-//		if( ptr >= MAX_LINES )
-//			ptr = 0;
-		
+		Data data = JsonMapper.ToObject<Data> (e.Message);
+		GameObject.FindWithTag("GameController").SendMessage("putPiece", main.codeToPos(data.place));
 	}
 
 	void Awake ()
 	{
 		DontDestroyOnLoad (this);
 		
+		Debug.Log("ws://" + SERVER_IP + ":" + PORT + "/");
 		websocket = new WebSocket("ws://" + SERVER_IP + ":" + PORT + "/");
 		websocket.Opened += new EventHandler(websocket_Opened);
 		websocket.Error += new EventHandler<SuperSocket.ClientEngine.ErrorEventArgs >(websocket_Error);
@@ -63,14 +53,15 @@ public class connect : MonoBehaviour
         websocket.Close();
 	}
 	
+	public static void Send(string message)
+	{
+	    websocket.Send(message);
+	}
 }
 
-/*
 [System.Serializable]
 public class Data {
 		public string type = "";
-		public string user = "";
-		public string text = "";
+		public string place = "";
 		public string time = "";
 }
-*/
