@@ -17,10 +17,17 @@ public class main : MonoBehaviour {
 	
 	public GameObject piecePrefab;
 	public GameObject markerPrefab;
+	public GameObject guidePrefab;
 	public GUIStyle labelStyleScoreBlack;
 	public GUIStyle labelStyleScoreWhite;
 	public GUIStyle labelStyleGameOver;
 	public GUIStyle labelStyleTimer;
+	
+	GameObject[,] guide = new GameObject[2,8];
+	string[,] guideLitteral = new string[,]{
+		{"a","b","c","d","e","f","g","h"},
+		{"1","2","3","4","5","6","7","8"}
+	};
 	
 	PIECE_TYPE[,] board = new PIECE_TYPE[8,8];
 	GameObject[,] pieceList = new GameObject[8,8];
@@ -47,8 +54,28 @@ public class main : MonoBehaviour {
 	
 		TimeLimit = menu.getLimitTime();
 		
-		GameObject.Find("textGuideH").guiText.text = "a    b     c     d     e     f     g     h";
-		GameObject.Find("textGuideV").guiText.text = "1\n2\n3\n4\n5\n6\n7\n8";
+		float x=-3.5f,y=+4.5f;
+		for (int i=0; i<8; i++) {
+			guide[0,i] = (GameObject)Instantiate(guidePrefab, new Vector3(0,0,0), Quaternion.identity);
+			guide[0,i].guiText.text = guideLitteral[0,i];
+			Vector3 screenPos = Camera.main.WorldToScreenPoint(new Vector3(x,0f,y));
+			guide[0,i].transform.position = new Vector3(screenPos.x/Screen.width,screenPos.y/Screen.height,0);
+			guide[0,i].guiText.fontSize = 20;
+			guide[0,i].guiText.anchor = TextAnchor.MiddleCenter;
+			guide[0,i].guiText.alignment = TextAlignment.Center;
+			x+=1f;
+		}
+		x=-4.5f;y=+3.5f;
+		for (int i=0; i<8; i++) {
+			guide[1,i] = (GameObject)Instantiate(guidePrefab, new Vector3(0,0,0), Quaternion.identity);
+			guide[1,i].guiText.text = guideLitteral[1,i];
+			Vector3 screenPos = Camera.main.WorldToScreenPoint(new Vector3(x,0f,y));
+			guide[1,i].transform.position = new Vector3(screenPos.x/Screen.width,screenPos.y/Screen.height,0);
+			guide[1,i].guiText.fontSize = 20;
+			guide[1,i].guiText.anchor = TextAnchor.MiddleCenter;
+			guide[1,i].guiText.alignment = TextAlignment.Center;
+			y-=1f;
+		}
 	}
 	
 	// Update is called once per frame
@@ -68,6 +95,19 @@ public class main : MonoBehaviour {
 		} else {
 			labelStyleScoreBlack.normal.textColor = new Color32(193,193,193,255);
 			labelStyleScoreWhite.normal.textColor = new Color32(209,221, 48,alfa);
+		}
+		
+		float x=-3.5f,y=+4.5f;
+		for (int i=0; i<8; i++) {
+			Vector3 screenPos = Camera.main.WorldToScreenPoint(new Vector3(x,0f,y));
+			guide[0,i].transform.position = new Vector3(screenPos.x/Screen.width,screenPos.y/Screen.height,0);
+			x+=1f;
+		}
+		x=-4.5f;y=+3.5f;
+		for (int i=0; i<8; i++) {
+			Vector3 screenPos = Camera.main.WorldToScreenPoint(new Vector3(x,0f,y));
+			guide[1,i].transform.position = new Vector3(screenPos.x/Screen.width,screenPos.y/Screen.height,0);
+			y-=1f;
 		}
 		
 		if (TimeLimit > 0f) {
@@ -92,8 +132,7 @@ public class main : MonoBehaviour {
 		}
 			
 		Debug.Log("put " + posToCode(key));
-		Vector2 ppp = codeToPos(posToCode(key));
-		Debug.Log("ppp " + posToCode(ppp));
+		
 		board[(int)key.x,(int)key.y] = pieceType;
 		bool changeFlag = updateBoard(key, true);
 	

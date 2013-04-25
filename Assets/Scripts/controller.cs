@@ -16,7 +16,8 @@ public class controller : MonoBehaviour {
  			Vector3 v = Camera.main.ScreenToWorldPoint(screenPoint);
 			float key_x = Mathf.Floor(v.x) + 4.0f;
 			float key_y = Mathf.Floor(v.z) + 4.0f;
-			GameObject.FindWithTag("GameController").SendMessage("putPiece", new Vector2(key_x, key_y));
+			//GameObject.FindWithTag("GameController").SendMessage("putPiece", new Vector2(key_x, key_y));
+			connect.Send("{\"type\":\"put\",\"place\":\"" + main.posToCode(new Vector2(key_x, key_y)) + "\"}");
 		}
 	
 	}
