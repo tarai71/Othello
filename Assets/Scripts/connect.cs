@@ -13,9 +13,10 @@ public class connect : MonoBehaviour
 	
 	private static WebSocket websocket;
 	
-	const int MAX_LINES = 10;
-	private Data[] DataList = new Data[MAX_LINES];
-	private int ptr = 0;
+	const int MAX_BUFFER = 60;
+	private Data[] DataList = new Data[MAX_BUFFER];
+	private int wptr = 0;
+	private int rptr = 0;
 
 	
 	private void websocket_Opened(object sender, EventArgs e)
@@ -35,9 +36,9 @@ public class connect : MonoBehaviour
 	private void websocket_MessageReceived(object sender, MessageReceivedEventArgs e)
 	{
 		Debug.Log(e.Message);
-		DataList[ptr++] = JsonMapper.ToObject<Data> (e.Message );
-		if( ptr >= MAX_LINES )
-			ptr = 0;
+		DataList[wptr++] = JsonMapper.ToObject<Data> (e.Message );
+		if( wptr >= MAX_BUFFER )
+			wptr = 0;
 	}
 
 	void Awake ()
@@ -55,10 +56,10 @@ public class connect : MonoBehaviour
 	
 	void Update ()
 	{
-		for (int i=0, p=ptr; i<MAX_LINES; i++) {
+		for (int i=0, p=rptr; i<MAX_BUFFER; i++) {
 			p--;
 			if (p < 0)
-				p = MAX_LINES-1;
+				p = MAX_BUFFER-1;
 
 			if (DataList[p] != null) {
 				if (DataList[p].type == "put") {
