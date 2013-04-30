@@ -1,8 +1,18 @@
 using UnityEngine;
 using System.Collections;
 
+public class Config 
+{
+	public string name = "name";
+	public string aiName = "ai_name";
+	public string iconFole = "hoge.png";
+
+}
+
 public class menu : MonoBehaviour
 {
+	public Config configData;
+	
 	private Rect[] windowRect = {
 		new Rect (10, 60, 200, 10),
 		new Rect (10, 180, 200, 10),
