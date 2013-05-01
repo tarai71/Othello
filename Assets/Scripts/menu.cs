@@ -16,10 +16,10 @@ public class menu : MonoBehaviour
 	
 	Rect[] windowRect = {
 		new Rect (10, 60, 200, 20),
-		new Rect (10, 180, 200, 20),
+		new Rect (10, 160, 200, 20),
 		new Rect (220, 60, 200, 20),
-		new Rect (220, 155, 200, 20),
-		new Rect (440, 20, 300, 20)
+		new Rect (220, 160, 200, 20),
+		new Rect (440, 60, 300, 20)
 	};
 	int[] option = {0,0,0,0,0};
 	float[] timeTable = {
@@ -53,7 +53,7 @@ public class menu : MonoBehaviour
 	void MakeSelectWindow (int id)
 	{
 		GUILayout.Space (10);
-		option[id] = GUILayout.SelectionGrid(option[id], new string[]{StringTable.HUMAN,StringTable.COMPUTER,StringTable.NETWORK}, 1);
+		option[id] = GUILayout.SelectionGrid(option[id], new string[]{StringTable.HUMAN,StringTable.COMPUTER}, 1);
 		GUILayout.FlexibleSpace ();
 	}
 
@@ -76,17 +76,16 @@ public class menu : MonoBehaviour
 		GUILayout.Space (10);
 		if (entryList.GetLength(0) > 0 ) {
 			option[id] = GUILayout.SelectionGrid(option[id], entryList, 1);
-		} else {
-			option[id] = GUILayout.SelectionGrid(option[id], new string[]{"none"}, 1);
 		}
 		GUILayout.FlexibleSpace ();
 	}
 
 	public void SetEntry(Entry[] list)
 	{
-		entryList = new string[list.Length];
+		entryList = new string[list.Length+1];
+		entryList[0] = StringTable.NO_VS;
 		for(int i=0; i<list.Length; i++) {
-			entryList[i] = list[i].name;
+			entryList[i+1] = list[i].name;
 		}
 	}
 	
