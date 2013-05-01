@@ -3,9 +3,11 @@ using System.Collections;
 
 public class controller : MonoBehaviour {
 
+	connect compConnect = null;
+
 	// Use this for initialization
 	void Start () {
-	
+		compConnect = GameObject.Find("Menu").GetComponent<connect>();
 	}
 	
 	// Update is called once per frame
@@ -19,8 +21,7 @@ public class controller : MonoBehaviour {
 			if (key_x < 0 || key_y < 0 || key_x > 7 || key_y > 7) {
 				return;
 			}
-			//GameObject.FindWithTag("GameController").SendMessage("putPiece", new Vector2(key_x, key_y));
-			connect.Send("{\"type\":\"put\",\"place\":\"" + main.posToCode(new Vector2(key_x, key_y)) + "\"}");
+			compConnect.Send("{\"type\":\"put\",\"place\":\"" + GameObject.FindWithTag("GameController").GetComponent<main>().posToCode(new Vector2(key_x, key_y)) + "\"}");
 		}
 	
 	}

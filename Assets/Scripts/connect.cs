@@ -9,19 +9,19 @@ public class connect : MonoBehaviour
 	public string SERVER_IP = "172.31.8.144";
 	public string PORT = "3000";
 	
-	static WebSocket websocket;
+	WebSocket websocket;
 		
 	const int MAX_BUFFER = 60;
 	Data[] DataList = new Data[MAX_BUFFER];
 	int wptr = 0;
 	int rptr = 0;
 	
-	menu m = null;
+	menu compMenu = null;
 
 	
 	private void websocket_Opened(object sender, EventArgs e)
 	{
-		websocket.Send("{\"type\":\"entry\", \"name\":\"" + m.configData.name + "\"}");
+		websocket.Send("{\"type\":\"entry\", \"name\":\"" + compMenu.configData.name + "\"}");
 	}
 	
 	private void websocket_Closed(object sender, EventArgs e)
@@ -41,6 +41,7 @@ public class connect : MonoBehaviour
 			Debug.Log("[websocket_MessageReceived] \"Join\" type recieved");
 		} else if( data.type == "entrylist") {
 			Debug.Log("[websocket_MessageReceived] \"Entey\" type recieved");
+			compMenu.SetEntry(data.list);
 		} else if( data.type == "put") {
 			DataList[wptr++] = data;
 			if (wptr >= MAX_BUFFER)
@@ -55,7 +56,7 @@ public class connect : MonoBehaviour
 	{
 		DontDestroyOnLoad (this);
 		
-		m = GetComponent<menu>();
+		compMenu = GetComponent<menu>();
 		
 		Debug.Log("ws://" + SERVER_IP + ":" + PORT + "/");
 		websocket = new WebSocket("ws://" + SERVER_IP + ":" + PORT + "/");
@@ -74,7 +75,7 @@ public class connect : MonoBehaviour
 				rptr = 0;
 
 			if (DataList[rptr] != null) {
-				GameObject.FindWithTag("GameController").SendMessage("putPiece", main.codeToPos(DataList[rptr].place));
+				GameObject.FindWithTag("GameController").SendMessage("putPiece", GameObject.FindWithTag("GameController").GetComponent<main>().codeToPos(DataList[rptr].place));
 			}
 		}
 	}
@@ -85,7 +86,7 @@ public class connect : MonoBehaviour
         websocket.Close();
 	}
 	
-	public static void Send(string message)
+	public void Send(string message)
 	{
 	    websocket.Send(message);
 	}

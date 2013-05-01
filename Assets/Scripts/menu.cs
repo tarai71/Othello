@@ -14,23 +14,27 @@ public class menu : MonoBehaviour
 {
 	public Config configData;
 	
-	private Rect[] windowRect = {
-		new Rect (10, 60, 200, 10),
-		new Rect (10, 180, 200, 10),
-		new Rect (220, 60, 200, 10),
-		new Rect (220, 155, 200, 10)
+	Rect[] windowRect = {
+		new Rect (10, 60, 200, 20),
+		new Rect (10, 180, 200, 20),
+		new Rect (220, 60, 200, 20),
+		new Rect (220, 155, 200, 20),
+		new Rect (440, 20, 300, 20)
 	};
-	private static int[] option = {0,0,0,0};
-	private static float[] timeTable = {
+	int[] option = {0,0,0,0,0};
+	float[] timeTable = {
 		0f, 5f, 10f, 15f, 20f, 25f, 30f
 	};
-
+		
+	string[] entryList = {};
+	
 	void OnGUI ()
 	{
 		windowRect[0] = GUILayout.Window (0, windowRect[0], MakeSelectWindow, StringTable.SENTE);
 		windowRect[1] = GUILayout.Window (1, windowRect[1], MakeSelectWindow, StringTable.GOTE);
 		windowRect[2] = GUILayout.Window (2, windowRect[2], MakeGuideWindow, StringTable.GUIDE);
 		windowRect[3] = GUILayout.Window (3, windowRect[3], MakeTimeWindow, StringTable.TIME);
+		windowRect[4] = GUILayout.Window (4, windowRect[4], MakeEntryWindow, StringTable.ENTRY);
 
 		GUILayout.BeginArea( new Rect (10, 10, 410, 40));
 			GUILayout.Space(10);
@@ -67,12 +71,31 @@ public class menu : MonoBehaviour
 		GUILayout.FlexibleSpace ();
 	}
 
-	public static bool getGuideEnable () 
+	void MakeEntryWindow (int id)
+	{
+		GUILayout.Space (10);
+		if (entryList.GetLength(0) > 0 ) {
+			option[id] = GUILayout.SelectionGrid(option[id], entryList, 1);
+		} else {
+			option[id] = GUILayout.SelectionGrid(option[id], new string[]{"none"}, 1);
+		}
+		GUILayout.FlexibleSpace ();
+	}
+
+	public void SetEntry(Entry[] list)
+	{
+		entryList = new string[list.Length];
+		for(int i=0; i<list.Length; i++) {
+			entryList[i] = list[i].name;
+		}
+	}
+	
+	public bool getGuideEnable () 
 	{
 		return (option[2] == 0);
 	}
 
-	public static float getLimitTime () 
+	public float getLimitTime () 
 	{
 		return timeTable[option[3]];
 	}
