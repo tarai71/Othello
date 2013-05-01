@@ -9,17 +9,19 @@ public class connect : MonoBehaviour
 	public string SERVER_IP = "172.31.8.144";
 	public string PORT = "3000";
 	
-	private static WebSocket websocket;
+	static WebSocket websocket;
 		
 	const int MAX_BUFFER = 60;
-	private Data[] DataList = new Data[MAX_BUFFER];
-	private int wptr = 0;
-	private int rptr = 0;
+	Data[] DataList = new Data[MAX_BUFFER];
+	int wptr = 0;
+	int rptr = 0;
+	
+	menu m = null;
 
 	
 	private void websocket_Opened(object sender, EventArgs e)
 	{
-//		websocket.Send("{\"type\":\"entry\",\"parameter\":{\"name\":\"arai\",\"time\":\"\"}}");
+		websocket.Send("{\"type\":\"entry\", \"name\":\"" + m.configData.name + "\"}");
 	}
 	
 	private void websocket_Closed(object sender, EventArgs e)
@@ -52,6 +54,8 @@ public class connect : MonoBehaviour
 	void Awake ()
 	{
 		DontDestroyOnLoad (this);
+		
+		m = GetComponent<menu>();
 		
 		Debug.Log("ws://" + SERVER_IP + ":" + PORT + "/");
 		websocket = new WebSocket("ws://" + SERVER_IP + ":" + PORT + "/");
