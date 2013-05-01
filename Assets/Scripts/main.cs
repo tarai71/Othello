@@ -39,9 +39,13 @@ public class main : MonoBehaviour {
 		
 	float TimeLimit;
 	float startTime;
+
+	menu compMenu = null;
 	
 	// Use this for initialization
 	void Start () {
+		compMenu = GameObject.Find("Menu").GetComponent<menu>();
+
 		for (int i=0; i<board.GetLength(0); i++) {
 			for (int j=0; j<board.GetLength(1); j++) {
 				board[i,j] = PIECE_TYPE.EMPTY;
@@ -52,7 +56,7 @@ public class main : MonoBehaviour {
 		pieceType = PIECE_TYPE.BLACK; putPiece(new Vector2(4,4));
 		pieceType = PIECE_TYPE.WHITE; putPiece(new Vector2(4,3));
 	
-		TimeLimit = menu.getLimitTime();
+		TimeLimit = compMenu.getLimitTime();
 		
 		float x=-3.5f,y=+4.5f;
 		for (int i=0; i<8; i++) {
@@ -175,7 +179,7 @@ public class main : MonoBehaviour {
 			}
 			startTime = Time.time;
 			
-			if (menu.getGuideEnable()) {
+			if (compMenu.getGuideEnable()) {
 				foreach(Vector2 v in enablePutList) {
 					position = new Vector3(v.x -4.0f + 0.5f, 0.201f, v.y -4.0f + 0.5f);
 					markerList.Add(Instantiate(markerPrefab, position, Quaternion.identity));
@@ -428,12 +432,12 @@ public class main : MonoBehaviour {
 		black = _black;
 	}
 	
-	public static string posToCode(Vector2 pos) {
+	public string posToCode(Vector2 pos) {
 		string code = ((char)('a'+pos.x)).ToString() + ((char)('0'+(8-pos.y))).ToString();
 		return code;
 	}
 
-	public static Vector2 codeToPos(string code) {
+	public Vector2 codeToPos(string code) {
 		Vector2 pos = new Vector2((int)code[0]-'a', 8-((int)code[1]-'0'));
 		return pos;
 	}
