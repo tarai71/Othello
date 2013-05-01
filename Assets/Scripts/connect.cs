@@ -12,18 +12,14 @@ public class connect : MonoBehaviour
 	private static WebSocket websocket;
 		
 	const int MAX_BUFFER = 60;
-	private DataPut[] PutList = new DataPut[MAX_BUFFER];
+	private Data[] DataList = new Data[MAX_BUFFER];
 	private int wptr = 0;
 	private int rptr = 0;
 
 	
 	private void websocket_Opened(object sender, EventArgs e)
 	{
-//	    websocket.Send("{\"type\":\"entry\",\"message\":{\"name\":\"" + StringTable.PLAYER_NAME + "\"}}");
-		//JsonData jd = "{'type':'entry','message':'{\'name\':\'arai\'}'";
-
-		websocket.Send("{\"type\":\"entry\",\"message\":{\"name\":\"arai\",\"time\":\"\"}}");
-		//websocket.Send(jd.ToJson());
+//		websocket.Send("{\"type\":\"entry\",\"parameter\":{\"name\":\"arai\",\"time\":\"\"}}");
 	}
 	
 	private void websocket_Closed(object sender, EventArgs e)
@@ -40,13 +36,11 @@ public class connect : MonoBehaviour
 		Debug.Log(e.Message);
 		Data data = JsonMapper.ToObject<Data> (e.Message);
 		if (data.type == "join") {
-			DataJoin join = JsonMapper.ToObject<DataJoin> (data.message);
 			Debug.Log("[websocket_MessageReceived] \"Join\" type recieved");
-		} else if( data.type == "entry") {
-			DataEntry entry = JsonMapper.ToObject<DataEntry> (data.message);
+		} else if( data.type == "entrylist") {
 			Debug.Log("[websocket_MessageReceived] \"Entey\" type recieved");
 		} else if( data.type == "put") {
-			PutList[wptr++] = JsonMapper.ToObject<DataPut> (data.message);
+			DataList[wptr++] = data;
 			if (wptr >= MAX_BUFFER)
 				wptr = 0;
 			Debug.Log("[websocket_MessageReceived] \"Put\" type recieved");
@@ -75,8 +69,8 @@ public class connect : MonoBehaviour
 			if (rptr >= MAX_BUFFER)
 				rptr = 0;
 
-			if (PutList[rptr] != null) {
-				GameObject.FindWithTag("GameController").SendMessage("putPiece", main.codeToPos(PutList[rptr].place));
+			if (DataList[rptr] != null) {
+				GameObject.FindWithTag("GameController").SendMessage("putPiece", main.codeToPos(DataList[rptr].place));
 			}
 		}
 	}
@@ -96,15 +90,8 @@ public class connect : MonoBehaviour
 [System.Serializable]
 public class Data {
 		public string type = "";
-		public string message = "";
-}
-public class DataJoin {
+		public string user = "";
 		public string time = "";
-}
-public class DataEntry {
 		public string name = "";
-}
-public class DataPut {
 		public string place = "";
-		public string time = "";
 }

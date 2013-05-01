@@ -1,11 +1,12 @@
 using UnityEngine;
 using System.Collections;
 
+[System.Serializable]
 public class Config 
 {
 	public string name = "name";
 	public string aiName = "ai_name";
-	public string iconFole = "hoge.png";
+	public string iconFile = "hoge.png";
 
 }
 
