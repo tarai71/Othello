@@ -97,4 +97,11 @@ public class Data {
 		public string name = "";
 		public string time = "";
 		public string place = "";
+		public Entry[] list;
+}
+[System.Serializable]
+public class Entry {
+	public string type = "";
+	public string name = "";
+	public string time = "";
 }
