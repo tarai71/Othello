@@ -81,7 +81,7 @@ public class connect : MonoBehaviour
 	
 	void OnDestroy ()
 	{
-	    websocket.Send("{\"type\":\"defect\",\"user\":\"" + StringTable.PLAYER_NAME + "\"}");
+	    websocket.Send("{\"type\":\"defect\",\"name\":\"" + StringTable.PLAYER_NAME + "\"}");
         websocket.Close();
 	}
 	
@@ -94,8 +94,7 @@ public class connect : MonoBehaviour
 [System.Serializable]
 public class Data {
 		public string type = "";
-		public string user = "";
-		public string time = "";
 		public string name = "";
+		public string time = "";
 		public string place = "";
 }
