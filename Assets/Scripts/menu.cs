@@ -166,9 +166,9 @@ public class menu : MonoBehaviour
 		return timeTable[option[3]];
 	}
 
-	public int getID()
+	public int getYourID()
 	{
-		return (lockType == LOCK_TYPE.FREE)? -1 : entryList[option[4]].id;
+		return yourID;
 	}
 	public int getMyID()
 	{
