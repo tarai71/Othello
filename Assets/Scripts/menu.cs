@@ -173,4 +173,9 @@ case LOCK_TYPE.LOCKED:
 	{
 		return timeTable[option[3]];
 	}
+
+	public int getID()
+	{
+		return (lockType == LOCK_TYPE.FREE)? -1 : entryList[option[4]].id;
+	}
 }
