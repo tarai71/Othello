@@ -39,8 +39,8 @@ public class menu : MonoBehaviour
 	
 	LOCK_TYPE lockType = LOCK_TYPE.FREE;
 	bool IsGameStart = false;
-	int myID = -1;
-	int yourID = -1;
+	string myID = "";
+	string yourID = "";
 	
 	void Update ()
 	{
@@ -61,11 +61,16 @@ public class menu : MonoBehaviour
 		windowRect[4] = GUILayout.Window (4, windowRect[4], MakeEntryWindow, StringTable.ENTRY);
 
 		GUILayout.BeginArea( new Rect (10, 10, 410, 40));
-			GUILayout.Space(10);
+		GUILayout.Space(10);
+		if(lockType == LOCK_TYPE.LOCKED)
+		{
+			GUILayout.Label("" + StringTable.LOCKED);
+		} else {
 			if(GUILayout.Button(StringTable.START + "[" + lockType.ToString() + ":" + myID + ":" + yourID + "]")) {
 				StartGame();
 				compConnect.Send("{\"type\":\"start\", \"myid\":" + myID.ToString() + ", \"id\":" + entryList[option[4]].id.ToString() + "}");
-		    }
+		   	}
+		}
 		GUILayout.EndArea();	
 	}
 	
@@ -127,14 +132,14 @@ public class menu : MonoBehaviour
 	public void SetUnlock()
 	{
 		lockType = LOCK_TYPE.FREE;
-		yourID = -1;
+		yourID = "";
 	}
 	public void SetLock()
 	{
 		lockType = LOCK_TYPE.LOCK;
 		yourID = entryList[option[4]].id;
 	}
-	public void SetLocked(int id)
+	public void SetLocked(string id)
 	{
 		lockType = LOCK_TYPE.LOCKED;
 		yourID = id;
@@ -147,11 +152,11 @@ public class menu : MonoBehaviour
 		for(int i=0; i<list.Length; i++) {
 			entryList[i] = list[i];
 			if (list[i].own) {
-				entryNameList[i] = StringTable.NO_VS;
+				entryNameList[i] = StringTable.NO_VS + "[" + list[i].id + "]";
 				option[4] = i;
 				myID = list[i].id;
 			} else {
-				entryNameList[i] = list[i].name;
+				entryNameList[i] = list[i].name + "[" + list[i].id + "]";
 			}
 		}
 	}
@@ -166,11 +171,11 @@ public class menu : MonoBehaviour
 		return timeTable[option[3]];
 	}
 
-	public int getYourID()
+	public string getYourID()
 	{
 		return yourID;
 	}
-	public int getMyID()
+	public string getMyID()
 	{
 		return myID;
 	}

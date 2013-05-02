@@ -111,8 +111,8 @@ public class Data {
 		public string name = "";
 		public string time = "";
 		public string place = "";
-		public int myid = -1;
-		public int id = -1;
+		public string myid = "";
+		public string id = "";
 		public Entry[] list;
 }
 [System.Serializable]
@@ -121,5 +121,5 @@ public class Entry {
 	public string name = "";
 	public string time = "";
 	public bool own = false;
-	public int id = -1;
+	public string id = "";
 }
