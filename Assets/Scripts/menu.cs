@@ -12,7 +12,7 @@ public class Config
 
 public class menu : MonoBehaviour
 {
-	enum LOCK_TYPE {
+	public enum LOCK_TYPE {
 		FREE = 0,
 		LOCK,
 		LOCKED
@@ -112,15 +112,28 @@ case LOCK_TYPE.LOCKED:
 		if (old != option[id]) {
 			if (!entryList[old].own) {
 				compConnect.Send("{\"type\":\"vsunlock\", \"id\":" + entryList[old].id.ToString() + "}");
-				lockType = LOCK_TYPE.FREE;
+				SetUnlock();
 			}
 			if (!entryList[option[id]].own) {
 				compConnect.Send("{\"type\":\"vslock\", \"id\":" + entryList[option[id]].id.ToString() + "}");
-				lockType = LOCK_TYPE.LOCK;
+				SetLock();
 			}
 		}
 	}
 
+	public void SetUnlock()
+	{
+		lockType = LOCK_TYPE.FREE;
+	}
+	public void SetLock()
+	{
+		lockType = LOCK_TYPE.LOCK;
+	}
+	public void SetLocked()
+	{
+		lockType = LOCK_TYPE.LOCKED;
+	}
+	
 	public void SetEntry(Entry[] list)
 	{
 		entryList = new Entry[list.Length];
