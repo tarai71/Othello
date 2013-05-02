@@ -98,7 +98,7 @@ public class Data {
 		public string name = "";
 		public string time = "";
 		public string place = "";
-		public int index = -1;
+		public int id = -1;
 		public Entry[] list;
 }
 [System.Serializable]
@@ -107,4 +107,5 @@ public class Entry {
 	public string name = "";
 	public string time = "";
 	public bool own = false;
+	public int id = -1;
 }
