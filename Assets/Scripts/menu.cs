@@ -132,7 +132,7 @@ public class menu : MonoBehaviour
 	public void SetLock()
 	{
 		lockType = LOCK_TYPE.LOCK;
-		yourID = entryList[option[id]].id.ToString();
+		yourID = entryList[option[4]].id;
 	}
 	public void SetLocked(int id)
 	{
