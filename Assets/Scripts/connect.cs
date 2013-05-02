@@ -51,6 +51,9 @@ public class connect : MonoBehaviour
 			compMenu.SetLocked();
 		} else if( data.type == "vsunlock") {
 			compMenu.SetUnlock();
+		} else if( data.type == "start") {
+			compMenu.enabled = false;
+			Application.LoadLevel("Main");
 		} else {
 			Debug.Log("[websocket_MessageReceived] Undeined type recieved");
 		}
