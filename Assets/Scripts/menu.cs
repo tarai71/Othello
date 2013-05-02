@@ -28,7 +28,8 @@ public class menu : MonoBehaviour
 		
 	connect compConnect = null;
 
-	string[] entryList = {};
+	Entry[] entryList = {};
+	string[] entryNameList = {};
 	
 	void OnGUI ()
 	{
@@ -83,14 +84,14 @@ public class menu : MonoBehaviour
 		int old = option[id];
 		
 		GUILayout.Space (10);
-		option[id] = GUILayout.SelectionGrid(option[id], entryList, 1);
+		option[id] = GUILayout.SelectionGrid(option[id], entryNameList, 1);
 		GUILayout.FlexibleSpace ();
 		
 		if (old != option[id]) {
-			if (entryList[old] != StringTable.NO_VS) {
+			if (!entryList[old].own) {
 				compConnect.Send("{\"type\":\"vsunlock\", \"index\":" + old.ToString() + "}");
 			}
-			if (entryList[option[id]] != StringTable.NO_VS) {
+			if (!entryList[option[id]].own) {
 				compConnect.Send("{\"type\":\"vslock\", \"index\":" + (option[id]).ToString() + "}");
 			}
 		}
@@ -98,13 +99,15 @@ public class menu : MonoBehaviour
 
 	public void SetEntry(Entry[] list)
 	{
-		entryList = new string[list.Length];
+		entryList = new Entry[list.Length];
+		entryNameList = new string[list.Length];
 		for(int i=0; i<list.Length; i++) {
+			entryList[i] = list[i];
 			if (list[i].own) {
-				entryList[i] = StringTable.NO_VS;
+				entryNameList[i] = StringTable.NO_VS;
 				option[4] = i;
 			} else {
-				entryList[i] = list[i].name;
+				entryNameList[i] = list[i].name;
 			}
 		}
 	}
