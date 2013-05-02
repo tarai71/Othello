@@ -38,7 +38,18 @@ public class menu : MonoBehaviour
 	string[] entryNameList = {};
 	
 	LOCK_TYPE lockType = LOCK_TYPE.FREE;
-		
+	bool IsGameStart = false;
+	
+	void Update ()
+	{
+		if (IsGameStart)
+		{
+			IsGameStart = false;
+			this.enabled = false;
+			Application.LoadLevel("Main");
+		}
+	}
+	
 	void OnGUI ()
 	{
 		windowRect[0] = GUILayout.Window (0, windowRect[0], MakeSelectWindow, StringTable.SENTE);
@@ -64,8 +75,7 @@ case LOCK_TYPE.LOCKED:
 		GUILayout.BeginArea( new Rect (10, 10, 410, 40));
 			GUILayout.Space(10);
 			if(GUILayout.Button(StringTable.START + "[" + aaa + "]")) {
-				this.enabled = false;
-				Application.LoadLevel("Main");
+				StartGame();
 				compConnect.Send("{\"type\":\"start\", \"id\":" + entryList[option[4]].id.ToString() + "}");
 		    }
 		GUILayout.EndArea();	
@@ -120,6 +130,10 @@ case LOCK_TYPE.LOCKED:
 				SetLock();
 			}
 		}
+	}
+
+	void StartGame () {
+		IsGameStart = true;
 	}
 
 	public void SetUnlock()
