@@ -99,7 +99,12 @@ public class menu : MonoBehaviour
 	{
 		entryList = new string[list.Length];
 		for(int i=0; i<list.Length; i++) {
-			entryList[i] = (list[i].own)? StringTable.NO_VS: list[i].name;
+			if (list[i].own) {
+				entryList[i] = StringTable.NO_VS;
+				option[id] = i;
+			} else {
+				entryList[i] = list[i].name;
+			}
 		}
 	}
 	
