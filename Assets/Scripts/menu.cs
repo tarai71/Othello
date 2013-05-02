@@ -132,7 +132,7 @@ case LOCK_TYPE.LOCKED:
 		}
 	}
 
-	void StartGame () {
+	public void StartGame () {
 		IsGameStart = true;
 	}
 
