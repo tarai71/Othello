@@ -12,6 +12,12 @@ public class Config
 
 public class menu : MonoBehaviour
 {
+	enum LOCK_TYPE {
+		FREE = 0,
+		LOCK,
+		LOCKED
+	}
+	
 	public Config configData;
 	
 	Rect[] windowRect = {
@@ -31,6 +37,8 @@ public class menu : MonoBehaviour
 	Entry[] entryList = {};
 	string[] entryNameList = {};
 	
+	LOCK_TYPE lockType = LOCK_TYPE.FREE;
+		
 	void OnGUI ()
 	{
 		windowRect[0] = GUILayout.Window (0, windowRect[0], MakeSelectWindow, StringTable.SENTE);
@@ -39,9 +47,23 @@ public class menu : MonoBehaviour
 		windowRect[3] = GUILayout.Window (3, windowRect[3], MakeTimeWindow, StringTable.TIME);
 		windowRect[4] = GUILayout.Window (4, windowRect[4], MakeEntryWindow, StringTable.ENTRY);
 
+string aaa = "";
+switch(lockType)
+{
+case LOCK_TYPE.FREE:
+	aaa = "FREE";
+	break;
+case LOCK_TYPE.LOCK:
+	aaa = "LOCK";
+	break;
+case LOCK_TYPE.LOCKED:
+	aaa = "LOCKED";
+	break;
+}
+		
 		GUILayout.BeginArea( new Rect (10, 10, 410, 40));
 			GUILayout.Space(10);
-			if(GUILayout.Button(StringTable.START)) {
+			if(GUILayout.Button(StringTable.START + "[" + aaa + "]")) {
 				this.enabled = false;
 				Application.LoadLevel("Main");
 		    }
@@ -89,10 +111,12 @@ public class menu : MonoBehaviour
 		
 		if (old != option[id]) {
 			if (!entryList[old].own) {
-				compConnect.Send("{\"type\":\"vsunlock\", \"index\":" + old.ToString() + "}");
+				compConnect.Send("{\"type\":\"vsunlock\", \"id\":" + entryList[old].id.ToString() + "}");
+				lockType = LOCK_TYPE.FREE;
 			}
 			if (!entryList[option[id]].own) {
-				compConnect.Send("{\"type\":\"vslock\", \"index\":" + (option[id]).ToString() + "}");
+				compConnect.Send("{\"type\":\"vslock\", \"id\":" + entryList[option[id]].id.ToString() + "}");
+				lockType = LOCK_TYPE.LOCK;
 			}
 		}
 	}
