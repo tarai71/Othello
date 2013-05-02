@@ -97,10 +97,9 @@ public class menu : MonoBehaviour
 
 	public void SetEntry(Entry[] list)
 	{
-		entryList = new string[list.Length+1];
-		entryList[0] = StringTable.NO_VS;
+		entryList = new string[list.Length];
 		for(int i=0; i<list.Length; i++) {
-			entryList[i+1] = list[i].name;
+			entryList[i] = (list[i].own)? StringTable.NO_VS: list[i].name;
 		}
 	}
 	
