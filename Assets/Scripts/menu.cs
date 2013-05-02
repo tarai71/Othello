@@ -39,6 +39,8 @@ public class menu : MonoBehaviour
 	
 	LOCK_TYPE lockType = LOCK_TYPE.FREE;
 	bool IsGameStart = false;
+	int myID = -1;
+	int yourID = -1;
 	
 	void Update ()
 	{
@@ -58,25 +60,11 @@ public class menu : MonoBehaviour
 		windowRect[3] = GUILayout.Window (3, windowRect[3], MakeTimeWindow, StringTable.TIME);
 		windowRect[4] = GUILayout.Window (4, windowRect[4], MakeEntryWindow, StringTable.ENTRY);
 
-string aaa = "";
-switch(lockType)
-{
-case LOCK_TYPE.FREE:
-	aaa = "FREE";
-	break;
-case LOCK_TYPE.LOCK:
-	aaa = "LOCK";
-	break;
-case LOCK_TYPE.LOCKED:
-	aaa = "LOCKED";
-	break;
-}
-		
 		GUILayout.BeginArea( new Rect (10, 10, 410, 40));
 			GUILayout.Space(10);
-			if(GUILayout.Button(StringTable.START + "[" + aaa + "]")) {
+			if(GUILayout.Button(StringTable.START + "[" + lockType.ToString() + ":" + myID + ":" + yourID + "]")) {
 				StartGame();
-				compConnect.Send("{\"type\":\"start\", \"id\":" + entryList[option[4]].id.ToString() + "}");
+				compConnect.Send("{\"type\":\"start\", \"myid\":" + myID.ToString() + ", \"id\":" + entryList[option[4]].id.ToString() + "}");
 		    }
 		GUILayout.EndArea();	
 	}
@@ -122,11 +110,11 @@ case LOCK_TYPE.LOCKED:
 		
 		if (old != option[id]) {
 			if (!entryList[old].own) {
-				compConnect.Send("{\"type\":\"vsunlock\", \"id\":" + entryList[old].id.ToString() + "}");
+				compConnect.Send("{\"type\":\"vsunlock\", \"myid\":" + myID.ToString() + ", \"id\":" + entryList[old].id.ToString() + "}");
 				SetUnlock();
 			}
 			if (!entryList[option[id]].own) {
-				compConnect.Send("{\"type\":\"vslock\", \"id\":" + entryList[option[id]].id.ToString() + "}");
+				compConnect.Send("{\"type\":\"vslock\", \"myid\":" + myID.ToString() + ", \"id\":" + entryList[option[id]].id.ToString() + "}");
 				SetLock();
 			}
 		}
@@ -139,14 +127,16 @@ case LOCK_TYPE.LOCKED:
 	public void SetUnlock()
 	{
 		lockType = LOCK_TYPE.FREE;
+		yourID = -1;
 	}
 	public void SetLock()
 	{
 		lockType = LOCK_TYPE.LOCK;
 	}
-	public void SetLocked()
+	public void SetLocked(int id)
 	{
 		lockType = LOCK_TYPE.LOCKED;
+		yourID = id;
 	}
 	
 	public void SetEntry(Entry[] list)
@@ -158,6 +148,7 @@ case LOCK_TYPE.LOCKED:
 			if (list[i].own) {
 				entryNameList[i] = StringTable.NO_VS;
 				option[4] = i;
+				myID = list[i].id;
 			} else {
 				entryNameList[i] = list[i].name;
 			}
@@ -177,5 +168,9 @@ case LOCK_TYPE.LOCKED:
 	public int getID()
 	{
 		return (lockType == LOCK_TYPE.FREE)? -1 : entryList[option[4]].id;
+	}
+	public int getMyID()
+	{
+		return myID;
 	}
 }
