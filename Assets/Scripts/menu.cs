@@ -66,6 +66,7 @@ case LOCK_TYPE.LOCKED:
 			if(GUILayout.Button(StringTable.START + "[" + aaa + "]")) {
 				this.enabled = false;
 				Application.LoadLevel("Main");
+				compConnect.Send("{\"type\":\"start\", \"id\":" + entryList[option[4]].id.ToString() + "}");
 		    }
 		GUILayout.EndArea();	
 	}
