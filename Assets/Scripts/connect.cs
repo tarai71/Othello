@@ -40,7 +40,7 @@ public class connect : MonoBehaviour
 		if (data.type == "join") {
 			Debug.Log("[websocket_MessageReceived] \"Join\" type recieved");
 		} else if( data.type == "entrylist") {
-			Debug.Log("[websocket_MessageReceived] \"Entey\" type recieved");
+			Debug.Log("[websocket_MessageReceived] \"Entry\" type recieved");
 			compMenu.SetEntry(data.list);
 		} else if( data.type == "put") {
 			DataList[wptr++] = data;
