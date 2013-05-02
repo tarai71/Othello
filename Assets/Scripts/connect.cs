@@ -46,7 +46,7 @@ public class connect : MonoBehaviour
 			putPiece(e.Message);
 			Debug.Log("[websocket_MessageReceived] \"Put\" type recieved");
 		} else if( data.type == "vslock") {
-			compMenu.SetLocked();
+			compMenu.SetLocked(data.myid);
 		} else if( data.type == "vsunlock") {
 			compMenu.SetUnlock();
 		} else if( data.type == "start") {
@@ -111,6 +111,7 @@ public class Data {
 		public string name = "";
 		public string time = "";
 		public string place = "";
+		public int myid = -1;
 		public int id = -1;
 		public Entry[] list;
 }
