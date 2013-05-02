@@ -26,6 +26,8 @@ public class menu : MonoBehaviour
 		0f, 5f, 10f, 15f, 20f, 25f, 30f
 	};
 		
+	connect compConnect = null;
+
 	string[] entryList = {};
 	
 	void OnGUI ()
@@ -48,6 +50,11 @@ public class menu : MonoBehaviour
 	void Awake ()
 	{
 		DontDestroyOnLoad (this);
+	}
+
+	// Use this for initialization
+	void Start () {
+		compConnect = GameObject.Find("Menu").GetComponent<connect>();
 	}
 	
 	void MakeSelectWindow (int id)
@@ -73,11 +80,19 @@ public class menu : MonoBehaviour
 
 	void MakeEntryWindow (int id)
 	{
+		int old = option[id];
+		
 		GUILayout.Space (10);
-		if (entryList.GetLength(0) > 0 ) {
-			option[id] = GUILayout.SelectionGrid(option[id], entryList, 1);
-		}
+		option[id] = GUILayout.SelectionGrid(option[id], entryList, 1);
 		GUILayout.FlexibleSpace ();
+		
+		if (old != option[id]) {
+			if (option[id] == 0) {
+				compConnect.Send("{\"type\":\"vsunlock\"}");
+			} else {
+				compConnect.Send("{\"type\":\"vslock\", \"index\":" + (option[id]-1).ToString() + "}");
+			}
+		}
 	}
 
 	public void SetEntry(Entry[] list)
