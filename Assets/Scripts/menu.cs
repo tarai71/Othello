@@ -87,10 +87,11 @@ public class menu : MonoBehaviour
 		GUILayout.FlexibleSpace ();
 		
 		if (old != option[id]) {
-			if (option[id] == 0) {
-				compConnect.Send("{\"type\":\"vsunlock\"}");
-			} else {
-				compConnect.Send("{\"type\":\"vslock\", \"index\":" + (option[id]-1).ToString() + "}");
+			if (entryList[old] != StringTable.NO_VS) {
+				compConnect.Send("{\"type\":\"vsunlock\", \"index\":" + old.ToString() + "}");
+			}
+			if (entryList[option[id]] != StringTable.NO_VS) {
+				compConnect.Send("{\"type\":\"vslock\", \"index\":" + (option[id]).ToString() + "}");
 			}
 		}
 	}
