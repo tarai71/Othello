@@ -47,6 +47,10 @@ public class connect : MonoBehaviour
 			if (wptr >= MAX_BUFFER)
 				wptr = 0;
 			Debug.Log("[websocket_MessageReceived] \"Put\" type recieved");
+		} else if( data.type == "vslock") {
+			compMenu.SetLocked();
+		} else if( data.type == "vsunlock") {
+			compMenu.SetUnlock();
 		} else {
 			Debug.Log("[websocket_MessageReceived] Undeined type recieved");
 		}
