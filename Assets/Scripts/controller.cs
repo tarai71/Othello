@@ -4,10 +4,12 @@ using System.Collections;
 public class controller : MonoBehaviour {
 
 	connect compConnect = null;
+	menu compMenu = null;
 
 	// Use this for initialization
 	void Start () {
 		compConnect = GameObject.Find("Menu").GetComponent<connect>();
+		compMenu = GameObject.Find("Menu").GetComponent<menu>();
 	}
 	
 	// Update is called once per frame
@@ -21,7 +23,9 @@ public class controller : MonoBehaviour {
 			if (key_x < 0 || key_y < 0 || key_x > 7 || key_y > 7) {
 				return;
 			}
-			compConnect.Send("{\"type\":\"put\",\"place\":\"" + GameObject.FindWithTag("GameController").GetComponent<main>().posToCode(new Vector2(key_x, key_y)) + "\"}");
+			string put = "{\"type\":\"put\",\"id\":" + compMenu.getID().ToString() + ",\"place\":\"" + GameObject.FindWithTag("GameController").GetComponent<main>().posToCode(new Vector2(key_x, key_y)) + "\"}";
+			compConnect.putPiece(put);
+			compConnect.Send(put);
 		}
 	
 	}

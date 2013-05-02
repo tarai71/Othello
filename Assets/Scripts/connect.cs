@@ -43,9 +43,7 @@ public class connect : MonoBehaviour
 			Debug.Log("[websocket_MessageReceived] \"Entry\" type recieved");
 			compMenu.SetEntry(data.list);
 		} else if( data.type == "put") {
-			DataList[wptr++] = data;
-			if (wptr >= MAX_BUFFER)
-				wptr = 0;
+			putPiece(e.Message);
 			Debug.Log("[websocket_MessageReceived] \"Put\" type recieved");
 		} else if( data.type == "vslock") {
 			compMenu.SetLocked();
@@ -96,6 +94,15 @@ public class connect : MonoBehaviour
 	{
 	    websocket.Send(message);
 	}
+
+	public void putPiece(string data)
+	{
+		Data d = JsonMapper.ToObject<Data> (data);
+		DataList[wptr++] = d;
+		if (wptr >= MAX_BUFFER)
+			wptr = 0;
+	}
+	
 }
 
 [System.Serializable]
