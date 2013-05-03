@@ -35,6 +35,7 @@ public class menu : MonoBehaviour
 	connect compConnect = null;
 
 	Hashtable entryList = new Hashtable();
+	string[] entryIdList = {};
 	string[] entryNameList = {};
 	
 	LOCK_TYPE lockType = LOCK_TYPE.FREE;
@@ -68,7 +69,7 @@ public class menu : MonoBehaviour
 		} else {
 			if(GUILayout.Button(StringTable.START + "[" + lockType.ToString() + ":" + myID + ":" + yourID + "]")) {
 				StartGame();
-				compConnect.Send("{\"type\":\"start\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[option[4]]).id.ToString() + "\"}");
+				compConnect.Send("{\"type\":\"start\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[yourID]).id.ToString() + "\"}");
 		   	}
 		}
 		GUILayout.EndArea();	
@@ -114,12 +115,12 @@ public class menu : MonoBehaviour
 		GUILayout.FlexibleSpace ();
 		
 		if (old != option[id]) {
-			if (!((Entry)entryList[old]).own) {
-				compConnect.Send("{\"type\":\"vsunlock\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[old]).id.ToString() + "\"}");
+			if (!((Entry)entryList[entryIdList[old]]).own) {
+				compConnect.Send("{\"type\":\"vsunlock\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[entryIdList[old]]).id.ToString() + "\"}");
 				SetUnlock();
 			}
-			if (!((Entry)entryList[option[id]]).own) {
-				compConnect.Send("{\"type\":\"vslock\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[option[id]]).id.ToString() + "\"}");
+			if (!((Entry)entryList[entryIdList[option[id]]]).own) {
+				compConnect.Send("{\"type\":\"vslock\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[entryIdList[option[id]]]).id.ToString() + "\"}");
 				SetLock();
 			}
 		}
@@ -137,7 +138,7 @@ public class menu : MonoBehaviour
 	public void SetLock()
 	{
 		lockType = LOCK_TYPE.LOCK;
-		yourID = ((Entry)entryList[option[4]]).id;
+		yourID = ((Entry)entryList[entryIdList[option[4]]]).id;
 	}
 	public void SetLocked(string id)
 	{
@@ -149,8 +150,10 @@ public class menu : MonoBehaviour
 	{
 		entryList.Clear() ;
 		entryNameList = new string[list.Length];
+		entryIdList = new string[list.Length];
 		for(int i=0; i<list.Length; i++) {
 			entryList[list[i].id] = list[i];
+			entryIdList[i] = list[i].id;
 			if (list[i].own) {
 				entryNameList[i] = StringTable.NO_VS + "[" + list[i].id + "]";
 				option[4] = i;
