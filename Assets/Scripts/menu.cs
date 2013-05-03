@@ -68,7 +68,7 @@ public class menu : MonoBehaviour
 		} else {
 			if(GUILayout.Button(StringTable.START + "[" + lockType.ToString() + ":" + myID + ":" + yourID + "]")) {
 				StartGame();
-				compConnect.Send("{\"type\":\"start\", \"myid\":" + myID.ToString() + ", \"id\":" + entryList[option[4]].id.ToString() + "}");
+				compConnect.Send("{\"type\":\"start\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + entryList[option[4]].id.ToString() + "\"}");
 		   	}
 		}
 		GUILayout.EndArea();	
@@ -115,11 +115,11 @@ public class menu : MonoBehaviour
 		
 		if (old != option[id]) {
 			if (!entryList[old].own) {
-				compConnect.Send("{\"type\":\"vsunlock\", \"myid\":" + myID.ToString() + ", \"id\":" + entryList[old].id.ToString() + "}");
+				compConnect.Send("{\"type\":\"vsunlock\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + entryList[old].id.ToString() + "\"}");
 				SetUnlock();
 			}
 			if (!entryList[option[id]].own) {
-				compConnect.Send("{\"type\":\"vslock\", \"myid\":" + myID.ToString() + ", \"id\":" + entryList[option[id]].id.ToString() + "}");
+				compConnect.Send("{\"type\":\"vslock\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + entryList[option[id]].id.ToString() + "\"}");
 				SetLock();
 			}
 		}

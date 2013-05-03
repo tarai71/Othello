@@ -6,7 +6,7 @@ using LitJson;
 
 public class connect : MonoBehaviour
 {
-	public string SERVER_IP = "172.31.8.144";
+	public string SERVER_IP = "54.248.211.43";
 	public string PORT = "3000";
 	
 	WebSocket websocket;
