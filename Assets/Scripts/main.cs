@@ -89,6 +89,7 @@ public class main : MonoBehaviour {
 		
 		foreach(GameObject obj in markerList) {
 			if(obj) {
+				obj.renderer.enabled = IsMySide();
 				obj.renderer.material.color = new Color32(209,221, 48,alfa);
 			}
 		}
