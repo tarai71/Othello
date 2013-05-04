@@ -104,7 +104,7 @@ Renderer:
   m_LightmapIndex: 255
   m_LightmapTilingOffset: {x: 1, y: 1, z: 0, w: 0}
   m_Materials:
-  - {fileID: 2100000, guid: 70bc552e1bd777e43855c716855d655c, type: 2}
+  - {fileID: 2100000, guid: 3bd3962d6510cd849bc4dd7f495ceab8, type: 2}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_UseLightProbes: 0
@@ -353,11 +353,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1785962474}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f790c4c29c00d04f8edd4145fcb8d17, type: 3}
+  m_Script: {fileID: 11500000, guid: e58a8ea80fc35ca4188197dc9a4d6b1b, type: 3}
   m_Name: 
-  piecePrefab: {fileID: 100000, guid: 03ef968d47fa5cd44bcd8ad54f164509, type: 2}
-  markerPrefab: {fileID: 100000, guid: 3af4b451c775afd41b89743e061f2a06, type: 2}
-  guidePrefab: {fileID: 100000, guid: 0854d542a0c70204783c03e6703fbb85, type: 2}
+  piecePrefab: {fileID: 100000, guid: 500456c2d46fb794fa41d4a88a0c6ceb, type: 2}
+  markerPrefab: {fileID: 100000, guid: 36e42970aabf93c40bfce0eff38b5927, type: 2}
+  guidePrefab: {fileID: 100000, guid: cd826612c31f70d4da9f843e9fb7cfd9, type: 2}
   labelStyleScoreBlack:
     m_Name: 
     m_Normal:
@@ -421,7 +421,7 @@ MonoBehaviour:
     m_Name: 
     m_Normal:
       m_Background: {fileID: 0}
-      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+      m_TextColor: {r: .75686276, g: .75686276, b: .75686276, a: 1}
     m_Hover:
       m_Background: {fileID: 0}
       m_TextColor: {r: 0, g: 0, b: 0, a: 1}
@@ -480,7 +480,7 @@ MonoBehaviour:
     m_Name: 
     m_Normal:
       m_Background: {fileID: 0}
-      m_TextColor: {r: .984313726, g: .301960796, b: .301960796, a: 1}
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
     m_Hover:
       m_Background: {fileID: 0}
       m_TextColor: {r: 0, g: 0, b: 0, a: 1}
@@ -523,9 +523,9 @@ MonoBehaviour:
       m_Top: 0
       m_Bottom: 0
     m_Font: {fileID: 0}
-    m_FontSize: 80
-    m_FontStyle: 3
-    m_Alignment: 4
+    m_FontSize: 0
+    m_FontStyle: 0
+    m_Alignment: 0
     m_WordWrap: 0
     m_RichText: 1
     m_TextClipping: 0
@@ -539,7 +539,7 @@ MonoBehaviour:
     m_Name: 
     m_Normal:
       m_Background: {fileID: 0}
-      m_TextColor: {r: .223529413, g: .768627465, b: .882352948, a: 1}
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
     m_Hover:
       m_Background: {fileID: 0}
       m_TextColor: {r: 0, g: 0, b: 0, a: 1}
@@ -582,9 +582,9 @@ MonoBehaviour:
       m_Top: 0
       m_Bottom: 0
     m_Font: {fileID: 0}
-    m_FontSize: 50
-    m_FontStyle: 3
-    m_Alignment: 7
+    m_FontSize: 0
+    m_FontStyle: 0
+    m_Alignment: 0
     m_WordWrap: 0
     m_RichText: 1
     m_TextClipping: 0
@@ -602,7 +602,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1785962474}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa55a175e02819f4187fe08bfd8a454e, type: 3}
+  m_Script: {fileID: 11500000, guid: 900190152922e78409269e053bec48a9, type: 3}
   m_Name: 
 --- !u!114 &1785962478
 MonoBehaviour:
@@ -612,7 +612,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1785962474}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f3b5a8117a408254188579a4c60a7c79, type: 3}
+  m_Script: {fileID: 11500000, guid: 61fce0dbed69011459df57a5fa8ceeae, type: 3}
   m_Name: 
 --- !u!114 &1785962479
 MonoBehaviour:
@@ -622,5 +622,5 @@ MonoBehaviour:
   m_GameObject: {fileID: 1785962474}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3efd4687b2691d94b9d7f027d5d9da93, type: 3}
+  m_Script: {fileID: 11500000, guid: 5a3f4b25b4d2fa7438c789869ca3fb2a, type: 3}
   m_Name: 
