@@ -6,7 +6,8 @@ public class main : MonoBehaviour {
 	public enum GAME_STATUS {
 		PLAY = 0,
 		GAMEOVER,
-		TIMEOVER
+		TIMEOVER,
+		ESCAPEOVER
 	}
 	
 	public enum PIECE_TYPE {
@@ -120,6 +121,11 @@ public class main : MonoBehaviour {
 				StartCoroutine("TimeOver");
 			}
 		}
+		
+		// 対戦相手がいなくなったらゲームオーバー
+		if (compMenu.getYourID() == "") {
+			StartCoroutine("EscapeOver");
+		}
 	}
 
 
@@ -215,7 +221,8 @@ public class main : MonoBehaviour {
 		yield return new WaitForSeconds(2.0f);
 		//while (!Input.GetButtonDown("Fire1") || Input.touches.Length > 0) yield return;
 
-		Application.LoadLevel("Main");
+		compMenu.enabled = true;
+		Application.LoadLevel("Menu");
 	}
 	
 	IEnumerator TimeOver() {
@@ -224,7 +231,18 @@ public class main : MonoBehaviour {
 		yield return new WaitForSeconds(2.0f);
 		//while (!Input.GetButtonDown("Fire1") || Input.touches.Length > 0) yield return;
 
-		Application.LoadLevel("Main");
+		compMenu.enabled = true;
+		Application.LoadLevel("Menu");
+	}
+	
+	IEnumerator EscapeOver() {
+		Debug.Log("escape over");
+		gamestatus = GAME_STATUS.ESCAPEOVER;
+		yield return new WaitForSeconds(2.0f);
+		//while (!Input.GetButtonDown("Fire1") || Input.touches.Length > 0) yield return;
+		
+		compMenu.enabled = true;
+		Application.LoadLevel("Menu");
 	}
 	
 	// 置ける場所があるかどうか検索/
@@ -483,6 +501,11 @@ public class main : MonoBehaviour {
 			} else {
 				result = StringTable.DRAW;
 			}
+			GUI.Box(rect_gameover, "");
+			GUI.Box(rect_gameover, "");
+			GUI.Label(rect_gameover, result, labelStyleGameOver);
+		} else if (gamestatus == GAME_STATUS.ESCAPEOVER) {
+			string result = StringTable.ESCAPE;
 			GUI.Box(rect_gameover, "");
 			GUI.Box(rect_gameover, "");
 			GUI.Label(rect_gameover, result, labelStyleGameOver);
