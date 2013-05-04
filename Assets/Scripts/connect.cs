@@ -86,7 +86,10 @@ public class connect : MonoBehaviour
 	
 	void OnDestroy ()
 	{
-	    websocket.Send("{\"type\":\"defect\",\"name\":\"" + StringTable.PLAYER_NAME + "\"}");
+		if (compMenu.getYourID() != "") {
+			websocket.Send("{\"type\":\"vsunlock\", \"myid\":\"" + compMenu.getMyID().ToString() + "\", \"id\":\"" + compMenu.getYourID().ToString() + "\"}");
+		}
+		websocket.Send("{\"type\":\"defect\",\"name\":\"" + StringTable.PLAYER_NAME + "\"}");
         websocket.Close();
 	}
 	
