@@ -3,13 +3,13 @@ using System.Collections;
 	
 public class main : MonoBehaviour {
 	
-	enum GAME_STATUS {
+	public enum GAME_STATUS {
 		PLAY = 0,
 		GAMEOVER,
 		TIMEOVER
 	}
 	
-	enum PIECE_TYPE {
+	public enum PIECE_TYPE {
 		EMPTY = 0,
 		BLACK,
 		WHITE
@@ -31,7 +31,7 @@ public class main : MonoBehaviour {
 	
 	PIECE_TYPE[,] board = new PIECE_TYPE[8,8];
 	GameObject[,] pieceList = new GameObject[8,8];
-	PIECE_TYPE pieceType = 0;
+	PIECE_TYPE pieceType = PIECE_TYPE.EMPTY;
 	int white = 0;
 	int black = 0;
 	GAME_STATUS gamestatus = GAME_STATUS.PLAY;
@@ -487,5 +487,22 @@ public class main : MonoBehaviour {
 			GUI.Label(rect_gameover, result, labelStyleGameOver);
 		}
 
+	}
+
+	public PIECE_TYPE getPieceType ()
+	{
+		return pieceType;
+	}
+
+	public bool IsMySide ()
+	{
+		menu.LOCK_TYPE t = compMenu.getLockType();
+		if (t == menu.LOCK_TYPE.LOCK) {
+			return (getPieceType() == PIECE_TYPE.BLACK);
+		} else if (t == menu.LOCK_TYPE.LOCKED) {
+			return (getPieceType() == PIECE_TYPE.WHITE);
+		}
+
+		return false;
 	}
 }

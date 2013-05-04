@@ -174,12 +174,17 @@ public class menu : MonoBehaviour
 		return timeTable[option[3]];
 	}
 
-	public string getYourID()
+	public string getYourID ()
 	{
 		return yourID;
 	}
-	public string getMyID()
+	public string getMyID ()
 	{
 		return myID;
+	}
+
+	public LOCK_TYPE getLockType () 
+	{
+		return lockType;
 	}
 }
