@@ -65,7 +65,7 @@ public class menu : MonoBehaviour
 		GUILayout.Space(10);
 		if(lockType == LOCK_TYPE.LOCKED)
 		{
-			GUILayout.Label(((Entry)entryList[yourID]).name + StringTable.LOCKED);
+			GUILayout.Label(getYourName() + StringTable.LOCKED);
 		} else {
 			if(GUILayout.Button(StringTable.START + "[" + lockType.ToString() + ":" + myID + ":" + yourID + "]")) {
 				StartGame();
@@ -182,7 +182,17 @@ public class menu : MonoBehaviour
 	{
 		return myID;
 	}
+	
+	public string getYourName ()
+	{
+		return ((Entry)entryList[yourID]).name;
+	}
 
+	public string getMyName ()
+	{
+		return ((Entry)entryList[myID]).name;
+	}
+	
 	public LOCK_TYPE getLockType () 
 	{
 		return lockType;

@@ -192,7 +192,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7250556424450fd4ab1b48e80d520b22, type: 3}
   m_Name: 
   configData:
-    name: name
+    name: "\u65B0\u4E95\u5229\u7537"
     aiName: ai_name
     iconFile: hoge.png
 --- !u!114 &1262060964

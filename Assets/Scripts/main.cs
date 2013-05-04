@@ -21,6 +21,7 @@ public class main : MonoBehaviour {
 	public GameObject guidePrefab;
 	public GUIStyle labelStyleScoreBlack;
 	public GUIStyle labelStyleScoreWhite;
+	public GUIStyle labelStyleScoreName;
 	public GUIStyle labelStyleGameOver;
 	public GUIStyle labelStyleTimer;
 	
@@ -122,7 +123,7 @@ public class main : MonoBehaviour {
 			}
 		}
 		
-		// 対戦相手がいなくなったらゲームオーバー
+		// 対戦相手がいなくなったら不戦勝/
 		if (compMenu.getYourID() == "") {
 			StartCoroutine("EscapeOver");
 		}
@@ -462,8 +463,10 @@ public class main : MonoBehaviour {
 	void OnGUI() {
 		GUI.Box(new Rect(10,10,100,80), StringTable.BLACK);
 		GUI.Label(new Rect(10,10,100,80), black.ToString("d2"), labelStyleScoreBlack);
+		GUI.Label(new Rect(60,70,100,80), compMenu.getYourName(), labelStyleScoreName);
 		GUI.Box(new Rect(10,100,100,80), StringTable.WHITE);
 		GUI.Label(new Rect(10,100,100,80), white.ToString("d2"), labelStyleScoreWhite);
+		GUI.Label(new Rect(60,160,100,80), compMenu.getMyName(), labelStyleScoreName);
 
 		if (TimeLimit > 0f) {
 			float restTime = TimeLimit - (Time.time - startTime);
