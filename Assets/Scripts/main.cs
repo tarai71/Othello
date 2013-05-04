@@ -222,7 +222,6 @@ public class main : MonoBehaviour {
 		//while (!Input.GetButtonDown("Fire1") || Input.touches.Length > 0) yield return;
 
 		compMenu.enabled = true;
-		Application.LoadLevel("Menu");
 	}
 	
 	IEnumerator TimeOver() {
@@ -232,7 +231,6 @@ public class main : MonoBehaviour {
 		//while (!Input.GetButtonDown("Fire1") || Input.touches.Length > 0) yield return;
 
 		compMenu.enabled = true;
-		Application.LoadLevel("Menu");
 	}
 	
 	IEnumerator EscapeOver() {
@@ -242,7 +240,7 @@ public class main : MonoBehaviour {
 		//while (!Input.GetButtonDown("Fire1") || Input.touches.Length > 0) yield return;
 		
 		compMenu.enabled = true;
-		Application.LoadLevel("Menu");
+		Application.LoadLevel("Empty");
 	}
 	
 	// 置ける場所があるかどうか検索/
