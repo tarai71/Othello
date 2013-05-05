@@ -41,7 +41,10 @@ public class connect : MonoBehaviour
 			Debug.Log("[websocket_MessageReceived] \"Join\" type recieved");
 		} else if( data.type == "entrylist") {
 			Debug.Log("[websocket_MessageReceived] \"Entry\" type recieved");
-			compMenu.SetEntry(data.list);
+			compMenu.SetEntry(data.list, false);
+		} else if( data.type == "updatelock") {
+			Debug.Log("[websocket_MessageReceived] \"UpdateLock\" type recieved");
+			compMenu.SetEntry(data.list, true);
 		} else if( data.type == "put") {
 			putPiece(e.Message);
 			Debug.Log("[websocket_MessageReceived] \"Put\" type recieved");

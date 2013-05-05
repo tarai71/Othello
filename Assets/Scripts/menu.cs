@@ -146,7 +146,7 @@ public class menu : MonoBehaviour
 		yourID = id;
 	}
 	
-	public void SetEntry(Entry[] list)
+	public void SetEntry(Entry[] list, bool isLock)
 	{
 		entryList.Clear() ;
 		entryNameList = new string[list.Length];
@@ -156,7 +156,9 @@ public class menu : MonoBehaviour
 			entryIdList[i] = list[i].id;
 			if (list[i].own) {
 				entryNameList[i] = StringTable.NO_VS + "[" + list[i].id + "]";
-				option[4] = i;
+				if(!isLock) {
+					option[4] = i;
+				}
 				myID = list[i].id;
 			} else {
 				entryNameList[i] = list[i].name + "[" + list[i].id + "]";
@@ -166,7 +168,7 @@ public class menu : MonoBehaviour
 			}
 		}
 	}
-	
+
 	public bool getGuideEnable () 
 	{
 		return (option[2] == 0);
