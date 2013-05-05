@@ -75,11 +75,17 @@ public class connect : MonoBehaviour
 	void Update ()
 	{
 		for (int i=0; i<MAX_BUFFER; i++, rptr++) {
+			if (wptr == rptr)
+				break;
 			if (rptr >= MAX_BUFFER)
 				rptr = 0;
 
 			if (DataList[rptr] != null) {
-				GameObject.FindWithTag("GameController").SendMessage("putPiece", GameObject.FindWithTag("GameController").GetComponent<main>().codeToPos(DataList[rptr].place));
+				if (compMenu.getYourID() != "") {
+					GameObject.FindWithTag("GameController").SendMessage("putPiece", GameObject.FindWithTag("GameController").GetComponent<main>().codeToPos(DataList[rptr].place));
+				} else {
+					
+				}
 			}
 		}
 	}
@@ -89,7 +95,7 @@ public class connect : MonoBehaviour
 		if (compMenu.getYourID() != "") {
 			websocket.Send("{\"type\":\"vsunlock\", \"myid\":\"" + compMenu.getMyID().ToString() + "\", \"id\":\"" + compMenu.getYourID().ToString() + "\"}");
 		}
-		websocket.Send("{\"type\":\"defect\",\"name\":\"" + StringTable.PLAYER_NAME + "\"}");
+		websocket.Send("{\"type\":\"defect\", \"myid\":\"" + compMenu.getMyID().ToString() + "\"}");
         websocket.Close();
 	}
 	

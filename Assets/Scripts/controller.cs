@@ -28,7 +28,9 @@ public class controller : MonoBehaviour {
 				}
 				string put = "{\"type\":\"put\",\"id\":\"" + compMenu.getYourID().ToString() + "\",\"place\":\"" + GameObject.FindWithTag("GameController").GetComponent<main>().posToCode(new Vector2(key_x, key_y)) + "\"}";
 				compConnect.putPiece(put);
-				compConnect.Send(put);
+				if (compMenu.getLockType() != menu.LOCK_TYPE.FREE) {
+					compConnect.Send(put);
+				}
 			}
 		}
 	}

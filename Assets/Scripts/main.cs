@@ -545,6 +545,6 @@ public class main : MonoBehaviour {
 			return (getPieceType() == PIECE_TYPE.White);
 		}
 
-		return false;
+		return true;
 	}
 }
