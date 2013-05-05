@@ -185,12 +185,12 @@ public class menu : MonoBehaviour
 	
 	public string getYourName ()
 	{
-		return ((Entry)entryList[yourID]).name;
+		return (yourID == "")? "" : ((Entry)entryList[yourID]).name;
 	}
 
 	public string getMyName ()
 	{
-		return ((Entry)entryList[myID]).name;
+		return (myID == "")? "" : ((Entry)entryList[myID]).name;
 	}
 	
 	public LOCK_TYPE getLockType () 

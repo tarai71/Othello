@@ -4,16 +4,18 @@ using System.Collections;
 public class main : MonoBehaviour {
 	
 	public enum GAME_STATUS {
-		PLAY = 0,
-		GAMEOVER,
-		TIMEOVER,
-		ESCAPEOVER
+		None = 0,
+		LocalPlay,
+		NetworkPlay,
+		GameOver,
+		TimeOver,
+		WinByDefault
 	}
 	
 	public enum PIECE_TYPE {
-		EMPTY = 0,
-		BLACK,
-		WHITE
+		Empty = 0,
+		Black,
+		White
 	}
 	
 	public GameObject piecePrefab;
@@ -33,10 +35,10 @@ public class main : MonoBehaviour {
 	
 	PIECE_TYPE[,] board = new PIECE_TYPE[8,8];
 	GameObject[,] pieceList = new GameObject[8,8];
-	PIECE_TYPE pieceType = PIECE_TYPE.EMPTY;
+	PIECE_TYPE pieceType = PIECE_TYPE.Empty;
 	int white = 0;
 	int black = 0;
-	GAME_STATUS gamestatus = GAME_STATUS.PLAY;
+	GAME_STATUS gamestatus = GAME_STATUS.None;
 	ArrayList markerList = new ArrayList();
 		
 	float TimeLimit;
@@ -47,16 +49,18 @@ public class main : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		compMenu = GameObject.Find("Menu").GetComponent<menu>();
+		
+		gamestatus = (compMenu.getLockType() == menu.LOCK_TYPE.FREE)? GAME_STATUS.LocalPlay : GAME_STATUS.NetworkPlay;
 
 		for (int i=0; i<board.GetLength(0); i++) {
 			for (int j=0; j<board.GetLength(1); j++) {
-				board[i,j] = PIECE_TYPE.EMPTY;
+				board[i,j] = PIECE_TYPE.Empty;
 			}
 		}
-		pieceType = PIECE_TYPE.WHITE; putPiece(new Vector2(3,4));
-		pieceType = PIECE_TYPE.BLACK; putPiece(new Vector2(3,3));
-		pieceType = PIECE_TYPE.BLACK; putPiece(new Vector2(4,4));
-		pieceType = PIECE_TYPE.WHITE; putPiece(new Vector2(4,3));
+		pieceType = PIECE_TYPE.White; putPiece(new Vector2(3,4));
+		pieceType = PIECE_TYPE.Black; putPiece(new Vector2(3,3));
+		pieceType = PIECE_TYPE.Black; putPiece(new Vector2(4,4));
+		pieceType = PIECE_TYPE.White; putPiece(new Vector2(4,3));
 	
 		TimeLimit = compMenu.getLimitTime();
 		
@@ -96,10 +100,10 @@ public class main : MonoBehaviour {
 			}
 		}
 		
-		if(pieceType == PIECE_TYPE.BLACK) {
+		if(pieceType == PIECE_TYPE.Black) {
 			labelStyleScoreBlack.normal.textColor = new Color32(209,221, 48,alfa);
 			labelStyleScoreWhite.normal.textColor = new Color32(193,193,193,255);
-		} else {
+		} else if(pieceType == PIECE_TYPE.White) {
 			labelStyleScoreBlack.normal.textColor = new Color32(193,193,193,255);
 			labelStyleScoreWhite.normal.textColor = new Color32(209,221, 48,alfa);
 		}
@@ -124,8 +128,8 @@ public class main : MonoBehaviour {
 		}
 		
 		// 対戦相手がいなくなったら不戦勝/
-		if (compMenu.getYourID() == "") {
-			StartCoroutine("EscapeOver");
+		if (gamestatus == GAME_STATUS.NetworkPlay && compMenu.getLockType() == menu.LOCK_TYPE.FREE) {
+			StartCoroutine("WinByDefault");
 		}
 	}
 
@@ -136,10 +140,10 @@ public class main : MonoBehaviour {
 		if (key.x < 0 || key.y < 0 || key.x > 7 || key.y > 7) {
 			return;
 		}
-		if (board[(int)key.x,(int)key.y] != PIECE_TYPE.EMPTY) {
+		if (board[(int)key.x,(int)key.y] != PIECE_TYPE.Empty) {
 			return;
 		}
-		if (gamestatus != GAME_STATUS.PLAY) {
+		if (gamestatus != GAME_STATUS.LocalPlay && gamestatus != GAME_STATUS.NetworkPlay) {
 			return;
 		}
 			
@@ -165,21 +169,21 @@ public class main : MonoBehaviour {
 			pieceList[(int)key.x, (int)key.y] = (GameObject)Instantiate(piecePrefab, position, rotation);
 			for (int i=0; i<board.GetLength(0); i++) {
 				for (int j=0; j<board.GetLength(1); j++) {
-					if (board[i,j] == PIECE_TYPE.BLACK) {
+					if (board[i,j] == PIECE_TYPE.Black) {
 						pieceList[i, j].renderer.material.color = new Color(0,0,0,255);
-					} else if (board[i,j] == PIECE_TYPE.WHITE) {
+					} else if (board[i,j] == PIECE_TYPE.White) {
 						pieceList[i, j].renderer.material.color = new Color(255,255,255,255);
 					}
 				}
 			}
-			pieceType = pieceType == PIECE_TYPE.BLACK ? PIECE_TYPE.WHITE : PIECE_TYPE.BLACK;
+			pieceType = (pieceType == PIECE_TYPE.Black)? PIECE_TYPE.White : PIECE_TYPE.Black;
 			// 置くところが無いかチェック/
 			foreach(Object obj in markerList) {
 				Object.Destroy(obj);
 			}
 			ArrayList enablePutList = new ArrayList();
 			if (!checkEnablePut(ref enablePutList) && !initialFlag) {
-				pieceType = pieceType == PIECE_TYPE.BLACK ? PIECE_TYPE.WHITE : PIECE_TYPE.BLACK;
+				pieceType = (pieceType == PIECE_TYPE.Black)? PIECE_TYPE.White : PIECE_TYPE.Black;
 				// 攻守交代2回してどこも置けなかったらそのゲームは終了/
 				if (!checkEnablePut(ref enablePutList) && !initialFlag) {
 					StartCoroutine("GameOver");
@@ -196,7 +200,7 @@ public class main : MonoBehaviour {
 			enablePutList.Clear();
 		} else {
 			Debug.Log("cannot put here");
-			board[(int)key.x,(int)key.y] = PIECE_TYPE.EMPTY;
+			board[(int)key.x,(int)key.y] = PIECE_TYPE.Empty;
 		}
 
 		// for debug
@@ -204,9 +208,9 @@ public class main : MonoBehaviour {
 		for (int i=0; i<board.GetLength(0); i++) {
 			_s = _s + '\n';
 			for (int j=0; j<board.GetLength(1); j++) {
-				if(board[i,j] == PIECE_TYPE.BLACK ) {
+				if(board[i,j] == PIECE_TYPE.Black) {
 					_s = _s + 'X';
-				} else if(board[i,j] == PIECE_TYPE.WHITE ) {
+				} else if(board[i,j] == PIECE_TYPE.White) {
 					_s = _s + 'O';
 				} else {
 					_s = _s + '&';
@@ -218,7 +222,7 @@ public class main : MonoBehaviour {
 	
 	IEnumerator GameOver() {
 		Debug.Log("game over");
-		gamestatus = GAME_STATUS.GAMEOVER;
+		gamestatus = GAME_STATUS.GameOver;
 		yield return new WaitForSeconds(2.0f);
 		//while (!Input.GetButtonDown("Fire1") || Input.touches.Length > 0) yield return;
 
@@ -227,16 +231,17 @@ public class main : MonoBehaviour {
 	
 	IEnumerator TimeOver() {
 		Debug.Log("time over");
-		gamestatus = GAME_STATUS.TIMEOVER;
+		gamestatus = GAME_STATUS.TimeOver;
 		yield return new WaitForSeconds(2.0f);
 		//while (!Input.GetButtonDown("Fire1") || Input.touches.Length > 0) yield return;
 
 		compMenu.enabled = true;
 	}
 	
-	IEnumerator EscapeOver() {
-		Debug.Log("escape over");
-		gamestatus = GAME_STATUS.ESCAPEOVER;
+	IEnumerator WinByDefault() {
+		Debug.Log("Win by default");
+		gamestatus = GAME_STATUS.WinByDefault
+;
 		yield return new WaitForSeconds(2.0f);
 		//while (!Input.GetButtonDown("Fire1") || Input.touches.Length > 0) yield return;
 		
@@ -248,7 +253,7 @@ public class main : MonoBehaviour {
 	bool checkEnablePut(ref ArrayList list) {
 		for (int x=0; x<board.GetLength(0); x++) {
 			for (int y=0; y<board.GetLength(1); y++) {
-				if (board[x,y] == PIECE_TYPE.EMPTY && updateBoard(new Vector2(x,y),false)) {
+				if (board[x,y] == PIECE_TYPE.Empty && updateBoard(new Vector2(x,y),false)) {
 					list.Add(new Vector2(x,y));
 				}
 			}
@@ -271,9 +276,9 @@ public class main : MonoBehaviour {
 				revList[0].Clear();
 				break;
 			}
-			if (board[ix,iy] != PIECE_TYPE.EMPTY && board[ix,iy] != pieceType) {
+			if (board[ix,iy] != PIECE_TYPE.Empty && board[ix,iy] != pieceType) {
 				revList[0].Add(new Vector2(ix, iy));
-			} else if (revList[0].Count > 0 && board[ix,iy] != PIECE_TYPE.EMPTY) {
+			} else if (revList[0].Count > 0 && board[ix,iy] != PIECE_TYPE.Empty) {
 				changeFlag = true;
 				break;
 			} else {
@@ -290,9 +295,9 @@ public class main : MonoBehaviour {
 				revList[1].Clear();
 				break;
 			}
-			if (board[ix,iy] != PIECE_TYPE.EMPTY && board[ix,iy] != pieceType) {
+			if (board[ix,iy] != PIECE_TYPE.Empty && board[ix,iy] != pieceType) {
 				revList[1].Add(new Vector2(ix,iy));
-			} else if (revList[1].Count > 0 && board[ix,iy] != PIECE_TYPE.EMPTY) {
+			} else if (revList[1].Count > 0 && board[ix,iy] != PIECE_TYPE.Empty) {
 				changeFlag = true;
 				break;
 			} else {
@@ -310,9 +315,9 @@ public class main : MonoBehaviour {
 				revList[2].Clear();
 				break;
 			}
-			if (board[ix,iy] != PIECE_TYPE.EMPTY && board[ix,iy] != pieceType) {
+			if (board[ix,iy] != PIECE_TYPE.Empty && board[ix,iy] != pieceType) {
 				revList[2].Add(new Vector2(ix, iy));
-			} else if (revList[2].Count > 0 && board[ix,iy] != PIECE_TYPE.EMPTY) {
+			} else if (revList[2].Count > 0 && board[ix,iy] != PIECE_TYPE.Empty) {
 				changeFlag = true;
 				break;
 			} else {
@@ -329,9 +334,9 @@ public class main : MonoBehaviour {
 				revList[3].Clear();
 				break;
 			}
-			if (board[ix,iy] != PIECE_TYPE.EMPTY && board[ix,iy] != pieceType) {
+			if (board[ix,iy] != PIECE_TYPE.Empty && board[ix,iy] != pieceType) {
 				revList[3].Add(new Vector2(ix, iy));
-			} else if (revList[3].Count > 0 && board[ix,iy] != PIECE_TYPE.EMPTY) {
+			} else if (revList[3].Count > 0 && board[ix,iy] != PIECE_TYPE.Empty) {
 				changeFlag = true;
 				break;
 			} else {
@@ -349,9 +354,9 @@ public class main : MonoBehaviour {
 				revList[4].Clear();
 				break;
 			}
-			if (board[ix,iy] != PIECE_TYPE.EMPTY && board[ix,iy] != pieceType) {
+			if (board[ix,iy] != PIECE_TYPE.Empty && board[ix,iy] != pieceType) {
 				revList[4].Add(new Vector2(ix,iy));
-			} else if (revList[4].Count > 0 && board[ix,iy] != PIECE_TYPE.EMPTY) {
+			} else if (revList[4].Count > 0 && board[ix,iy] != PIECE_TYPE.Empty) {
 				changeFlag = true;
 				break;
 			} else {
@@ -368,9 +373,9 @@ public class main : MonoBehaviour {
 				revList[5].Clear();
 				break;
 			}
-			if (board[ix,iy] != PIECE_TYPE.EMPTY && board[ix,iy] != pieceType) {
+			if (board[ix,iy] != PIECE_TYPE.Empty && board[ix,iy] != pieceType) {
 				revList[5].Add(new Vector2(ix,iy));
-			} else if (revList[5].Count > 0 && board[ix,iy] != PIECE_TYPE.EMPTY) {
+			} else if (revList[5].Count > 0 && board[ix,iy] != PIECE_TYPE.Empty) {
 				changeFlag = true;
 				break;
 			} else {
@@ -388,9 +393,9 @@ public class main : MonoBehaviour {
 				revList[6].Clear();
 				break;
 			}
-			if (board[ix,iy] != PIECE_TYPE.EMPTY && board[ix,iy] != pieceType) {
+			if (board[ix,iy] != PIECE_TYPE.Empty && board[ix,iy] != pieceType) {
 				revList[6].Add(new Vector2(ix,iy));
-			} else if (revList[6].Count > 0 && board[ix,iy] != PIECE_TYPE.EMPTY) {
+			} else if (revList[6].Count > 0 && board[ix,iy] != PIECE_TYPE.Empty) {
 				changeFlag = true;
 				break;
 			} else {
@@ -407,9 +412,9 @@ public class main : MonoBehaviour {
 				revList[7].Clear();
 				break;
 			}
-			if (board[ix,iy] != PIECE_TYPE.EMPTY && board[ix,iy] != pieceType) {
+			if (board[ix,iy] != PIECE_TYPE.Empty && board[ix,iy] != pieceType) {
 				revList[7].Add(new Vector2(ix,iy));
-			} else if (revList[7].Count > 0 && board[ix,iy] != PIECE_TYPE.EMPTY) {
+			} else if (revList[7].Count > 0 && board[ix,iy] != PIECE_TYPE.Empty) {
 				changeFlag = true;
 				break;
 			} else {
@@ -424,7 +429,7 @@ public class main : MonoBehaviour {
 				foreach (ArrayList val in revList) {
 					foreach (Vector2 v in val) {
 						pieceList[(int)v.x, (int)v.y].transform.rotation *= Quaternion.AngleAxis(180, new Vector3(1,0,0));
-						board[(int)v.x, (int)v.y] = (board[(int)v.x, (int)v.y] == PIECE_TYPE.BLACK) ? PIECE_TYPE.WHITE : PIECE_TYPE.BLACK;
+						board[(int)v.x, (int)v.y] = (board[(int)v.x, (int)v.y] == PIECE_TYPE.Black) ? PIECE_TYPE.White : PIECE_TYPE.Black;
 					} 
 				}
 			}
@@ -439,9 +444,9 @@ public class main : MonoBehaviour {
 		int _black = 0;
 		for (int x=0; x<board.GetLength(0); x++) {
 			for (int y=0; y<board.GetLength(1); y++) {
-				if (board[x,y] == PIECE_TYPE.BLACK) {
+				if (board[x,y] == PIECE_TYPE.Black) {
 					_black += 1;
-				} else if (board[x,y] == PIECE_TYPE.WHITE) {
+				} else if (board[x,y] == PIECE_TYPE.White) {
 					_white += 1;
 				}
 			}
@@ -463,11 +468,19 @@ public class main : MonoBehaviour {
 	void OnGUI() {
 		GUI.Box(new Rect(10,10,100,80), StringTable.BLACK);
 		GUI.Label(new Rect(10,10,100,80), black.ToString("d2"), labelStyleScoreBlack);
-		GUI.Label(new Rect(60,70,100,80), compMenu.getYourName(), labelStyleScoreName);
 		GUI.Box(new Rect(10,100,100,80), StringTable.WHITE);
 		GUI.Label(new Rect(10,100,100,80), white.ToString("d2"), labelStyleScoreWhite);
-		GUI.Label(new Rect(60,160,100,80), compMenu.getMyName(), labelStyleScoreName);
-
+		switch (compMenu.getLockType()) {
+		case menu.LOCK_TYPE.LOCK:
+			GUI.Label(new Rect(60,70,100,80), compMenu.getMyName(), labelStyleScoreName);
+			GUI.Label(new Rect(60,160,100,80), compMenu.getYourName(), labelStyleScoreName);
+			break;
+		case menu.LOCK_TYPE.LOCKED:
+			GUI.Label(new Rect(60,70,100,80), compMenu.getYourName(), labelStyleScoreName);
+			GUI.Label(new Rect(60,160,100,80), compMenu.getMyName(), labelStyleScoreName);
+			break;
+		}
+		
 		if (TimeLimit > 0f) {
 			float restTime = TimeLimit - (Time.time - startTime);
 			if (restTime < 0f) restTime = 0f;
@@ -481,7 +494,8 @@ public class main : MonoBehaviour {
 		}
 		
 		Rect rect_gameover = new Rect(Screen.width / 2 - 300, Screen.height / 2 - 50, 600, 100);
-		if (gamestatus == GAME_STATUS.GAMEOVER) {
+		switch (gamestatus) {
+		case GAME_STATUS.GameOver:
 			string result = "";
 			if (white > black) {
 				result = StringTable.WIN_WHITE;
@@ -493,11 +507,12 @@ public class main : MonoBehaviour {
 			GUI.Box(rect_gameover, "");
 			GUI.Box(rect_gameover, "");
 			GUI.Label(rect_gameover, result, labelStyleGameOver);
-		} else if (gamestatus == GAME_STATUS.TIMEOVER) {
-			string result = "";
-			if (pieceType == PIECE_TYPE.BLACK) {
+			break;
+		case GAME_STATUS.TimeOver:
+			result = "";
+			if (pieceType == PIECE_TYPE.Black) {
 				result = StringTable.WIN_WHITE;
-			} else if (pieceType == PIECE_TYPE.WHITE){
+			} else if (pieceType == PIECE_TYPE.White){
 				result = StringTable.WIN_BLACK;
 			} else {
 				result = StringTable.DRAW;
@@ -505,11 +520,13 @@ public class main : MonoBehaviour {
 			GUI.Box(rect_gameover, "");
 			GUI.Box(rect_gameover, "");
 			GUI.Label(rect_gameover, result, labelStyleGameOver);
-		} else if (gamestatus == GAME_STATUS.ESCAPEOVER) {
-			string result = StringTable.ESCAPE;
+			break;
+		case GAME_STATUS.WinByDefault:
+			result = StringTable.ESCAPE;
 			GUI.Box(rect_gameover, "");
 			GUI.Box(rect_gameover, "");
 			GUI.Label(rect_gameover, result, labelStyleGameOver);
+			break;
 		}
 
 	}
@@ -523,9 +540,9 @@ public class main : MonoBehaviour {
 	{
 		menu.LOCK_TYPE t = compMenu.getLockType();
 		if (t == menu.LOCK_TYPE.LOCK) {
-			return (getPieceType() == PIECE_TYPE.BLACK);
+			return (getPieceType() == PIECE_TYPE.Black);
 		} else if (t == menu.LOCK_TYPE.LOCKED) {
-			return (getPieceType() == PIECE_TYPE.WHITE);
+			return (getPieceType() == PIECE_TYPE.White);
 		}
 
 		return false;
