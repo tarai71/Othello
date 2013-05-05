@@ -104,7 +104,7 @@ Renderer:
   m_LightmapIndex: 255
   m_LightmapTilingOffset: {x: 1, y: 1, z: 0, w: 0}
   m_Materials:
-  - {fileID: 2100000, guid: 70bc552e1bd777e43855c716855d655c, type: 2}
+  - {fileID: 2100000, guid: 545b082061a2cd840886e7f05bbaf59b, type: 2}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_UseLightProbes: 0
@@ -353,11 +353,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1785962474}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f790c4c29c00d04f8edd4145fcb8d17, type: 3}
+  m_Script: {fileID: 11500000, guid: 4fd12a76b08643a4bb4a1e0a31edda3b, type: 3}
   m_Name: 
-  piecePrefab: {fileID: 100000, guid: 03ef968d47fa5cd44bcd8ad54f164509, type: 2}
-  markerPrefab: {fileID: 100000, guid: 3af4b451c775afd41b89743e061f2a06, type: 2}
-  guidePrefab: {fileID: 100000, guid: 0854d542a0c70204783c03e6703fbb85, type: 2}
+  piecePrefab: {fileID: 100000, guid: 5c3d3014047d7c142b09960e961b1b39, type: 2}
+  markerPrefab: {fileID: 100000, guid: e803a02b44a183e4d8badba470325493, type: 2}
+  guidePrefab: {fileID: 100000, guid: 5030d2b21fd57c84e81ac59a5b694bd6, type: 2}
   labelStyleScoreBlack:
     m_Name: 
     m_Normal:
@@ -539,7 +539,7 @@ MonoBehaviour:
     m_Name: 
     m_Normal:
       m_Background: {fileID: 0}
-      m_TextColor: {r: .984313726, g: .301960796, b: .301960796, a: 1}
+      m_TextColor: {r: .501960814, g: .501960814, b: .501960814, a: 1}
     m_Hover:
       m_Background: {fileID: 0}
       m_TextColor: {r: 0, g: 0, b: 0, a: 1}
@@ -598,7 +598,7 @@ MonoBehaviour:
     m_Name: 
     m_Normal:
       m_Background: {fileID: 0}
-      m_TextColor: {r: .223529413, g: .768627465, b: .882352948, a: 1}
+      m_TextColor: {r: .501960814, g: .501960814, b: .501960814, a: 1}
     m_Hover:
       m_Background: {fileID: 0}
       m_TextColor: {r: 0, g: 0, b: 0, a: 1}
@@ -661,7 +661,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1785962474}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa55a175e02819f4187fe08bfd8a454e, type: 3}
+  m_Script: {fileID: 11500000, guid: 98daa3ceba63e1c4d9e30fb8f19dba95, type: 3}
   m_Name: 
 --- !u!114 &1785962478
 MonoBehaviour:
@@ -671,7 +671,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1785962474}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f3b5a8117a408254188579a4c60a7c79, type: 3}
+  m_Script: {fileID: 11500000, guid: 43810d2df704bd2449c9416429998515, type: 3}
   m_Name: 
 --- !u!114 &1785962479
 MonoBehaviour:
@@ -681,5 +681,5 @@ MonoBehaviour:
   m_GameObject: {fileID: 1785962474}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3efd4687b2691d94b9d7f027d5d9da93, type: 3}
+  m_Script: {fileID: 11500000, guid: 4a65475fda59d46468fc4b92a6e9d796, type: 3}
   m_Name: 
