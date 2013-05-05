@@ -161,6 +161,9 @@ public class menu : MonoBehaviour
 			} else {
 				entryNameList[i] = list[i].name + "[" + list[i].id + "]";
 			}
+			if (list[i].locked) {
+				entryNameList[i] += "*";
+			}
 		}
 	}
 	

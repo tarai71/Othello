@@ -18,6 +18,19 @@ public class main : MonoBehaviour {
 		White
 	}
 	
+	class GameEnd {
+		public string debug;
+		public GAME_STATUS status;
+		public float wait;
+		
+		public GameEnd(string debug, GAME_STATUS status, float wait)
+		{
+			this.debug = debug;
+			this.status = status;
+			this.wait = wait;
+		}
+	}
+	
 	public GameObject piecePrefab;
 	public GameObject markerPrefab;
 	public GameObject guidePrefab;
@@ -123,13 +136,13 @@ public class main : MonoBehaviour {
 		
 		if (TimeLimit > 0f) {
 			if (Time.time - startTime >= TimeLimit) {
-				StartCoroutine("TimeOver");
+				StartCoroutine("GameOver", new GameEnd("time over", GAME_STATUS.TimeOver, 2.5f));
 			}
 		}
 		
 		// 対戦相手がいなくなったら不戦勝/
 		if (gamestatus == GAME_STATUS.NetworkPlay && compMenu.getLockType() == menu.LOCK_TYPE.FREE) {
-			StartCoroutine("WinByDefault");
+			StartCoroutine("GameOver", new GameEnd("win by default", GAME_STATUS.WinByDefault, 2.5f));
 		}
 	}
 
@@ -186,7 +199,7 @@ public class main : MonoBehaviour {
 				pieceType = (pieceType == PIECE_TYPE.Black)? PIECE_TYPE.White : PIECE_TYPE.Black;
 				// 攻守交代2回してどこも置けなかったらそのゲームは終了/
 				if (!checkEnablePut(ref enablePutList) && !initialFlag) {
-					StartCoroutine("GameOver");
+					StartCoroutine("GameOver", new GameEnd("game over", GAME_STATUS.GameOver, 2.5f));
 				}
 			}
 			startTime = Time.time;
@@ -220,31 +233,12 @@ public class main : MonoBehaviour {
 		Debug.Log(_s);
 	}
 	
-	IEnumerator GameOver() {
-		Debug.Log("game over");
-		gamestatus = GAME_STATUS.GameOver;
-		yield return new WaitForSeconds(2.0f);
+	IEnumerator GameOver(GameEnd obj) {
+		Debug.Log(obj.debug);
+		gamestatus = obj.status;
+		yield return new WaitForSeconds(obj.wait);
 		//while (!Input.GetButtonDown("Fire1") || Input.touches.Length > 0) yield return;
 
-		compMenu.enabled = true;
-	}
-	
-	IEnumerator TimeOver() {
-		Debug.Log("time over");
-		gamestatus = GAME_STATUS.TimeOver;
-		yield return new WaitForSeconds(2.0f);
-		//while (!Input.GetButtonDown("Fire1") || Input.touches.Length > 0) yield return;
-
-		compMenu.enabled = true;
-	}
-	
-	IEnumerator WinByDefault() {
-		Debug.Log("Win by default");
-		gamestatus = GAME_STATUS.WinByDefault
-;
-		yield return new WaitForSeconds(2.0f);
-		//while (!Input.GetButtonDown("Fire1") || Input.touches.Length > 0) yield return;
-		
 		compMenu.enabled = true;
 		Application.LoadLevel("Empty");
 	}

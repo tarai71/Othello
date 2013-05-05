@@ -122,6 +122,7 @@ public class Data {
 		public string place = "";
 		public string myid = "";
 		public string id = "";
+		public bool locked = false;
 		public Entry[] list;
 }
 [System.Serializable]
@@ -130,5 +131,6 @@ public class Entry {
 	public string name = "";
 	public string time = "";
 	public bool own = false;
+	public bool locked = false;
 	public string id = "";
 }

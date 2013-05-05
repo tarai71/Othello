@@ -189,10 +189,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1262060961}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70fe13fc571d5914b82f567ef32cf917, type: 3}
+  m_Script: {fileID: 11500000, guid: 7250556424450fd4ab1b48e80d520b22, type: 3}
   m_Name: 
   configData:
-    name: name
+    name: "\u677F\u91CE\u53CB\u7F8E"
     aiName: ai_name
     iconFile: hoge.png
 --- !u!114 &1262060964
@@ -203,7 +203,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1262060961}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc1904d1a2b31e847984706e770621ed, type: 3}
+  m_Script: {fileID: 11500000, guid: a663d56b218f94847a1a32b5757d0231, type: 3}
   m_Name: 
   SERVER_IP: 54.248.211.43
   PORT: 3000
