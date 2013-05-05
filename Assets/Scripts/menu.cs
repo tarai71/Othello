@@ -115,13 +115,17 @@ public class menu : MonoBehaviour
 		GUILayout.FlexibleSpace ();
 		
 		if (old != option[id]) {
-			if (!((Entry)entryList[entryIdList[old]]).own) {
-				compConnect.Send("{\"type\":\"vsunlock\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[entryIdList[old]]).id.ToString() + "\"}");
-				SetUnlock();
-			}
-			if (!((Entry)entryList[entryIdList[option[id]]]).own) {
-				compConnect.Send("{\"type\":\"vslock\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[entryIdList[option[id]]]).id.ToString() + "\"}");
-				SetLock();
+			if (((Entry)entryList[entryIdList[option[id]]]).locked && (!((Entry)entryList[entryIdList[option[id]]]).own || (lockType != LOCK_TYPE.LOCK))) {
+				option[id] = old;
+			} else {
+				if (!((Entry)entryList[entryIdList[old]]).own) {
+					compConnect.Send("{\"type\":\"vsunlock\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[entryIdList[old]]).id.ToString() + "\"}");
+					SetUnlock();
+				}
+				if (!((Entry)entryList[entryIdList[option[id]]]).own) {
+					compConnect.Send("{\"type\":\"vslock\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[entryIdList[option[id]]]).id.ToString() + "\"}");
+					SetLock();
+				}
 			}
 		}
 	}
@@ -163,7 +167,7 @@ public class menu : MonoBehaviour
 			} else {
 				entryNameList[i] = list[i].name + "[" + list[i].id + "]";
 			}
-			if (list[i].locked) {
+			if (list[i].locked && (!list[i].own || (lockType != LOCK_TYPE.LOCK))) {
 				entryNameList[i] += "*";
 			}
 		}
