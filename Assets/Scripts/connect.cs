@@ -21,7 +21,7 @@ public class connect : MonoBehaviour
 	
 	private void websocket_Opened(object sender, EventArgs e)
 	{
-		websocket.Send("{\"type\":\"entry\", \"name\":\"" + compMenu.configData.name + "\"}");
+		websocket.Send("{\"type\":\"entry\", \"name\":\"" + ConfigData.name + "\"}");
 	}
 	
 	private void websocket_Closed(object sender, EventArgs e)

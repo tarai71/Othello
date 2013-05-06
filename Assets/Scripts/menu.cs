@@ -9,8 +9,6 @@ public class menu : MonoBehaviour
 		LOCKED
 	}
 	
-	public config configData;
-
 	Rect[] windowRect = {
 		new Rect (10, 60, 200, 20),
 		new Rect (10, 160, 200, 20),
