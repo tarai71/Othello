@@ -1,15 +1,6 @@
 using UnityEngine;
 using System.Collections;
 
-[System.Serializable]
-public class Config 
-{
-	public string name = "name";
-	public string aiName = "ai_name";
-	public string iconFile = "hoge.png";
-
-}
-
 public class menu : MonoBehaviour
 {
 	public enum LOCK_TYPE {
@@ -18,8 +9,8 @@ public class menu : MonoBehaviour
 		LOCKED
 	}
 	
-	public Config configData;
-	
+	public config configData;
+
 	Rect[] windowRect = {
 		new Rect (10, 60, 200, 20),
 		new Rect (10, 160, 200, 20),
