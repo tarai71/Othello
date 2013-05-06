@@ -169,3 +169,5 @@ Temp
 *.sln
 *.userprefs
 
+
+/Assets/Scripts/config.cs
