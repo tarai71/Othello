@@ -84,11 +84,11 @@ public class connect : MonoBehaviour
 				rptr = 0;
 
 			if (DataList[rptr] != null) {
-				if (compMenu.getYourID() != "") {
+//				if (compMenu.getYourID() != "") {
 					GameObject.FindWithTag("GameController").SendMessage("putPiece", GameObject.FindWithTag("GameController").GetComponent<main>().codeToPos(DataList[rptr].place));
-				} else {
+//				} else {
 					
-				}
+//				}
 			}
 		}
 	}

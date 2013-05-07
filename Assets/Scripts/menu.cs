@@ -58,8 +58,11 @@ public class menu : MonoBehaviour
 		} else {
 			if(GUILayout.Button(StringTable.START + "[" + lockType.ToString() + ":" + myID + ":" + yourID + "]")) {
 				StartGame();
-				compConnect.Send("{\"type\":\"start\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[yourID]).id.ToString() + "\"}");
-		   	}
+				if(lockType != LOCK_TYPE.FREE)
+				{
+					compConnect.Send("{\"type\":\"start\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[yourID]).id.ToString() + "\"}");
+				}
+			}
 		}
 		GUILayout.EndArea();	
 	}
