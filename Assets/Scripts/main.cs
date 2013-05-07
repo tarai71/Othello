@@ -3,21 +3,24 @@ using System.Collections;
 	
 public class main : MonoBehaviour {
 	
+	// ゲームの状態を列挙/
 	public enum GAME_STATUS {
 		None = 0,
-		LocalPlay,
-		NetworkPlay,
-		GameOver,
-		TimeOver,
-		WinByDefault
+		LocalPlay,			// ローカル対戦中/
+		NetworkPlay,		// 通信対戦中/
+		GameOver,			// ゲームオーバー表示中/
+		TimeOver,			// タイムオーバー表示中/
+		WinByDefault		// 不戦勝表示中/
 	}
 	
+	// 升の状態を列挙/
 	public enum PIECE_TYPE {
-		Empty = 0,
-		Black,
-		White
+		Empty = 0,			// 空/
+		Black,				// 黒配置/
+		White				// 白配置/
 	}
 	
+	// ゲーム終了処理クラス/
 	class GameEnd {
 		public string debug;
 		public GAME_STATUS status;
@@ -31,52 +34,69 @@ public class main : MonoBehaviour {
 		}
 	}
 	
+	// Prefab定義/
 	public GameObject piecePrefab;
 	public GameObject markerPrefab;
 	public GameObject guidePrefab;
+	// GUIStyle定義/
 	public GUIStyle labelStyleScoreBlack;
 	public GUIStyle labelStyleScoreWhite;
 	public GUIStyle labelStyleScoreName;
 	public GUIStyle labelStyleGameOver;
 	public GUIStyle labelStyleTimer;
-	
+	public GUIStyle labelStyleLaberl;
+		
+	// 盤面定義/
+	PIECE_TYPE[,] board = new PIECE_TYPE[8,8];
+	// 盤面に配置した駒のオブジェクトリスト/
+	GameObject[,] pieceList = new GameObject[8,8];
+	// 盤面に配置した着手可能場所マーカーのオブジェクトリスト/
+	ArrayList markerList = new ArrayList();
+	// 盤面のガイド表示のオブジェクトリスト/
 	GameObject[,] guide = new GameObject[2,8];
+	// 盤面のガイド表示用文字データ/
 	string[,] guideLitteral = new string[,]{
 		{"a","b","c","d","e","f","g","h"},
 		{"1","2","3","4","5","6","7","8"}
 	};
-	
-	PIECE_TYPE[,] board = new PIECE_TYPE[8,8];
-	GameObject[,] pieceList = new GameObject[8,8];
+	// 現在の手順/
 	PIECE_TYPE pieceType = PIECE_TYPE.Empty;
+	// 白駒数/
 	int white = 0;
+	// 黒駒数/
 	int black = 0;
+	// ゲームの状態/
 	GAME_STATUS gamestatus = GAME_STATUS.None;
-	ArrayList markerList = new ArrayList();
-		
+	// 制限時間/
 	float TimeLimit;
+	// 残り時間計算用ワーク/
 	float startTime;
-
+	// メニューコンポーネントキャッシュ用/
 	menu compMenu = null;
 	
 	// Use this for initialization
 	void Start () {
+		// メニューコンポーネントをキャッシュ/
 		compMenu = GameObject.Find("Menu").GetComponent<menu>();
 		
 		gamestatus = (compMenu.getLockType() == menu.LOCK_TYPE.FREE)? GAME_STATUS.LocalPlay : GAME_STATUS.NetworkPlay;
-
+		
+		// 盤面クリア/
 		for (int i=0; i<board.GetLength(0); i++) {
 			for (int j=0; j<board.GetLength(1); j++) {
 				board[i,j] = PIECE_TYPE.Empty;
 			}
 		}
+		// 駒の初期配置/
 		pieceType = PIECE_TYPE.White; putPiece(new Vector2(3,4));
 		pieceType = PIECE_TYPE.Black; putPiece(new Vector2(3,3));
 		pieceType = PIECE_TYPE.Black; putPiece(new Vector2(4,4));
 		pieceType = PIECE_TYPE.White; putPiece(new Vector2(4,3));
 	
+		// メニューから制限時間取得/
 		TimeLimit = compMenu.getLimitTime();
 		
+		// 盤面の横ガイド表示用オブジェクト生成/
 		float x=-3.5f,y=+4.5f;
 		for (int i=0; i<8; i++) {
 			guide[0,i] = (GameObject)Instantiate(guidePrefab, new Vector3(0,0,0), Quaternion.identity);
@@ -88,6 +108,7 @@ public class main : MonoBehaviour {
 			guide[0,i].guiText.alignment = TextAlignment.Center;
 			x+=1f;
 		}
+		// 盤面の縦ガイド表示用オブジェクト生成/
 		x=-4.5f;y=+3.5f;
 		for (int i=0; i<8; i++) {
 			guide[1,i] = (GameObject)Instantiate(guidePrefab, new Vector3(0,0,0), Quaternion.identity);
@@ -460,34 +481,37 @@ public class main : MonoBehaviour {
 	}
 	
 	void OnGUI() {
-		GUI.Box(new Rect(10,10,100,80), StringTable.BLACK);
+//		GUI.Box(new Rect(10,10,100,80), StringTable.BLACK);
+		GUI.Label(new Rect(10,20,100,80), StringTable.BLACK, labelStyleLaberl);
 		GUI.Label(new Rect(10,10,100,80), black.ToString("d2"), labelStyleScoreBlack);
-		GUI.Box(new Rect(10,100,100,80), StringTable.WHITE);
+//		GUI.Box(new Rect(10,100,100,80), StringTable.WHITE);
+		GUI.Label(new Rect(10,110,100,80), StringTable.WHITE, labelStyleLaberl);
 		GUI.Label(new Rect(10,100,100,80), white.ToString("d2"), labelStyleScoreWhite);
 		switch (compMenu.getLockType()) {
 		case menu.LOCK_TYPE.LOCK:
-			GUI.Label(new Rect(60,70,100,80), compMenu.getMyName(), labelStyleScoreName);
-			GUI.Label(new Rect(60,160,100,80), compMenu.getYourName(), labelStyleScoreName);
+			GUI.Label(new Rect(80,80,100,80), compMenu.getMyName(), labelStyleScoreName);
+			GUI.Label(new Rect(80,170,100,80), compMenu.getYourName(), labelStyleScoreName);
 			break;
 		case menu.LOCK_TYPE.LOCKED:
-			GUI.Label(new Rect(60,70,100,80), compMenu.getYourName(), labelStyleScoreName);
-			GUI.Label(new Rect(60,160,100,80), compMenu.getMyName(), labelStyleScoreName);
+			GUI.Label(new Rect(80,80,100,80), compMenu.getYourName(), labelStyleScoreName);
+			GUI.Label(new Rect(80,170,100,80), compMenu.getMyName(), labelStyleScoreName);
 			break;
 		}
 		
 		if (TimeLimit > 0f) {
 			float restTime = TimeLimit - (Time.time - startTime);
 			if (restTime < 0f) restTime = 0f;
-			GUI.Box(new Rect(10,220,150,80), StringTable.TIMER);
+//			GUI.Box(new Rect(10,220,150,80), StringTable.TIMER);
+			GUI.Label(new Rect(10,235,150,80), StringTable.TIMER, labelStyleLaberl);
 			GUI.Label(new Rect(10,220,150,80), restTime.ToString("f02"), labelStyleTimer);
 			if (restTime < 3f) {
-				labelStyleTimer.normal.textColor = new Color32(230,0,0,255);
+				labelStyleTimer.normal.textColor = new Color32(64,64,64,255);
 			} else {
-				labelStyleTimer.normal.textColor = new Color32(57,196,225,255);
+				labelStyleTimer.normal.textColor = new Color32(193,193,193,255);
 			}
 		}
 		
-		Rect rect_gameover = new Rect(Screen.width / 2 - 300, Screen.height / 2 - 50, 600, 100);
+		Rect rect_gameover = new Rect(10, 320, 600, 100);
 		switch (gamestatus) {
 		case GAME_STATUS.GameOver:
 			string result = "";
@@ -498,8 +522,8 @@ public class main : MonoBehaviour {
 			} else {
 				result = StringTable.DRAW;
 			}
-			GUI.Box(rect_gameover, "");
-			GUI.Box(rect_gameover, "");
+			//GUI.Box(rect_gameover, "");
+			//GUI.Box(rect_gameover, "");
 			GUI.Label(rect_gameover, result, labelStyleGameOver);
 			break;
 		case GAME_STATUS.TimeOver:
@@ -511,14 +535,14 @@ public class main : MonoBehaviour {
 			} else {
 				result = StringTable.DRAW;
 			}
-			GUI.Box(rect_gameover, "");
-			GUI.Box(rect_gameover, "");
+			//GUI.Box(rect_gameover, "");
+			//GUI.Box(rect_gameover, "");
 			GUI.Label(rect_gameover, result, labelStyleGameOver);
 			break;
 		case GAME_STATUS.WinByDefault:
 			result = StringTable.ESCAPE;
-			GUI.Box(rect_gameover, "");
-			GUI.Box(rect_gameover, "");
+			//GUI.Box(rect_gameover, "");
+			//GUI.Box(rect_gameover, "");
 			GUI.Label(rect_gameover, result, labelStyleGameOver);
 			break;
 		}
