@@ -53,7 +53,7 @@ public class connect : MonoBehaviour
 		} else if( data.type == "vsunlock") {
 			compMenu.SetUnlock();
 		} else if( data.type == "start") {
-			compMenu.StartGame();
+			compMenu.StartGame(data.option);
 		} else {
 			Debug.Log("[websocket_MessageReceived] Undeined type recieved");
 		}
@@ -127,6 +127,7 @@ public class Data {
 		public string place = "";
 		public string myid = "";
 		public string id = "";
+		public int[] option = {0,0,0,0,0}; 
 		public bool locked = false;
 		public Entry[] list;
 }

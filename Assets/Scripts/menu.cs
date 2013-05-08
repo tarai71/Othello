@@ -59,10 +59,10 @@ public class menu : MonoBehaviour
 			GUILayout.Label(getYourName() + StringTable.LOCKED);
 		} else {
 			if(GUILayout.Button(StringTable.START + "[" + lockType.ToString() + ":" + myID + ":" + yourID + "]")) {
-				StartGame();
+				StartGame(option);
 				if(lockType != LOCK_TYPE.FREE)
 				{
-					compConnect.Send("{\"type\":\"start\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[yourID]).id.ToString() + "\"}");
+					compConnect.Send("{\"type\":\"start\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[yourID]).id.ToString() + "\", \"option\":" + option +  "}");
 				}
 			}
 		}
@@ -124,8 +124,9 @@ public class menu : MonoBehaviour
 		}
 	}
 
-	public void StartGame () {
+	public void StartGame (int[] opt) {
 		IsGameStart = true;
+		option = opt;
 	}
 
 	public void SetUnlock()
