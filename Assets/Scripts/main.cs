@@ -169,7 +169,7 @@ public class main : MonoBehaviour {
 
 
 	// 駒を盤に置く/
-	void putPiece(Vector2 key)
+	public void putPiece(Vector2 key)
 	{
 		if (key.x < 0 || key.y < 0 || key.x > 7 || key.y > 7) {
 			return;
@@ -265,7 +265,7 @@ public class main : MonoBehaviour {
 	}
 	
 	// 置ける場所があるかどうか検索/
-	bool checkEnablePut(ref ArrayList list) {
+	public bool checkEnablePut(ref ArrayList list) {
 		for (int x=0; x<board.GetLength(0); x++) {
 			for (int y=0; y<board.GetLength(1); y++) {
 				if (board[x,y] == PIECE_TYPE.Empty && updateBoard(new Vector2(x,y),false)) {
@@ -548,7 +548,7 @@ public class main : MonoBehaviour {
 		}
 
 	}
-
+	
 	public PIECE_TYPE getPieceType ()
 	{
 		return pieceType;
@@ -564,5 +564,23 @@ public class main : MonoBehaviour {
 		}
 
 		return true;
+	}
+	
+	public bool IsAI ()
+	{
+		int side = -1;
+		switch(getPieceType()) {
+		case main.PIECE_TYPE.Black:
+			side = 0;
+			break;
+		case main.PIECE_TYPE.White:
+			side = 1;
+			break;
+		}
+		if (side == -1) {
+			return false;
+		}
+		
+		return (compMenu.getKind(side) == 1);
 	}
 }

@@ -198,4 +198,13 @@ public class menu : MonoBehaviour
 	{
 		return lockType;
 	}
+
+	public int getKind (int side)
+	{
+		if (side != 0 && side != 1) {
+			return 0;
+		}
+		
+		return option[side];
+	}
 }

@@ -11,13 +11,13 @@ public class connect : MonoBehaviour
 	
 	WebSocket websocket;
 		
-	const int MAX_BUFFER = 60;
-	Data[] DataList = new Data[MAX_BUFFER];
-	int wptr = 0;
-	int rptr = 0;
+	const int MAX_BUFFER = 64;
+	Vector2[] DataList = new Vector2[MAX_BUFFER];
+	public int wptr = 0;
+	public int rptr = 0;
 	
 	menu compMenu = null;
-
+	public main compMain = null;
 	
 	private void websocket_Opened(object sender, EventArgs e)
 	{
@@ -74,25 +74,24 @@ public class connect : MonoBehaviour
 		websocket.Open();
 
 	}
-	
+
 	void Update ()
 	{
-		for (int i=0; i<MAX_BUFFER; i++, rptr++) {
-			if (wptr == rptr)
-				break;
-			if (rptr >= MAX_BUFFER)
+		// 後で直す/
+		if (!compMain) {
+			if (GameObject.Find("GameMaster")) {
+				compMain = GameObject.Find("GameMaster").GetComponent<main>();
+				wptr = 0;
 				rptr = 0;
-
-			if (DataList[rptr] != null) {
-//				if (compMenu.getYourID() != "") {
-					GameObject.FindWithTag("GameController").SendMessage("putPiece", GameObject.FindWithTag("GameController").GetComponent<main>().codeToPos(DataList[rptr].place));
-//				} else {
-					
-//				}
 			}
 		}
+		
+		Vector2 pos;
+		if (ReadPutBuffer(out pos)) {
+			compMain.putPiece(pos);
+		}
 	}
-	
+
 	void OnDestroy ()
 	{
 		if (compMenu.getYourID() != "") {
@@ -100,6 +99,28 @@ public class connect : MonoBehaviour
 		}
 		websocket.Send("{\"type\":\"defect\", \"myid\":\"" + compMenu.getMyID().ToString() + "\"}");
         websocket.Close();
+	}
+	
+	bool ReadPutBuffer (out Vector2 pos)
+	{
+		pos = Vector2.zero;
+		if (rptr < wptr) {
+			pos = DataList[rptr];
+			rptr++;
+			return true;
+		}
+		
+		return false;
+	}
+	
+	bool WritePutBuffer (Vector2 pos)
+	{
+		if (wptr < MAX_BUFFER) {
+			DataList[wptr] = pos;
+			wptr++;
+			return true;
+		}
+		return false;
 	}
 	
 	public void Send(string message)
@@ -110,11 +131,9 @@ public class connect : MonoBehaviour
 	public void putPiece(string data)
 	{
 		Data d = JsonMapper.ToObject<Data> (data);
-		DataList[wptr++] = d;
-		if (wptr >= MAX_BUFFER)
-			wptr = 0;
+		WritePutBuffer(compMain.codeToPos(d.place));
 	}
-	
+
 }
 
 [System.Serializable]
