@@ -30,7 +30,7 @@ public class controller : MonoBehaviour {
 					if (key_x < 0 || key_y < 0 || key_x > 7 || key_y > 7) {
 						return;
 					}
-					string put = "{\"type\":\"put\",\"id\":\"" + compMenu.getYourID().ToString() + "\",\"place\":\"" + GameObject.FindWithTag("GameController").GetComponent<main>().posToCode(new Vector2(key_x, key_y)) + "\"}";
+					string put = "{\"type\":\"put\",\"id\":\"" + compMenu.getYourID().ToString() + "\",\"place\":\"" + compMenu.posToCode(new Vector2(key_x, key_y)) + "\"}";
 					compConnect.putPiece(put);
 					if (compMenu.getLockType() != menu.LOCK_TYPE.FREE) {
 						compConnect.Send(put);

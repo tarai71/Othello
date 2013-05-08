@@ -75,23 +75,6 @@ public class connect : MonoBehaviour
 
 	}
 
-	void Update ()
-	{
-		// 後で直す/
-		if (!compMain) {
-			if (GameObject.Find("GameMaster")) {
-				compMain = GameObject.Find("GameMaster").GetComponent<main>();
-				wptr = 0;
-				rptr = 0;
-			}
-		}
-		
-		Vector2 pos;
-		if (ReadPutBuffer(out pos)) {
-			compMain.putPiece(pos);
-		}
-	}
-
 	void OnDestroy ()
 	{
 		if (compMenu.getYourID() != "") {
@@ -101,7 +84,7 @@ public class connect : MonoBehaviour
         websocket.Close();
 	}
 	
-	bool ReadPutBuffer (out Vector2 pos)
+	public bool ReadPutBuffer (out Vector2 pos)
 	{
 		pos = Vector2.zero;
 		if (rptr < wptr) {
@@ -131,7 +114,7 @@ public class connect : MonoBehaviour
 	public void putPiece(string data)
 	{
 		Data d = JsonMapper.ToObject<Data> (data);
-		WritePutBuffer(compMain.codeToPos(d.place));
+		WritePutBuffer(compMenu.codeToPos(d.place));
 	}
 
 }

@@ -73,11 +73,13 @@ public class main : MonoBehaviour {
 	float startTime;
 	// メニューコンポーネントキャッシュ用/
 	menu compMenu = null;
-	
+	connect compConnect = null;
+		
 	// Use this for initialization
 	void Start () {
 		// メニューコンポーネントをキャッシュ/
 		compMenu = GameObject.Find("Menu").GetComponent<menu>();
+		compConnect = GameObject.Find("Menu").GetComponent<connect>();
 		
 		gamestatus = (compMenu.getLockType() == menu.LOCK_TYPE.FREE)? GAME_STATUS.LocalPlay : GAME_STATUS.NetworkPlay;
 		
@@ -165,8 +167,16 @@ public class main : MonoBehaviour {
 		if (gamestatus == GAME_STATUS.NetworkPlay && compMenu.getLockType() == menu.LOCK_TYPE.FREE) {
 			StartCoroutine("GameOver", new GameEnd("win by default", GAME_STATUS.WinByDefault, 2.5f));
 		}
+
 	}
 
+	void LateUpdate () {
+		Vector2 pos;
+		if (compConnect.ReadPutBuffer(out pos)) {
+			putPiece(pos);
+		}
+	}
+	
 
 	// 駒を盤に置く/
 	public void putPiece(Vector2 key)
@@ -181,7 +191,7 @@ public class main : MonoBehaviour {
 			return;
 		}
 			
-		Debug.Log("put " + posToCode(key));
+		Debug.Log("put " + compMenu.posToCode(key));
 		
 		board[(int)key.x,(int)key.y] = pieceType;
 		bool changeFlag = updateBoard(key, true);
@@ -468,16 +478,6 @@ public class main : MonoBehaviour {
 		}
 		white = _white;
 		black = _black;
-	}
-	
-	public string posToCode(Vector2 pos) {
-		string code = ((char)('a'+pos.x)).ToString() + ((char)('0'+(8-pos.y))).ToString();
-		return code;
-	}
-
-	public Vector2 codeToPos(string code) {
-		Vector2 pos = new Vector2((int)code[0]-'a', 8-((int)code[1]-'0'));
-		return pos;
 	}
 	
 	void OnGUI() {
