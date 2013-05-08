@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using LitJson;
 
 public class menu : MonoBehaviour
 {
@@ -62,7 +63,7 @@ public class menu : MonoBehaviour
 				StartGame(option);
 				if(lockType != LOCK_TYPE.FREE)
 				{
-					compConnect.Send("{\"type\":\"start\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[yourID]).id.ToString() + "\", \"option\":" + option +  "}");
+					compConnect.Send("{\"type\":\"start\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[yourID]).id.ToString() + "\", \"option\":" + JsonMapper.ToJson(option) +  "}");
 				}
 			}
 		}
