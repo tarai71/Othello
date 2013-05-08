@@ -32,7 +32,7 @@ public class ai : MonoBehaviour {
 	}
 	
 	IEnumerator defaultAI () {
-		yield return new WaitForSeconds(1.0f+Random.Range(0f, 5f);
+		yield return new WaitForSeconds(1.0f+Random.Range(0f, 5f));
 
 		string place = "";
 		ArrayList enablePutList = new ArrayList();
