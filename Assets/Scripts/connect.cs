@@ -4,6 +4,51 @@ using System.Collections;
 using WebSocket4Net;
 using LitJson;
 
+
+class PutBuffer
+{
+	const int MAX_BUFFER = 64;
+	Vector2[] DataList = new Vector2[MAX_BUFFER];
+
+	int wptr;
+	int rptr;
+	
+	public PutBuffer()
+	{
+		Reset();
+	}
+		
+	public void Reset()
+	{
+		wptr = 0;
+		rptr = 0;
+	}
+		
+	public bool Read (out Vector2 pos)
+	{
+		pos = Vector2.zero;
+		if (rptr < wptr) {
+			pos = DataList[rptr];
+			rptr++;
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public bool Write (Vector2 pos)
+	{
+		if (wptr < MAX_BUFFER) {
+			DataList[wptr] = pos;
+			wptr++;
+			return true;
+		}
+
+		Debug.LogError("PutBuffer Overflow!");
+		return false;
+	}
+}
+
 public class connect : MonoBehaviour
 {
 	public string SERVER_IP = "54.248.211.43";
@@ -11,11 +56,8 @@ public class connect : MonoBehaviour
 	
 	WebSocket websocket;
 		
-	const int MAX_BUFFER = 64;
-	Vector2[] DataList = new Vector2[MAX_BUFFER];
-	public int wptr = 0;
-	public int rptr = 0;
-	
+	PutBuffer PutList = new PutBuffer();
+		
 	menu compMenu = null;
 	public main compMain = null;
 	
@@ -84,28 +126,6 @@ public class connect : MonoBehaviour
         websocket.Close();
 	}
 	
-	public bool ReadPutBuffer (out Vector2 pos)
-	{
-		pos = Vector2.zero;
-		if (rptr < wptr) {
-			pos = DataList[rptr];
-			rptr++;
-			return true;
-		}
-		
-		return false;
-	}
-	
-	bool WritePutBuffer (Vector2 pos)
-	{
-		if (wptr < MAX_BUFFER) {
-			DataList[wptr] = pos;
-			wptr++;
-			return true;
-		}
-		return false;
-	}
-	
 	public void Send(string message)
 	{
 	    websocket.Send(message);
@@ -114,16 +134,25 @@ public class connect : MonoBehaviour
 	public void putPiece(string data)
 	{
 		Data d = JsonMapper.ToObject<Data> (data);
-		WritePutBuffer(compMenu.codeToPos(d.place));
+		PutList.Write(compMenu.codeToPos(d.place));
 	}
-
+	
+	public bool ReadPutList(out Vector2 pos)
+	{
+		return PutList.Read(out pos);
+	}
+	
+	public void ResetPutList()
+	{
+		PutList.Reset();
+	}
 }
 
 [System.Serializable]
 public class Data {
 		public string type = "";
-		public string name = "";
-		public string time = "";
+//		public string name = "";
+//		public string time = "";
 		public string place = "";
 		public string myid = "";
 		public string id = "";

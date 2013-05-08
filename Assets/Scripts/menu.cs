@@ -39,8 +39,7 @@ public class menu : MonoBehaviour
 		{
 			IsGameStart = false;
 			this.enabled = false;
-			compConnect.wptr = 0;
-			compConnect.rptr = 0;
+			compConnect.ResetPutList();
 			Application.LoadLevel("Main");
 		}
 	}

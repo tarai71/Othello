@@ -172,7 +172,7 @@ public class main : MonoBehaviour {
 
 	void LateUpdate () {
 		Vector2 pos;
-		if (compConnect.ReadPutBuffer(out pos)) {
+		if (compConnect.ReadPutList(out pos)) {
 			putPiece(pos);
 		}
 	}
