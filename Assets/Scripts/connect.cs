@@ -151,8 +151,8 @@ public class connect : MonoBehaviour
 [System.Serializable]
 public class Data {
 		public string type = "";
-//		public string name = "";
-//		public string time = "";
+		public string name = "";
+		public string time = "";
 		public string place = "";
 		public string myid = "";
 		public string id = "";

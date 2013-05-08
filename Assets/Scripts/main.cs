@@ -481,10 +481,8 @@ public class main : MonoBehaviour {
 	}
 	
 	void OnGUI() {
-//		GUI.Box(new Rect(10,10,100,80), StringTable.BLACK);
 		GUI.Label(new Rect(10,20,100,80), StringTable.BLACK, labelStyleLaberl);
 		GUI.Label(new Rect(10,10,100,80), black.ToString("d2"), labelStyleScoreBlack);
-//		GUI.Box(new Rect(10,100,100,80), StringTable.WHITE);
 		GUI.Label(new Rect(10,110,100,80), StringTable.WHITE, labelStyleLaberl);
 		GUI.Label(new Rect(10,100,100,80), white.ToString("d2"), labelStyleScoreWhite);
 		switch (compMenu.getLockType()) {
@@ -501,7 +499,6 @@ public class main : MonoBehaviour {
 		if (TimeLimit > 0f) {
 			float restTime = TimeLimit - (Time.time - startTime);
 			if (restTime < 0f) restTime = 0f;
-//			GUI.Box(new Rect(10,220,150,80), StringTable.TIMER);
 			GUI.Label(new Rect(10,235,150,80), StringTable.TIMER, labelStyleLaberl);
 			GUI.Label(new Rect(10,220,150,80), restTime.ToString("f02"), labelStyleTimer);
 			if (restTime < 3f) {
@@ -522,8 +519,6 @@ public class main : MonoBehaviour {
 			} else {
 				result = StringTable.DRAW;
 			}
-			//GUI.Box(rect_gameover, "");
-			//GUI.Box(rect_gameover, "");
 			GUI.Label(rect_gameover, result, labelStyleGameOver);
 			break;
 		case GAME_STATUS.TimeOver:
@@ -535,14 +530,10 @@ public class main : MonoBehaviour {
 			} else {
 				result = StringTable.DRAW;
 			}
-			//GUI.Box(rect_gameover, "");
-			//GUI.Box(rect_gameover, "");
 			GUI.Label(rect_gameover, result, labelStyleGameOver);
 			break;
 		case GAME_STATUS.WinByDefault:
 			result = StringTable.ESCAPE;
-			//GUI.Box(rect_gameover, "");
-			//GUI.Box(rect_gameover, "");
 			GUI.Label(rect_gameover, result, labelStyleGameOver);
 			break;
 		}
