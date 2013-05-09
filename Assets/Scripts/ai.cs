@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
-	
+using Othello;
+
 public class ai : MonoBehaviour {
 	
 	// コネクトコンポーネントキャッシュ用/
@@ -32,19 +33,21 @@ public class ai : MonoBehaviour {
 	}
 	
 	IEnumerator defaultAI () {
-		yield return new WaitForSeconds(1.0f+Random.Range(0f, 2f));
+		yield return new WaitForSeconds(0.5f+Random.Range(0f, 0f));
 
 		string place = "";
-		ArrayList enablePutList = new ArrayList();
-		if (compMain.checkEnablePut(ref enablePutList)) {
-			Vector2 v = (Vector2)enablePutList[Random.Range(0,enablePutList.Count-1)];
-			place = compMenu.posToCode(v);
-			string put = "{\"type\":\"put\",\"id\":\"" + compMenu.getYourID().ToString() + "\",\"place\":\"" + place + "\"}";
-			compConnect.putPiece(put);
-			if (compMenu.getLockType() != menu.LOCK_TYPE.FREE) {
-				compConnect.Send(put);
+		ArrayList PutableList = new ArrayList();
+		if (Board.Instance().CheckPutable(compMain.getPieceSide(), ref PutableList)) {
+			Board.Position v = (Board.Position)PutableList[Random.Range(0,PutableList.Count-1)];
+			if(Board.Instance().posToCode(v.x, v.y, out place))
+			{
+				string put = "{\"type\":\"put\",\"id\":\"" + compMenu.getYourID().ToString() + "\",\"place\":\"" + place + "\"}";
+				compConnect.putPiece(put);
+				if (compMenu.getLockType() != menu.LOCK_TYPE.FREE) {
+					compConnect.Send(put);
+				}
+				IsThinking = false;
 			}
-			IsThinking = false;
 		}
 	}
 

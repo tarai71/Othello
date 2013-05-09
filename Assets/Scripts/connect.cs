@@ -3,12 +3,12 @@ using System;
 using System.Collections;
 using WebSocket4Net;
 using LitJson;
-
+using Othello;
 
 class PutBuffer
 {
 	const int MAX_BUFFER = 64;
-	Vector2[] DataList = new Vector2[MAX_BUFFER];
+	Board.Position[] DataList = new Board.Position[MAX_BUFFER];
 
 	int wptr;
 	int rptr;
@@ -24,9 +24,9 @@ class PutBuffer
 		rptr = 0;
 	}
 		
-	public bool Read (out Vector2 pos)
+	public bool Read (out Board.Position pos)
 	{
-		pos = Vector2.zero;
+		pos = new Board.Position(0,0);
 		if (rptr < wptr) {
 			pos = DataList[rptr];
 			rptr++;
@@ -36,7 +36,7 @@ class PutBuffer
 		return false;
 	}
 	
-	public bool Write (Vector2 pos)
+	public bool Write (Board.Position pos)
 	{
 		if (wptr < MAX_BUFFER) {
 			DataList[wptr] = pos;
@@ -134,10 +134,14 @@ public class connect : MonoBehaviour
 	public void putPiece(string data)
 	{
 		Data d = JsonMapper.ToObject<Data> (data);
-		PutList.Write(compMenu.codeToPos(d.place));
+		int x, y;
+		if(Board.Instance().codeToPos(d.place, out x, out y))
+		{
+			PutList.Write(new Board.Position(x, y));
+		}
 	}
 	
-	public bool ReadPutList(out Vector2 pos)
+	public bool ReadPutList(out Board.Position pos)
 	{
 		return PutList.Read(out pos);
 	}

@@ -1,7 +1,22 @@
 using UnityEngine;
 using System.Collections;
 	
+using Othello;
+
 public class main : MonoBehaviour {
+	
+	// Prefab定義/
+	public GameObject piecePrefab;
+	public GameObject markerPrefab;
+	public GameObject guidePrefab;
+	
+	// GUIStyle定義/
+	public GUIStyle labelStyleScoreBlack;
+	public GUIStyle labelStyleScoreWhite;
+	public GUIStyle labelStyleScoreName;
+	public GUIStyle labelStyleGameOver;
+	public GUIStyle labelStyleTimer;
+	public GUIStyle labelStyleLaberl;
 	
 	// ゲームの状態を列挙/
 	public enum GAME_STATUS {
@@ -11,13 +26,6 @@ public class main : MonoBehaviour {
 		GameOver,			// ゲームオーバー表示中/
 		TimeOver,			// タイムオーバー表示中/
 		WinByDefault		// 不戦勝表示中/
-	}
-	
-	// 升の状態を列挙/
-	public enum PIECE_TYPE {
-		Empty = 0,			// 空/
-		Black,				// 黒配置/
-		White				// 白配置/
 	}
 	
 	// ゲーム終了処理クラス/
@@ -34,37 +42,20 @@ public class main : MonoBehaviour {
 		}
 	}
 	
-	// Prefab定義/
-	public GameObject piecePrefab;
-	public GameObject markerPrefab;
-	public GameObject guidePrefab;
-	// GUIStyle定義/
-	public GUIStyle labelStyleScoreBlack;
-	public GUIStyle labelStyleScoreWhite;
-	public GUIStyle labelStyleScoreName;
-	public GUIStyle labelStyleGameOver;
-	public GUIStyle labelStyleTimer;
-	public GUIStyle labelStyleLaberl;
-		
-	// 盤面定義/
-	PIECE_TYPE[,] board = new PIECE_TYPE[8,8];
 	// 盤面に配置した駒のオブジェクトリスト/
 	GameObject[,] pieceList = new GameObject[8,8];
-	// 盤面に配置した着手可能場所マーカーのオブジェクトリスト/
-	ArrayList markerList = new ArrayList();
 	// 盤面のガイド表示のオブジェクトリスト/
 	GameObject[,] guide = new GameObject[2,8];
+		
 	// 盤面のガイド表示用文字データ/
-	string[,] guideLitteral = new string[,]{
+	string[,] guideLitteral = new string[2,8]{
 		{"a","b","c","d","e","f","g","h"},
 		{"1","2","3","4","5","6","7","8"}
 	};
+	// 盤面に配置した着手可能場所マーカーのオブジェクトリスト/
+	ArrayList markerList = new ArrayList();
 	// 現在の手順/
-	PIECE_TYPE pieceType = PIECE_TYPE.Empty;
-	// 白駒数/
-	int white = 0;
-	// 黒駒数/
-	int black = 0;
+	Piece.TYPE pieceSide = Piece.TYPE.Black;
 	// ゲームの状態/
 	GAME_STATUS gamestatus = GAME_STATUS.None;
 	// 制限時間/
@@ -81,22 +72,16 @@ public class main : MonoBehaviour {
 		compMenu = GameObject.Find("Menu").GetComponent<menu>();
 		compConnect = GameObject.Find("Menu").GetComponent<connect>();
 		
-		gamestatus = (compMenu.getLockType() == menu.LOCK_TYPE.FREE)? GAME_STATUS.LocalPlay : GAME_STATUS.NetworkPlay;
-		
-		// 盤面クリア/
-		for (int i=0; i<board.GetLength(0); i++) {
-			for (int j=0; j<board.GetLength(1); j++) {
-				board[i,j] = PIECE_TYPE.Empty;
+		// 駒オブジェクト生成/
+		for (int i=0; i<8; i++)
+		{
+			for (int j=0; j<8; j++)
+			{
+				var rotation = Quaternion.identity;
+				var position = new Vector3(j -4.0f + 0.5f, 0.25f, i -4.0f + 0.5f);
+				pieceList[j, i] = (GameObject)Instantiate(piecePrefab, position, rotation);
 			}
 		}
-		// 駒の初期配置/
-		pieceType = PIECE_TYPE.White; putPiece(new Vector2(3,4));
-		pieceType = PIECE_TYPE.Black; putPiece(new Vector2(3,3));
-		pieceType = PIECE_TYPE.Black; putPiece(new Vector2(4,4));
-		pieceType = PIECE_TYPE.White; putPiece(new Vector2(4,3));
-	
-		// メニューから制限時間取得/
-		TimeLimit = compMenu.getLimitTime();
 		
 		// 盤面の横ガイド表示用オブジェクト生成/
 		float x=-3.5f,y=+4.5f;
@@ -122,10 +107,40 @@ public class main : MonoBehaviour {
 			guide[1,i].guiText.alignment = TextAlignment.Center;
 			y-=1f;
 		}
+		
+		// ゲーム状態初期化/
+		gamestatus = (compMenu.getLockType() == menu.LOCK_TYPE.FREE)? GAME_STATUS.LocalPlay : GAME_STATUS.NetworkPlay;
+		
+		// 盤面初期化/
+		Board.Instance().Initialize();
+
+		// メニューから制限時間取得/
+		TimeLimit = compMenu.getLimitTime();
+
+		// ターンを初期化/
+		InitializeTurn();
 	}
 	
 	// Update is called once per frame
 	void Update () {
+		
+		// 駒オブジェクト表示制御/
+		for (int i=0; i<8; i++) {
+			for (int j=0; j<8; j++) {
+				if (Board.Instance().GetPiece(i,j) == Piece.TYPE.Black) {
+					pieceList[i, j].renderer.enabled = true;
+					pieceList[i, j].renderer.material.color = new Color(0,0,0,255);
+				} else if (Board.Instance().GetPiece(i,j) == Piece.TYPE.White) {
+					pieceList[i, j].renderer.enabled = true;
+					pieceList[i, j].renderer.material.color = new Color(255,255,255,255);
+				} else {
+					pieceList[i, j].renderer.enabled = false;
+				}
+			}
+		}
+		
+		
+		
 		byte alfa;
 		alfa = (Time.time % 1.0f < 0.5f)? (byte)((Time.time % 1.0f) * 255 + 127) : (byte)((1.0f - Time.time % 1.0f) * 255 + 127);
 		
@@ -136,10 +151,10 @@ public class main : MonoBehaviour {
 			}
 		}
 		
-		if(pieceType == PIECE_TYPE.Black) {
+		if(pieceSide == Piece.TYPE.Black) {
 			labelStyleScoreBlack.normal.textColor = new Color32(209,221, 48,alfa);
 			labelStyleScoreWhite.normal.textColor = new Color32(193,193,193,255);
-		} else if(pieceType == PIECE_TYPE.White) {
+		} else if(pieceSide == Piece.TYPE.White) {
 			labelStyleScoreBlack.normal.textColor = new Color32(193,193,193,255);
 			labelStyleScoreWhite.normal.textColor = new Color32(209,221, 48,alfa);
 		}
@@ -171,97 +186,46 @@ public class main : MonoBehaviour {
 	}
 
 	void LateUpdate () {
-		Vector2 pos;
+		Board.Position pos;
 		if (compConnect.ReadPutList(out pos)) {
-			putPiece(pos);
+			
+			// 駒を置く/
+			Board.Instance().putPiece(pieceSide, (int)pos.x, (int)pos.y);
+			
+			// ターンを入れ替える/
+			pieceSide = (pieceSide == Piece.TYPE.Black)? Piece.TYPE.White : Piece.TYPE.Black;
+
+			// ターンを初期化/
+			InitializeTurn();
 		}
 	}
 	
-
-	// 駒を盤に置く/
-	public void putPiece(Vector2 key)
+	void InitializeTurn()
 	{
-		if (key.x < 0 || key.y < 0 || key.x > 7 || key.y > 7) {
-			return;
-		}
-		if (board[(int)key.x,(int)key.y] != PIECE_TYPE.Empty) {
-			return;
-		}
-		if (gamestatus != GAME_STATUS.LocalPlay && gamestatus != GAME_STATUS.NetworkPlay) {
-			return;
-		}
-			
-		Debug.Log("put " + compMenu.posToCode(key));
+		// 計測開始時間をセット/
+		startTime = Time.time;
 		
-		board[(int)key.x,(int)key.y] = pieceType;
-		bool changeFlag = updateBoard(key, true);
-	
-		// initial position
-		var initialFlag = false;
-		if (key == new Vector2(3,3) || key == new Vector2(3,4) || key == new Vector2(4,3) || key == new Vector2(4,4)) {
-			initialFlag = true;
+		// 着手可能場所マーカーのオブジェクトを削除/
+		foreach(Object obj in markerList) {
+			Object.Destroy(obj);
 		}
-		if (changeFlag || initialFlag) {
-			calcStatus();
-			var rotation = transform.rotation;
-			var position = new Vector3(key.x -4.0f + 0.5f, 0.25f, key.y -4.0f + 0.5f);
-			//if (pieceType == 1) {
-			//	rotation = Quaternion.AngleAxis(180, new Vector3(1, 0, 0));
-			//} else {
-			//	rotation = Quaternion.AngleAxis(0, new Vector3(1, 0, 0));
-			//}
-			pieceList[(int)key.x, (int)key.y] = (GameObject)Instantiate(piecePrefab, position, rotation);
-			for (int i=0; i<board.GetLength(0); i++) {
-				for (int j=0; j<board.GetLength(1); j++) {
-					if (board[i,j] == PIECE_TYPE.Black) {
-						pieceList[i, j].renderer.material.color = new Color(0,0,0,255);
-					} else if (board[i,j] == PIECE_TYPE.White) {
-						pieceList[i, j].renderer.material.color = new Color(255,255,255,255);
-					}
-				}
-			}
-			pieceType = (pieceType == PIECE_TYPE.Black)? PIECE_TYPE.White : PIECE_TYPE.Black;
-			// 置くところが無いかチェック/
-			foreach(Object obj in markerList) {
-				Object.Destroy(obj);
-			}
-			ArrayList enablePutList = new ArrayList();
-			if (!checkEnablePut(ref enablePutList) && !initialFlag) {
-				pieceType = (pieceType == PIECE_TYPE.Black)? PIECE_TYPE.White : PIECE_TYPE.Black;
-				// 攻守交代2回してどこも置けなかったらそのゲームは終了/
-				if (!checkEnablePut(ref enablePutList) && !initialFlag) {
-					StartCoroutine("GameOver", new GameEnd("game over", GAME_STATUS.GameOver, 2.5f));
-				}
-			}
-			startTime = Time.time;
-			
-			if (compMenu.getGuideEnable()) {
-				foreach(Vector2 v in enablePutList) {
-					position = new Vector3(v.x -4.0f + 0.5f, 0.201f, v.y -4.0f + 0.5f);
-					markerList.Add(Instantiate(markerPrefab, position, Quaternion.identity));
-				}
-			}
-			enablePutList.Clear();
-		} else {
-			Debug.Log("cannot put here");
-			board[(int)key.x,(int)key.y] = PIECE_TYPE.Empty;
-		}
-
-		// for debug
-		string _s = "";
-		for (int i=0; i<board.GetLength(0); i++) {
-			_s = _s + '\n';
-			for (int j=0; j<board.GetLength(1); j++) {
-				if(board[i,j] == PIECE_TYPE.Black) {
-					_s = _s + 'X';
-				} else if(board[i,j] == PIECE_TYPE.White) {
-					_s = _s + 'O';
-				} else {
-					_s = _s + '&';
-				}
+		// 着手可能場所チェック/
+		ArrayList PutableList = new ArrayList();
+		if (!Board.Instance().CheckPutable(pieceSide, ref PutableList)) {
+			// 攻守交代2回してどこも置けなかったらそのゲームは終了/
+			pieceSide = (pieceSide == Piece.TYPE.Black)? Piece.TYPE.White : Piece.TYPE.Black;
+			if (!Board.Instance().CheckPutable(pieceSide, ref PutableList)) {
+				StartCoroutine("GameOver", new GameEnd("game over", GAME_STATUS.GameOver, 2.5f));
 			}
 		}
-		Debug.Log(_s);
+		// 着手可能場所マーカーのオブジェクトを生成/
+		if (compMenu.getGuideEnable()) {
+			foreach(Board.Position v in PutableList) {
+				Vector3 position = new Vector3(v.x -4.0f + 0.5f, 0.201f, v.y -4.0f + 0.5f);
+				markerList.Add(Instantiate(markerPrefab, position, Quaternion.identity));
+			}
+		}
+		PutableList.Clear();
 	}
 	
 	IEnumerator GameOver(GameEnd obj) {
@@ -273,214 +237,11 @@ public class main : MonoBehaviour {
 		compMenu.enabled = true;
 		Application.LoadLevel("Empty");
 	}
-	
-	// 置ける場所があるかどうか検索/
-	public bool checkEnablePut(ref ArrayList list) {
-		for (int x=0; x<board.GetLength(0); x++) {
-			for (int y=0; y<board.GetLength(1); y++) {
-				if (board[x,y] == PIECE_TYPE.Empty && updateBoard(new Vector2(x,y),false)) {
-					list.Add(new Vector2(x,y));
-				}
-			}
-		}
-		return (list.Count > 0);
-	}
 
-	// 盤面の更新、updateFlag が false なら/
-	// その場所に置けるかどうかのチェックだけ/
-	bool updateBoard(Vector2 key, bool updateFlag) {
-		int ix = 0; int iy = 0;
-		
-		ArrayList[] revList = new ArrayList[8];
-		var changeFlag = false;
-		// horizon
-		ix = (int)key.x + 1; iy = (int)key.y;
-		revList[0] = new ArrayList();
-		while (true) {
-			if (ix >= board.GetLength(0)) {
-				revList[0].Clear();
-				break;
-			}
-			if (board[ix,iy] != PIECE_TYPE.Empty && board[ix,iy] != pieceType) {
-				revList[0].Add(new Vector2(ix, iy));
-			} else if (revList[0].Count > 0 && board[ix,iy] != PIECE_TYPE.Empty) {
-				changeFlag = true;
-				break;
-			} else {
-				revList[0].Clear();
-				break;
-			}
-			ix += 1;
-		}
-		
-		ix = (int)key.x - 1; iy = (int)key.y;
-		revList[1] = new ArrayList();
-		while (true) {
-			if (ix < 0) {
-				revList[1].Clear();
-				break;
-			}
-			if (board[ix,iy] != PIECE_TYPE.Empty && board[ix,iy] != pieceType) {
-				revList[1].Add(new Vector2(ix,iy));
-			} else if (revList[1].Count > 0 && board[ix,iy] != PIECE_TYPE.Empty) {
-				changeFlag = true;
-				break;
-			} else {
-				revList[1].Clear();
-				break;
-			}
-			ix -= 1;
-		}
-	
-		// vertical
-		ix = (int)key.x; iy = (int)key.y + 1;
-		revList[2] = new ArrayList();
-		while (true) {
-			if (iy >= board.GetLength(1)) {
-				revList[2].Clear();
-				break;
-			}
-			if (board[ix,iy] != PIECE_TYPE.Empty && board[ix,iy] != pieceType) {
-				revList[2].Add(new Vector2(ix, iy));
-			} else if (revList[2].Count > 0 && board[ix,iy] != PIECE_TYPE.Empty) {
-				changeFlag = true;
-				break;
-			} else {
-				revList[2].Clear();
-				break;
-			}
-			iy += 1;
-		}
-	
-		ix = (int)key.x; iy = (int)key.y - 1; 
-		revList[3] = new ArrayList();
-		while (true) {
-			if (iy < 0) {
-				revList[3].Clear();
-				break;
-			}
-			if (board[ix,iy] != PIECE_TYPE.Empty && board[ix,iy] != pieceType) {
-				revList[3].Add(new Vector2(ix, iy));
-			} else if (revList[3].Count > 0 && board[ix,iy] != PIECE_TYPE.Empty) {
-				changeFlag = true;
-				break;
-			} else {
-				revList[3].Clear();
-				break;
-			}
-			iy -= 1;
-		}
-	
-		// cross
-		ix = (int)key.x + 1; iy = (int)key.y + 1;
-		revList[4] = new ArrayList();
-		while (true) {
-			if (ix >= board.GetLength(0) || iy >= board.GetLength(1)) {
-				revList[4].Clear();
-				break;
-			}
-			if (board[ix,iy] != PIECE_TYPE.Empty && board[ix,iy] != pieceType) {
-				revList[4].Add(new Vector2(ix,iy));
-			} else if (revList[4].Count > 0 && board[ix,iy] != PIECE_TYPE.Empty) {
-				changeFlag = true;
-				break;
-			} else {
-				revList[4].Clear();
-				break;
-			}
-			iy += 1; ix += 1;
-		}
-	
-		revList[5] = new ArrayList();
-		ix = (int)key.x + 1; iy = (int)key.y - 1;
-		while (true) {
-			if (ix >= board.GetLength(0) || iy < 0 ) {
-				revList[5].Clear();
-				break;
-			}
-			if (board[ix,iy] != PIECE_TYPE.Empty && board[ix,iy] != pieceType) {
-				revList[5].Add(new Vector2(ix,iy));
-			} else if (revList[5].Count > 0 && board[ix,iy] != PIECE_TYPE.Empty) {
-				changeFlag = true;
-				break;
-			} else {
-				revList[5].Clear();
-				break;
-			}
-			ix += 1; iy -= 1;
-		}
-		
-	
-		revList[6] = new ArrayList();
-		ix = (int)key.x - 1; iy = (int)key.y + 1;
-		while (true) {
-			if (ix < 0 || iy >= board.GetLength(1)) {
-				revList[6].Clear();
-				break;
-			}
-			if (board[ix,iy] != PIECE_TYPE.Empty && board[ix,iy] != pieceType) {
-				revList[6].Add(new Vector2(ix,iy));
-			} else if (revList[6].Count > 0 && board[ix,iy] != PIECE_TYPE.Empty) {
-				changeFlag = true;
-				break;
-			} else {
-				revList[6].Clear();
-				break;
-			}
-			ix -= 1; iy += 1;
-		}
-	
-		revList[7] = new ArrayList();
-		ix = (int)key.x - 1; iy = (int)key.y - 1;
-		while (true) {
-			if (ix < 0 || iy < 0) {
-				revList[7].Clear();
-				break;
-			}
-			if (board[ix,iy] != PIECE_TYPE.Empty && board[ix,iy] != pieceType) {
-				revList[7].Add(new Vector2(ix,iy));
-			} else if (revList[7].Count > 0 && board[ix,iy] != PIECE_TYPE.Empty) {
-				changeFlag = true;
-				break;
-			} else {
-				revList[7].Clear();
-				break;
-			}
-			ix -= 1; iy -= 1;
-		}
-	
-		if (changeFlag) {
-			if (updateFlag) {
-				foreach (ArrayList val in revList) {
-					foreach (Vector2 v in val) {
-						pieceList[(int)v.x, (int)v.y].transform.rotation *= Quaternion.AngleAxis(180, new Vector3(1,0,0));
-						board[(int)v.x, (int)v.y] = (board[(int)v.x, (int)v.y] == PIECE_TYPE.Black) ? PIECE_TYPE.White : PIECE_TYPE.Black;
-					} 
-				}
-			}
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	void calcStatus() {
-		int _white = 0;
-		int _black = 0;
-		for (int x=0; x<board.GetLength(0); x++) {
-			for (int y=0; y<board.GetLength(1); y++) {
-				if (board[x,y] == PIECE_TYPE.Black) {
-					_black += 1;
-				} else if (board[x,y] == PIECE_TYPE.White) {
-					_white += 1;
-				}
-			}
-		}
-		white = _white;
-		black = _black;
-	}
-	
 	void OnGUI() {
+		int black = Board.Instance().GetBlackPiecies();
+		int white = Board.Instance().GetWhitePiecies();
+		
 		GUI.Label(new Rect(10,20,100,80), StringTable.BLACK, labelStyleLaberl);
 		GUI.Label(new Rect(10,10,100,80), black.ToString("d2"), labelStyleScoreBlack);
 		GUI.Label(new Rect(10,110,100,80), StringTable.WHITE, labelStyleLaberl);
@@ -523,9 +284,9 @@ public class main : MonoBehaviour {
 			break;
 		case GAME_STATUS.TimeOver:
 			result = "";
-			if (pieceType == PIECE_TYPE.Black) {
+			if (pieceSide == Piece.TYPE.Black) {
 				result = StringTable.WIN_WHITE;
-			} else if (pieceType == PIECE_TYPE.White){
+			} else if (pieceSide == Piece.TYPE.White){
 				result = StringTable.WIN_BLACK;
 			} else {
 				result = StringTable.DRAW;
@@ -540,18 +301,18 @@ public class main : MonoBehaviour {
 
 	}
 	
-	public PIECE_TYPE getPieceType ()
+	public Piece.TYPE getPieceSide ()
 	{
-		return pieceType;
+		return pieceSide;
 	}
 
 	public bool IsMySide ()
 	{
 		menu.LOCK_TYPE t = compMenu.getLockType();
 		if (t == menu.LOCK_TYPE.LOCK) {
-			return (getPieceType() == PIECE_TYPE.Black);
+			return (getPieceSide() == Piece.TYPE.Black);
 		} else if (t == menu.LOCK_TYPE.LOCKED) {
-			return (getPieceType() == PIECE_TYPE.White);
+			return (getPieceSide() == Piece.TYPE.White);
 		}
 
 		return true;
@@ -560,11 +321,11 @@ public class main : MonoBehaviour {
 	public bool IsAI ()
 	{
 		int side = -1;
-		switch(getPieceType()) {
-		case main.PIECE_TYPE.Black:
+		switch(getPieceSide()) {
+		case Piece.TYPE.Black:
 			side = 0;
 			break;
-		case main.PIECE_TYPE.White:
+		case Piece.TYPE.White:
 			side = 1;
 			break;
 		}

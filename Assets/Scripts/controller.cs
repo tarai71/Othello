@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using Othello;
 
 public class controller : MonoBehaviour {
 
@@ -25,15 +26,19 @@ public class controller : MonoBehaviour {
 					Vector3 screenPoint = Input.mousePosition;		
 					screenPoint.z = 10;
 		 			Vector3 v = Camera.main.ScreenToWorldPoint(screenPoint);
-					float key_x = Mathf.Floor(v.x) + 4.0f;
-					float key_y = Mathf.Floor(v.z) + 4.0f;
+					int key_x = Mathf.FloorToInt(v.x) + 4;
+					int key_y = Mathf.FloorToInt(v.z) + 4;
 					if (key_x < 0 || key_y < 0 || key_x > 7 || key_y > 7) {
 						return;
 					}
-					string put = "{\"type\":\"put\",\"id\":\"" + compMenu.getYourID().ToString() + "\",\"place\":\"" + compMenu.posToCode(new Vector2(key_x, key_y)) + "\"}";
-					compConnect.putPiece(put);
-					if (compMenu.getLockType() != menu.LOCK_TYPE.FREE) {
-						compConnect.Send(put);
+					string place;
+					if(Board.Instance().posToCode(key_x, key_y, out place))
+					{
+						string put = "{\"type\":\"put\",\"id\":\"" + compMenu.getYourID().ToString() + "\",\"place\":\"" + place + "\"}";
+						compConnect.putPiece(put);
+						if (compMenu.getLockType() != menu.LOCK_TYPE.FREE) {
+							compConnect.Send(put);
+						}
 					}
 				}
 			}

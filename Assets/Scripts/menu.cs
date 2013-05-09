@@ -211,14 +211,4 @@ public class menu : MonoBehaviour
 		return option[side];
 	}
 
-	public string posToCode(Vector2 pos) {
-		string code = ((char)('a'+pos.x)).ToString() + ((char)('0'+(8-pos.y))).ToString();
-		return code;
-	}
-
-	public Vector2 codeToPos(string code) {
-		Vector2 pos = new Vector2((int)code[0]-'a', 8-((int)code[1]-'0'));
-		return pos;
-	}
-	
 }
