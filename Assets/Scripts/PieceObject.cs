@@ -11,6 +11,7 @@ public class PieceObject
 	Quaternion rotation;
 	float angle;
 	float hight;
+	bool drop;
 	
 	const float OFFSETY = 0.05f;
 	
@@ -26,6 +27,7 @@ public class PieceObject
 		
 		angle = 0f;
 		hight = 0f;
+		drop = false;
 		position = pos;
 		CalcTransform();
 	}
@@ -47,24 +49,40 @@ public class PieceObject
 	
 	public void SetHight(float v)
 	{
+		drop = true;
 		hight = v;
+	}
+	
+	public bool GetDrop()
+	{
+		return drop;
+	}
+	
+	public void ToDrop()
+	{
+		hight -= hight*0.4f * (60f * Time.deltaTime);
+		if(hight <= 0.01f)
+		{
+			drop = false;
+			hight = 0f;
+		}
+
+		CalcTransform();
 	}
 	
 	public void ToBlack(bool animationFlag = true)
 	{
 		if(animationFlag)
 		{
-			angle -= 10f * 60f * Time.deltaTime;
+			angle -= 10f * (60f * Time.deltaTime);
 			if(angle < 0f) angle = 0f;
+	
+			if(angle < 90f) hight = angle * 1f / 90f;
+			if(angle >= 90f) hight = (180f - angle) * 1f / 90f;
 		}
 		else
 		{
 			angle = 0f;
-		}	
-
-		if(hight > 0f)
-		{
-			hight -= hight*0.5f * 60f * Time.deltaTime;
 		}
 		
 		CalcTransform();
@@ -74,18 +92,16 @@ public class PieceObject
 	{
 		if(animationFlag)
 		{
-			angle += 10f * 60f * Time.deltaTime;
+			angle += 10f * (60f * Time.deltaTime);
 			if(angle > 180f) angle = 180f;
+			
+			if(angle < 90f) hight = angle * 1f / 90f;
+			if(angle >= 90f) hight = (180f - angle) * 1f / 90f;
 		}
 		else
 		{
 			angle = 180f;
 		}	
-
-		if(hight > 0f)
-		{
-			hight -= hight*0.5f * 60f * Time.deltaTime;
-		}
 		
 		CalcTransform();
 	}

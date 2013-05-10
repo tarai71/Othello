@@ -109,18 +109,36 @@ public class main : MonoBehaviour {
 	void Update () {
 		
 		// 駒オブジェクト表示制御/
+		bool inDrop = false;
 		for (int i=0; i<8; i++)
 		{
 			for (int j=0; j<8; j++)
 			{
 				if(pieceList[i, j].GetEnabled())
 				{
-					if (Board.Instance().GetPiece(i,j) == Piece.TYPE.Black) {
-						pieceList[i, j].ToBlack();
+					if(pieceList[i, j].GetDrop())
+					{
+						inDrop = true;
+						pieceList[i, j].ToDrop();
 					}
-					else
-					if (Board.Instance().GetPiece(i,j) == Piece.TYPE.White) {
-						pieceList[i, j].ToWhite();
+				}
+			}
+		}
+		if(!inDrop)
+		{
+			for (int i=0; i<8; i++)
+			{
+				for (int j=0; j<8; j++)
+				{
+					if(pieceList[i, j].GetEnabled())
+					{
+						if (Board.Instance().GetPiece(i,j) == Piece.TYPE.Black) {
+							pieceList[i, j].ToBlack();
+						}
+						else
+						if (Board.Instance().GetPiece(i,j) == Piece.TYPE.White) {
+							pieceList[i, j].ToWhite();
+						}
 					}
 				}
 			}
@@ -187,8 +205,11 @@ public class main : MonoBehaviour {
 		Debug.Log(obj.debug);
 		gamestatus = obj.status;
 		yield return new WaitForSeconds(obj.wait);
-		//while (!Input.GetButtonDown("Fire1") || Input.touches.Length > 0) yield return;
-
+		while (!Input.GetButtonDown("Fire1") || Input.touches.Length > 0)
+		{
+			yield return new WaitForSeconds(0f);
+		}
+		
 		compMenu.enabled = true;
 		Application.LoadLevel("Empty");
 	}
