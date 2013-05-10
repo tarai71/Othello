@@ -58,12 +58,12 @@ public class connect : MonoBehaviour
 		
 	PutBuffer PutList = new PutBuffer();
 		
+	config compConfig = null;
 	menu compMenu = null;
-	public main compMain = null;
 	
 	private void websocket_Opened(object sender, EventArgs e)
 	{
-		websocket.Send("{\"type\":\"entry\", \"name\":\"" + ConfigData.name + "\"}");
+		websocket.Send("{\"type\":\"entry\", \"name\":\"" + compConfig.MyName + "\"}");
 	}
 	
 	private void websocket_Closed(object sender, EventArgs e)
@@ -105,6 +105,7 @@ public class connect : MonoBehaviour
 	{
 		DontDestroyOnLoad (this);
 		
+		compConfig = GameObject.Find("Config").GetComponent<config>();
 		compMenu = GetComponent<menu>();
 		
 		Debug.Log("ws://" + SERVER_IP + ":" + PORT + "/");

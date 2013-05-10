@@ -49,6 +49,7 @@
      <Compile Include="Assets\Scripts\config.cs" />
      <Compile Include="Assets\Scripts\connect.cs" />
      <Compile Include="Assets\Scripts\controller.cs" />
+     <Compile Include="Assets\Scripts\iniFile.cs" />
      <Compile Include="Assets\Scripts\main.cs" />
      <Compile Include="Assets\Scripts\menu.cs" />
      <Compile Include="Assets\Scripts\othello.cs" />
