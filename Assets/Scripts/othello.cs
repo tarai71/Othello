@@ -1,6 +1,5 @@
 ﻿namespace Othello
 {
-	//using UnityEngine;
 	using System.Collections;
 	
 	public class Piece
@@ -84,82 +83,19 @@
 			{
 				return;
 			}
-			//if (gamestatus != GAME_STATUS.LocalPlay && gamestatus != GAME_STATUS.NetworkPlay) {
-			//	return;
-			//}
 			
 			string place;
 			Board.Instance().posToCode(x, y, out place);
-			//Debug.Log("put:" + place");
 			
 			board[x,y] = pieceType;
 			bool changeFlag = updateBoard(pieceType, x, y, true);
 		
 			if (changeFlag) {
 				calcPiecies();
-/*
-				var rotation = Quaternion.identity;
-				var position = new Vector3(key.x -4.0f + 0.5f, 0.25f, key.y -4.0f + 0.5f);
-				//if (pieceType == 1) {
-				//	rotation = Quaternion.AngleAxis(180, new Vector3(1, 0, 0));
-				//} else {
-				//	rotation = Quaternion.AngleAxis(0, new Vector3(1, 0, 0));
-				//}
-				pieceList[x, y] = (GameObject)Instantiate(piecePrefab, position, rotation);
-				for (int i=0; i<board.GetLength(0); i++) {
-					for (int j=0; j<board.GetLength(1); j++) {
-						if (board[i,j] == Piece.TYPE.Black) {
-							pieceList[i, j].renderer.material.color = new Color(0,0,0,255);
-						} else if (board[i,j] == Piece.TYPE.White) {
-							pieceList[i, j].renderer.material.color = new Color(255,255,255,255);
-						}
-					}
-				}
-				Piece.TYPE pieceSide = (pieceType == Piece.TYPE.Black)? Piece.TYPE.White : Piece.TYPE.Black;
-				// 置くところが無いかチェック/
-				foreach(Object obj in markerList) {
-					Object.Destroy(obj);
-				}
-				ArrayList enablePutList = new ArrayList();
-				if (!checkEnablePut(pieceSide, ref enablePutList) && !initialFlag) {
-					pieceSide = (pieceSide == Piece.TYPE.Black)? Piece.TYPE.White : Piece.TYPE.Black;
-					// 攻守交代2回してどこも置けなかったらそのゲームは終了/
-					if (!checkEnablePut(pieceSide, ref enablePutList) && !initialFlag) {
-						StartCoroutine("GameOver", new GameEnd("game over", GAME_STATUS.GameOver, 2.5f));
-					}
-				}
-				startTime = Time.time;
-				
-				if (compMenu.getGuideEnable()) {
-					foreach(Vector2 v in enablePutList) {
-						position = new Vector3(v.x -4.0f + 0.5f, 0.201f, v.y -4.0f + 0.5f);
-						markerList.Add(Instantiate(markerPrefab, position, Quaternion.identity));
-					}
-				}
-				enablePutList.Clear();
-*/
 			} else {
-				//Debug.Log("cannot put here");
 				board[x,y] = Piece.TYPE.Empty;
 			}
-	
-			// for debug
-			/*
-			string _s = "";
-			for (int i=0; i<SIZEX; i++) {
-				_s = _s + '\n';
-				for (int j=0; j<SIZEY; j++) {
-					if(board[i,j] == Piece.TYPE.Black) {
-						_s = _s + 'X';
-					} else if(board[i,j] == Piece.TYPE.White) {
-						_s = _s + 'O';
-					} else {
-						_s = _s + '&';
-					}
-				}
-			}
-			Debug.Log(_s);
-			*/
+
 		}
 		
 		// 盤面の更新、updateFlag が false なら/
@@ -382,6 +318,7 @@
 			return (list.Count > 0);
 		}
 
+		// ポジションをガイドコードに変換/
 		public bool posToCode(int x, int y, out string code) {
 			if (x < 0 || y < 0 || x >= SIZEX || y >= SIZEY)
 			{
@@ -393,6 +330,7 @@
 			return true;
 		}
 	
+		// ガイドコードをポジションに変換/
 		public  bool codeToPos(string code, out int x, out int y) {
 			if (code[0] < 'a' || code[1] < '0' || code[0] > 'h' || code[1] > '8')
 			{

@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections;
-	
 using Othello;
 
 public class main : MonoBehaviour {
@@ -43,7 +42,7 @@ public class main : MonoBehaviour {
 	}
 	
 	// 盤面に配置した駒のオブジェクトリスト/
-	GameObject[,] pieceList = new GameObject[8,8];
+	PieceObject[,] pieceList = new PieceObject[8,8];
 	// 盤面のガイド表示のオブジェクトリスト/
 	GameObject[,] guide = new GameObject[2,8];
 		
@@ -77,9 +76,10 @@ public class main : MonoBehaviour {
 		{
 			for (int j=0; j<8; j++)
 			{
-				var rotation = Quaternion.identity;
-				var position = new Vector3(j -4.0f + 0.5f, 0.25f, i -4.0f + 0.5f);
-				pieceList[j, i] = (GameObject)Instantiate(piecePrefab, position, rotation);
+				Vector3 position = new Vector3(j -4.0f + 0.5f, 0.3f, i -4.0f + 0.5f);
+				GameObject blackPiece = (GameObject)Instantiate(piecePrefab);
+				GameObject whitePiece = (GameObject)Instantiate(piecePrefab);
+				pieceList[j, i] = new PieceObject(ref blackPiece, ref whitePiece, position);
 			}
 		}
 		
@@ -113,11 +113,29 @@ public class main : MonoBehaviour {
 		
 		// 盤面初期化/
 		Board.Instance().Initialize();
-
+		
+		// 駒オブジェクト初期表示/
+		for (int i=0; i<8; i++)
+		{
+			for (int j=0; j<8; j++)
+			{
+				if (Board.Instance().GetPiece(i,j) == Piece.TYPE.Black) {
+					pieceList[i, j].Enabled(true);
+					pieceList[i, j].ToBlack(false);
+				}
+				else
+				if (Board.Instance().GetPiece(i,j) == Piece.TYPE.White) {
+					pieceList[i, j].Enabled(true);
+					pieceList[i, j].ToWhite(false);
+				}
+			}
+		}
+			
 		// メニューから制限時間取得/
 		TimeLimit = compMenu.getLimitTime();
 
 		// ターンを初期化/
+		pieceSide = Piece.TYPE.White;
 		InitializeTurn();
 	}
 	
@@ -125,16 +143,19 @@ public class main : MonoBehaviour {
 	void Update () {
 		
 		// 駒オブジェクト表示制御/
-		for (int i=0; i<8; i++) {
-			for (int j=0; j<8; j++) {
-				if (Board.Instance().GetPiece(i,j) == Piece.TYPE.Black) {
-					pieceList[i, j].renderer.enabled = true;
-					pieceList[i, j].renderer.material.color = new Color(0,0,0,255);
-				} else if (Board.Instance().GetPiece(i,j) == Piece.TYPE.White) {
-					pieceList[i, j].renderer.enabled = true;
-					pieceList[i, j].renderer.material.color = new Color(255,255,255,255);
-				} else {
-					pieceList[i, j].renderer.enabled = false;
+		for (int i=0; i<8; i++)
+		{
+			for (int j=0; j<8; j++)
+			{
+				if(pieceList[i, j].GetEnabled())
+				{
+					if (Board.Instance().GetPiece(i,j) == Piece.TYPE.Black) {
+						pieceList[i, j].ToBlack();
+					}
+					else
+					if (Board.Instance().GetPiece(i,j) == Piece.TYPE.White) {
+						pieceList[i, j].ToWhite();
+					}
 				}
 			}
 		}
@@ -182,19 +203,23 @@ public class main : MonoBehaviour {
 		if (gamestatus == GAME_STATUS.NetworkPlay && compMenu.getLockType() == menu.LOCK_TYPE.FREE) {
 			StartCoroutine("GameOver", new GameEnd("win by default", GAME_STATUS.WinByDefault, 2.5f));
 		}
+//	}
 
-	}
-
-	void LateUpdate () {
+//	void LateUpdate () {
 		Board.Position pos;
 		if (compConnect.ReadPutList(out pos)) {
 			
 			// 駒を置く/
-			Board.Instance().putPiece(pieceSide, (int)pos.x, (int)pos.y);
-			
-			// ターンを入れ替える/
-			pieceSide = (pieceSide == Piece.TYPE.Black)? Piece.TYPE.White : Piece.TYPE.Black;
+			Board.Instance().putPiece(pieceSide, pos.x, pos.y);
 
+			// 駒オブジェクトを置く/
+			pieceList[pos.x, pos.y].Enabled(true);
+			pieceList[pos.x, pos.y].SetHight(10f);
+			if(pieceSide == Piece.TYPE.Black)
+				pieceList[pos.x, pos.y].ToBlack(false);
+			else
+				pieceList[pos.x, pos.y].ToWhite(false);
+			
 			// ターンを初期化/
 			InitializeTurn();
 		}
@@ -202,6 +227,9 @@ public class main : MonoBehaviour {
 	
 	void InitializeTurn()
 	{
+		// ターンを入れ替える/
+		pieceSide = (pieceSide == Piece.TYPE.Black)? Piece.TYPE.White : Piece.TYPE.Black;
+
 		// 計測開始時間をセット/
 		startTime = Time.time;
 		
