@@ -34,7 +34,7 @@ public class controller : MonoBehaviour {
 					string place;
 					if(Board.Instance().posToCode(key_x, key_y, out place))
 					{
-						string put = "{\"type\":\"put\",\"id\":\"" + compMenu.getYourID().ToString() + "\",\"place\":\"" + place + "\"}";
+						string put = "{\"type\":\"put\",\"id\":\"" + compMenu.GetYourID().ToString() + "\",\"place\":\"" + place + "\"}";
 						compConnect.putPiece(put);
 						if (compMenu.getLockType() != menu.LOCK_TYPE.FREE) {
 							compConnect.Send(put);

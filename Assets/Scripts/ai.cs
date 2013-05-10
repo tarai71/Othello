@@ -37,11 +37,11 @@ public class ai : MonoBehaviour {
 
 		string place = "";
 		ArrayList PutableList = new ArrayList();
-		if (Board.Instance().CheckPutable(compMain.getPieceSide(), ref PutableList)) {
+		if (Board.Instance().CheckPutable(compMain.GetPieceSide(), ref PutableList)) {
 			Board.Position v = (Board.Position)PutableList[Random.Range(0,PutableList.Count-1)];
 			if(Board.Instance().posToCode(v.x, v.y, out place))
 			{
-				string put = "{\"type\":\"put\",\"id\":\"" + compMenu.getYourID().ToString() + "\",\"place\":\"" + place + "\"}";
+				string put = "{\"type\":\"put\",\"id\":\"" + compMenu.GetYourID().ToString() + "\",\"place\":\"" + place + "\"}";
 				compConnect.putPiece(put);
 				if (compMenu.getLockType() != menu.LOCK_TYPE.FREE) {
 					compConnect.Send(put);

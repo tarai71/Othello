@@ -56,7 +56,7 @@ public class menu : MonoBehaviour
 		GUILayout.Space(10);
 		if(lockType == LOCK_TYPE.LOCKED)
 		{
-			GUILayout.Label(getYourName() + StringTable.LOCKED);
+			GUILayout.Label(GetYourName() + StringTable.LOCKED);
 		} else {
 			if(GUILayout.Button(StringTable.START + "[" + lockType.ToString() + ":" + myID + ":" + yourID + "]")) {
 				StartGame(option);
@@ -168,31 +168,31 @@ public class menu : MonoBehaviour
 		}
 	}
 
-	public bool getGuideEnable () 
+	public bool GetGuideEnable () 
 	{
 		return (option[2] == 0);
 	}
 
-	public float getLimitTime () 
+	public float GetLimitTime () 
 	{
 		return timeTable[option[3]];
 	}
 
-	public string getYourID ()
+	public string GetYourID ()
 	{
 		return yourID;
 	}
-	public string getMyID ()
+	public string GetMyID ()
 	{
 		return myID;
 	}
 	
-	public string getYourName ()
+	public string GetYourName ()
 	{
 		return (yourID == "")? "" : ((Entry)entryList[yourID]).name;
 	}
 
-	public string getMyName ()
+	public string GetMyName ()
 	{
 		return (myID == "")? "" : ((Entry)entryList[myID]).name;
 	}
@@ -202,7 +202,7 @@ public class menu : MonoBehaviour
 		return lockType;
 	}
 
-	public int getKind (int side)
+	public int GetKind (int side)
 	{
 		if (side != 0 && side != 1) {
 			return 0;

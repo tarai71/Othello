@@ -120,10 +120,10 @@ public class connect : MonoBehaviour
 
 	void OnDestroy ()
 	{
-		if (compMenu.getYourID() != "") {
-			websocket.Send("{\"type\":\"vsunlock\", \"myid\":\"" + compMenu.getMyID().ToString() + "\", \"id\":\"" + compMenu.getYourID().ToString() + "\"}");
+		if (compMenu.GetYourID() != "") {
+			websocket.Send("{\"type\":\"vsunlock\", \"myid\":\"" + compMenu.GetMyID().ToString() + "\", \"id\":\"" + compMenu.GetYourID().ToString() + "\"}");
 		}
-		websocket.Send("{\"type\":\"defect\", \"myid\":\"" + compMenu.getMyID().ToString() + "\"}");
+		websocket.Send("{\"type\":\"defect\", \"myid\":\"" + compMenu.GetMyID().ToString() + "\"}");
         websocket.Close();
 	}
 	

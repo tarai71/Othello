@@ -46,10 +46,10 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\PieceObject.cs" />
      <Compile Include="Assets\Scripts\ai.cs" />
+     <Compile Include="Assets\Scripts\board.cs" />
      <Compile Include="Assets\Scripts\config.cs" />
      <Compile Include="Assets\Scripts\connect.cs" />
      <Compile Include="Assets\Scripts\controller.cs" />
-     <Compile Include="Assets\Scripts\iniFile.cs" />
      <Compile Include="Assets\Scripts\main.cs" />
      <Compile Include="Assets\Scripts\menu.cs" />
      <Compile Include="Assets\Scripts\othello.cs" />

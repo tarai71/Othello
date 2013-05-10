@@ -6,8 +6,6 @@ public class main : MonoBehaviour {
 	
 	// Prefab定義/
 	public GameObject piecePrefab;
-	public GameObject markerPrefab;
-	public GameObject guidePrefab;
 	
 	// GUIStyle定義/
 	public GUIStyle labelStyleScoreBlack;
@@ -41,18 +39,9 @@ public class main : MonoBehaviour {
 		}
 	}
 	
-	// 盤面に配置した駒のオブジェクトリスト/
+	// 駒のオブジェクトリスト/
 	PieceObject[,] pieceList = new PieceObject[8,8];
-	// 盤面のガイド表示のオブジェクトリスト/
-	GameObject[,] guide = new GameObject[2,8];
 		
-	// 盤面のガイド表示用文字データ/
-	string[,] guideLitteral = new string[2,8]{
-		{"a","b","c","d","e","f","g","h"},
-		{"1","2","3","4","5","6","7","8"}
-	};
-	// 盤面に配置した着手可能場所マーカーのオブジェクトリスト/
-	ArrayList markerList = new ArrayList();
 	// 現在の手順/
 	Piece.TYPE pieceSide = Piece.TYPE.Black;
 	// ゲームの状態/
@@ -64,12 +53,14 @@ public class main : MonoBehaviour {
 	// メニューコンポーネントキャッシュ用/
 	menu compMenu = null;
 	connect compConnect = null;
+	board compBoard = null;
 		
 	// Use this for initialization
 	void Start () {
 		// メニューコンポーネントをキャッシュ/
 		compMenu = GameObject.Find("Menu").GetComponent<menu>();
 		compConnect = GameObject.Find("Menu").GetComponent<connect>();
+		compBoard = GetComponent<board>();
 		
 		// 駒オブジェクト生成/
 		for (int i=0; i<8; i++)
@@ -81,31 +72,6 @@ public class main : MonoBehaviour {
 				GameObject whitePiece = (GameObject)Instantiate(piecePrefab);
 				pieceList[j, i] = new PieceObject(ref blackPiece, ref whitePiece, position);
 			}
-		}
-		
-		// 盤面の横ガイド表示用オブジェクト生成/
-		float x=-3.5f,y=+4.5f;
-		for (int i=0; i<8; i++) {
-			guide[0,i] = (GameObject)Instantiate(guidePrefab, new Vector3(0,0,0), Quaternion.identity);
-			guide[0,i].guiText.text = guideLitteral[0,i];
-			Vector3 screenPos = Camera.main.WorldToScreenPoint(new Vector3(x,0f,y));
-			guide[0,i].transform.position = new Vector3(screenPos.x/Screen.width,screenPos.y/Screen.height,0);
-			guide[0,i].guiText.fontSize = 20;
-			guide[0,i].guiText.anchor = TextAnchor.MiddleCenter;
-			guide[0,i].guiText.alignment = TextAlignment.Center;
-			x+=1f;
-		}
-		// 盤面の縦ガイド表示用オブジェクト生成/
-		x=-4.5f;y=+3.5f;
-		for (int i=0; i<8; i++) {
-			guide[1,i] = (GameObject)Instantiate(guidePrefab, new Vector3(0,0,0), Quaternion.identity);
-			guide[1,i].guiText.text = guideLitteral[1,i];
-			Vector3 screenPos = Camera.main.WorldToScreenPoint(new Vector3(x,0f,y));
-			guide[1,i].transform.position = new Vector3(screenPos.x/Screen.width,screenPos.y/Screen.height,0);
-			guide[1,i].guiText.fontSize = 20;
-			guide[1,i].guiText.anchor = TextAnchor.MiddleCenter;
-			guide[1,i].guiText.alignment = TextAlignment.Center;
-			y-=1f;
 		}
 		
 		// ゲーム状態初期化/
@@ -132,7 +98,7 @@ public class main : MonoBehaviour {
 		}
 			
 		// メニューから制限時間取得/
-		TimeLimit = compMenu.getLimitTime();
+		TimeLimit = compMenu.GetLimitTime();
 
 		// ターンを初期化/
 		pieceSide = Piece.TYPE.White;
@@ -160,17 +126,8 @@ public class main : MonoBehaviour {
 			}
 		}
 		
-		
-		
 		byte alfa;
 		alfa = (Time.time % 1.0f < 0.5f)? (byte)((Time.time % 1.0f) * 255 + 127) : (byte)((1.0f - Time.time % 1.0f) * 255 + 127);
-		
-		foreach(GameObject obj in markerList) {
-			if(obj) {
-				obj.renderer.enabled = IsMySide();
-				obj.renderer.material.color = new Color32(209,221, 48,alfa);
-			}
-		}
 		
 		if(pieceSide == Piece.TYPE.Black) {
 			labelStyleScoreBlack.normal.textColor = new Color32(209,221, 48,alfa);
@@ -180,32 +137,19 @@ public class main : MonoBehaviour {
 			labelStyleScoreWhite.normal.textColor = new Color32(209,221, 48,alfa);
 		}
 		
-		float x=-3.5f,y=+4.5f;
-		for (int i=0; i<8; i++) {
-			Vector3 screenPos = Camera.main.WorldToScreenPoint(new Vector3(x,0f,y));
-			guide[0,i].transform.position = new Vector3(screenPos.x/Screen.width,screenPos.y/Screen.height,0);
-			x+=1f;
-		}
-		x=-4.5f;y=+3.5f;
-		for (int i=0; i<8; i++) {
-			Vector3 screenPos = Camera.main.WorldToScreenPoint(new Vector3(x,0f,y));
-			guide[1,i].transform.position = new Vector3(screenPos.x/Screen.width,screenPos.y/Screen.height,0);
-			y-=1f;
-		}
-		
+		// 制限時間切れでゲームは終了/
 		if (TimeLimit > 0f) {
 			if (Time.time - startTime >= TimeLimit) {
-				StartCoroutine("GameOver", new GameEnd("time over", GAME_STATUS.TimeOver, 2.5f));
+				SetGameEnd(GAME_STATUS.TimeOver);
 			}
 		}
-		
 		// 対戦相手がいなくなったら不戦勝/
 		if (gamestatus == GAME_STATUS.NetworkPlay && compMenu.getLockType() == menu.LOCK_TYPE.FREE) {
-			StartCoroutine("GameOver", new GameEnd("win by default", GAME_STATUS.WinByDefault, 2.5f));
+			SetGameEnd(GAME_STATUS.WinByDefault);
 		}
-//	}
 
-//	void LateUpdate () {
+		
+		// 駒更新/
 		Board.Position pos;
 		if (compConnect.ReadPutList(out pos)) {
 			
@@ -232,28 +176,10 @@ public class main : MonoBehaviour {
 
 		// 計測開始時間をセット/
 		startTime = Time.time;
-		
-		// 着手可能場所マーカーのオブジェクトを削除/
-		foreach(Object obj in markerList) {
-			Object.Destroy(obj);
-		}
-		// 着手可能場所チェック/
-		ArrayList PutableList = new ArrayList();
-		if (!Board.Instance().CheckPutable(pieceSide, ref PutableList)) {
-			// 攻守交代2回してどこも置けなかったらそのゲームは終了/
-			pieceSide = (pieceSide == Piece.TYPE.Black)? Piece.TYPE.White : Piece.TYPE.Black;
-			if (!Board.Instance().CheckPutable(pieceSide, ref PutableList)) {
-				StartCoroutine("GameOver", new GameEnd("game over", GAME_STATUS.GameOver, 2.5f));
-			}
-		}
-		// 着手可能場所マーカーのオブジェクトを生成/
-		if (compMenu.getGuideEnable()) {
-			foreach(Board.Position v in PutableList) {
-				Vector3 position = new Vector3(v.x -4.0f + 0.5f, 0.201f, v.y -4.0f + 0.5f);
-				markerList.Add(Instantiate(markerPrefab, position, Quaternion.identity));
-			}
-		}
-		PutableList.Clear();
+	
+		// マーカー更新/
+		compBoard.MarkerUpdate();
+		compBoard.MarkerEnabled(IsMySide());
 	}
 	
 	IEnumerator GameOver(GameEnd obj) {
@@ -276,12 +202,12 @@ public class main : MonoBehaviour {
 		GUI.Label(new Rect(10,100,100,80), white.ToString("d2"), labelStyleScoreWhite);
 		switch (compMenu.getLockType()) {
 		case menu.LOCK_TYPE.LOCK:
-			GUI.Label(new Rect(80,80,100,80), compMenu.getMyName(), labelStyleScoreName);
-			GUI.Label(new Rect(80,170,100,80), compMenu.getYourName(), labelStyleScoreName);
+			GUI.Label(new Rect(80,80,100,80), compMenu.GetMyName(), labelStyleScoreName);
+			GUI.Label(new Rect(80,170,100,80), compMenu.GetYourName(), labelStyleScoreName);
 			break;
 		case menu.LOCK_TYPE.LOCKED:
-			GUI.Label(new Rect(80,80,100,80), compMenu.getYourName(), labelStyleScoreName);
-			GUI.Label(new Rect(80,170,100,80), compMenu.getMyName(), labelStyleScoreName);
+			GUI.Label(new Rect(80,80,100,80), compMenu.GetYourName(), labelStyleScoreName);
+			GUI.Label(new Rect(80,170,100,80), compMenu.GetMyName(), labelStyleScoreName);
 			break;
 		}
 		
@@ -328,9 +254,30 @@ public class main : MonoBehaviour {
 		}
 
 	}
-	
-	public Piece.TYPE getPieceSide ()
+
+	public void SetGameEnd(GAME_STATUS status)
 	{
+		switch(status)
+		{
+		case GAME_STATUS.GameOver:
+			StartCoroutine("GameOver", new GameEnd("game over", GAME_STATUS.GameOver, 2.5f));
+			break;
+		case GAME_STATUS.TimeOver:
+			StartCoroutine("GameOver", new GameEnd("time over", GAME_STATUS.TimeOver, 2.5f));
+			break;
+		case GAME_STATUS.WinByDefault:
+			StartCoroutine("GameOver", new GameEnd("win by default", GAME_STATUS.WinByDefault, 2.5f));
+			break;
+		}
+	}
+	
+	public Piece.TYPE GetPieceSide ()
+	{
+		return pieceSide;
+	}
+	public Piece.TYPE ChangePieceSide()
+	{
+		pieceSide = (pieceSide == Piece.TYPE.Black)? Piece.TYPE.White : Piece.TYPE.Black;
 		return pieceSide;
 	}
 
@@ -338,9 +285,9 @@ public class main : MonoBehaviour {
 	{
 		menu.LOCK_TYPE t = compMenu.getLockType();
 		if (t == menu.LOCK_TYPE.LOCK) {
-			return (getPieceSide() == Piece.TYPE.Black);
+			return (GetPieceSide() == Piece.TYPE.Black);
 		} else if (t == menu.LOCK_TYPE.LOCKED) {
-			return (getPieceSide() == Piece.TYPE.White);
+			return (GetPieceSide() == Piece.TYPE.White);
 		}
 
 		return true;
@@ -349,7 +296,7 @@ public class main : MonoBehaviour {
 	public bool IsAI ()
 	{
 		int side = -1;
-		switch(getPieceSide()) {
+		switch(GetPieceSide()) {
 		case Piece.TYPE.Black:
 			side = 0;
 			break;
@@ -361,6 +308,6 @@ public class main : MonoBehaviour {
 			return false;
 		}
 		
-		return (compMenu.getKind(side) == 1);
+		return (compMenu.GetKind(side) == 1);
 	}
 }
