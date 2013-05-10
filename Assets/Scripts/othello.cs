@@ -73,29 +73,30 @@
 		}
 		
 		// 駒を盤に置く/
-		public void putPiece(Piece.TYPE pieceType, int x, int y)
+		public bool putPiece(Piece.TYPE pieceType, int x, int y)
 		{
 			if (x < 0 || y < 0 || x >= SIZEX || y >= SIZEY)
 			{
-				return;
+				return false;
 			}
 			if (board[x,y] != Piece.TYPE.Empty)
 			{
-				return;
+				return false;
 			}
 			
 			string place;
 			Board.Instance().posToCode(x, y, out place);
 			
 			board[x,y] = pieceType;
-			bool changeFlag = updateBoard(pieceType, x, y, true);
-		
-			if (changeFlag) {
-				calcPiecies();
-			} else {
+			if(!updateBoard(pieceType, x, y, true))
+			{
 				board[x,y] = Piece.TYPE.Empty;
+				return false;
 			}
-
+			
+			calcPiecies();
+			return true;
+		
 		}
 		
 		// 盤面の更新、updateFlag が false なら/

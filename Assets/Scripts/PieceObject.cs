@@ -54,7 +54,7 @@ public class PieceObject
 	{
 		if(animationFlag)
 		{
-			angle -= 10f;
+			angle -= 10f * 60f * Time.deltaTime;
 			if(angle < 0f) angle = 0f;
 		}
 		else
@@ -64,7 +64,7 @@ public class PieceObject
 
 		if(hight > 0f)
 		{
-			hight -= hight*0.5f;
+			hight -= hight*0.5f * 60f * Time.deltaTime;
 		}
 		
 		CalcTransform();
@@ -74,7 +74,7 @@ public class PieceObject
 	{
 		if(animationFlag)
 		{
-			angle += 10f;
+			angle += 10f * 60f * Time.deltaTime;
 			if(angle > 180f) angle = 180f;
 		}
 		else
@@ -84,7 +84,7 @@ public class PieceObject
 
 		if(hight > 0f)
 		{
-			hight -= hight*0.5f;
+			hight -= hight*0.5f * 60f * Time.deltaTime;
 		}
 		
 		CalcTransform();

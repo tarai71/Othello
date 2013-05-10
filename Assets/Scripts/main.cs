@@ -154,18 +154,19 @@ public class main : MonoBehaviour {
 		if (compConnect.ReadPutList(out pos)) {
 			
 			// 駒を置く/
-			Board.Instance().putPiece(pieceSide, pos.x, pos.y);
-
-			// 駒オブジェクトを置く/
-			pieceList[pos.x, pos.y].Enabled(true);
-			pieceList[pos.x, pos.y].SetHight(10f);
-			if(pieceSide == Piece.TYPE.Black)
-				pieceList[pos.x, pos.y].ToBlack(false);
-			else
-				pieceList[pos.x, pos.y].ToWhite(false);
-			
-			// ターンを初期化/
-			InitializeTurn();
+			if(Board.Instance().putPiece(pieceSide, pos.x, pos.y))
+			{
+				// 駒オブジェクトを置く/
+				pieceList[pos.x, pos.y].Enabled(true);
+				pieceList[pos.x, pos.y].SetHight(10f);
+				if(pieceSide == Piece.TYPE.Black)
+					pieceList[pos.x, pos.y].ToBlack(false);
+				else
+					pieceList[pos.x, pos.y].ToWhite(false);
+				
+				// ターンを初期化/
+				InitializeTurn();
+			}
 		}
 	}
 	
@@ -222,7 +223,13 @@ public class main : MonoBehaviour {
 				labelStyleTimer.normal.textColor = new Color32(193,193,193,255);
 			}
 		}
-		
+/*
+		GUILayout.BeginArea( new Rect (10, 10, 410, 40));
+		if(GUILayout.Button(StringTable.DISCON))
+		{
+		}
+		GUILayout.EndArea();	
+*/		
 		Rect rect_gameover = new Rect(10, 320, 600, 100);
 		switch (gamestatus) {
 		case GAME_STATUS.GameOver:
