@@ -72,6 +72,27 @@
 			calcPiecies();
 		}
 		
+		// 駒を指定位場所に置けるか確認/
+		public bool IsPutEnable(Piece.TYPE pieceType, int x, int y)
+		{
+			if (x < 0 || y < 0 || x >= SIZEX || y >= SIZEY)
+			{
+				return false;
+			}
+			if (board[x,y] != Piece.TYPE.Empty)
+			{
+				return false;
+			}
+			
+			string place;
+			Board.Instance().posToCode(x, y, out place);
+			
+			board[x,y] = pieceType;
+			bool change =updateBoard(pieceType, x, y, false);
+			board[x,y] = Piece.TYPE.Empty;
+			return change;
+		}
+		
 		// 駒を盤に置く/
 		public bool putPiece(Piece.TYPE pieceType, int x, int y)
 		{
