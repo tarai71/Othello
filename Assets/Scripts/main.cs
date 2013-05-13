@@ -9,11 +9,14 @@ public class main : MonoBehaviour {
 	
 	// GUIStyle定義/
 	public GUIStyle labelStyleScoreBlack;
+	public GUIStyle labelStyleLabelBlack;
+	public GUIStyle labelStyleScoreNameBlack;
 	public GUIStyle labelStyleScoreWhite;
-	public GUIStyle labelStyleScoreName;
+	public GUIStyle labelStyleLabelWhite;
+	public GUIStyle labelStyleScoreNameWhite;
 	public GUIStyle labelStyleGameOver;
+	public GUIStyle labelStyleLabelTimer;
 	public GUIStyle labelStyleTimer;
-	public GUIStyle labelStyleLaberl;
 	
 	// ゲームの状態を列挙/
 	public enum GAME_STATUS {
@@ -50,6 +53,7 @@ public class main : MonoBehaviour {
 	float TimeLimit;
 	// 残り時間計算用ワーク/
 	float startTime;
+	float restTime;
 	// メニューコンポーネントキャッシュ用/
 	menu compMenu = null;
 	connect compConnect = null;
@@ -149,15 +153,15 @@ public class main : MonoBehaviour {
 		
 		if(pieceSide == Piece.TYPE.Black) {
 			labelStyleScoreBlack.normal.textColor = new Color32(209,221, 48,alfa);
-			labelStyleScoreWhite.normal.textColor = new Color32(193,193,193,255);
+			labelStyleScoreWhite.normal.textColor = new Color32(192,192,192,255);
 		} else if(pieceSide == Piece.TYPE.White) {
-			labelStyleScoreBlack.normal.textColor = new Color32(193,193,193,255);
+			labelStyleScoreBlack.normal.textColor = new Color32( 64, 64, 64,255);
 			labelStyleScoreWhite.normal.textColor = new Color32(209,221, 48,alfa);
 		}
 		
 		// 制限時間切れでゲームは終了/
 		if (TimeLimit > 0f) {
-			if (Time.time - startTime >= TimeLimit) {
+			if (restTime <= 0f) {
 				SetGameEnd(GAME_STATUS.TimeOver);
 			}
 		}
@@ -205,7 +209,7 @@ public class main : MonoBehaviour {
 		Debug.Log(obj.debug);
 		gamestatus = obj.status;
 		yield return new WaitForSeconds(obj.wait);
-		while (!Input.GetButtonDown("Fire1") || Input.touches.Length > 0)
+		while (!Input.GetButtonDown("Fire1") && Input.touches.Length == 0)
 		{
 			yield return new WaitForSeconds(0f);
 		}
@@ -218,49 +222,49 @@ public class main : MonoBehaviour {
 		int black = Board.Instance().GetBlackPiecies();
 		int white = Board.Instance().GetWhitePiecies();
 		
-		GUI.Label(new Rect(10,20,100,80), StringTable.BLACK, labelStyleLaberl);
-		GUI.Label(new Rect(10,10,100,80), black.ToString("d2"), labelStyleScoreBlack);
-		GUI.Label(new Rect(10,110,100,80), StringTable.WHITE, labelStyleLaberl);
-		GUI.Label(new Rect(10,100,100,80), white.ToString("d2"), labelStyleScoreWhite);
+		GUI.Label(new Rect(10,10,80,80), StringTable.BLACK, labelStyleLabelBlack);
+		GUI.Label(new Rect(10,10,80,80), black.ToString("d2"), labelStyleScoreBlack);
+		GUI.Label(new Rect(Screen.width-100,10,80,80), StringTable.WHITE, labelStyleLabelWhite);
+		GUI.Label(new Rect(Screen.width-100,10,80,80), white.ToString("d2"), labelStyleScoreWhite);
 		switch (compMenu.getLockType()) {
 		case menu.LOCK_TYPE.LOCK:
-			GUI.Label(new Rect(80,80,100,80), compMenu.GetMyName(), labelStyleScoreName);
-			GUI.Label(new Rect(80,170,100,80), compMenu.GetYourName(), labelStyleScoreName);
+			GUI.Label(new Rect(10+40,20,80,80), compMenu.GetMyName(), labelStyleScoreNameBlack);
+			GUI.Label(new Rect(Screen.width-100-40,20,80,80), compMenu.GetYourName(), labelStyleScoreNameWhite);
 			break;
 		case menu.LOCK_TYPE.LOCKED:
-			GUI.Label(new Rect(80,80,100,80), compMenu.GetYourName(), labelStyleScoreName);
-			GUI.Label(new Rect(80,170,100,80), compMenu.GetMyName(), labelStyleScoreName);
+			GUI.Label(new Rect(10+40,20,80,80), compMenu.GetYourName(), labelStyleScoreNameBlack);
+			GUI.Label(new Rect(Screen.width-100-40,20,80,80), compMenu.GetMyName(), labelStyleScoreNameWhite);
 			break;
 		}
-		
+
 		if (TimeLimit > 0f) {
-			float restTime = TimeLimit - (Time.time - startTime);
+			if(gamestatus == GAME_STATUS.LocalPlay || gamestatus == GAME_STATUS.NetworkPlay)
+			{
+				restTime = TimeLimit - (Time.time - startTime);
+			}
 			if (restTime < 0f) restTime = 0f;
-			GUI.Label(new Rect(10,235,150,80), StringTable.TIMER, labelStyleLaberl);
-			GUI.Label(new Rect(10,220,150,80), restTime.ToString("f02"), labelStyleTimer);
+			GUI.Label(new Rect((Screen.width-150)/2,40,150,70), StringTable.TIMER, labelStyleLabelTimer);
+			GUI.Label(new Rect((Screen.width-150)/2,40,150,70), restTime.ToString("f02"), labelStyleTimer);
 			if (restTime < 3f) {
-				labelStyleTimer.normal.textColor = new Color32(64,64,64,255);
+				labelStyleTimer.normal.textColor = new Color32(250,64,64,255);
 			} else {
-				labelStyleTimer.normal.textColor = new Color32(193,193,193,255);
+				labelStyleTimer.normal.textColor = new Color32(250,250,250,255);
 			}
 		}
-/*
-		GUILayout.BeginArea( new Rect (10, 10, 410, 40));
-		if(GUILayout.Button(StringTable.DISCON))
-		{
-		}
-		GUILayout.EndArea();	
-*/		
-		Rect rect_gameover = new Rect(10, 320, 600, 100);
+
+		Rect rect_gameover = new Rect((Screen.width-600)/2, Screen.height-80, 600, 100);
 		switch (gamestatus) {
 		case GAME_STATUS.GameOver:
 			string result = "";
 			if (white > black) {
 				result = StringTable.WIN_WHITE;
+				labelStyleGameOver.normal.textColor = new Color32(192,192,192,255);
 			} else if (white < black) {
 				result = StringTable.WIN_BLACK;
+				labelStyleGameOver.normal.textColor = new Color32(64,64,64,255);
 			} else {
 				result = StringTable.DRAW;
+				labelStyleGameOver.normal.textColor = new Color32(250,250,250,255);
 			}
 			GUI.Label(rect_gameover, result, labelStyleGameOver);
 			break;
@@ -268,15 +272,19 @@ public class main : MonoBehaviour {
 			result = "";
 			if (pieceSide == Piece.TYPE.Black) {
 				result = StringTable.WIN_WHITE;
+				labelStyleGameOver.normal.textColor = new Color32(192,192,192,255);
 			} else if (pieceSide == Piece.TYPE.White){
 				result = StringTable.WIN_BLACK;
+				labelStyleGameOver.normal.textColor = new Color32(64,64,64,255);
 			} else {
 				result = StringTable.DRAW;
+				labelStyleGameOver.normal.textColor = new Color32(250,250,250,255);
 			}
 			GUI.Label(rect_gameover, result, labelStyleGameOver);
 			break;
 		case GAME_STATUS.WinByDefault:
 			result = StringTable.ESCAPE;
+			labelStyleGameOver.normal.textColor = new Color32(250,250,250,255);
 			GUI.Label(rect_gameover, result, labelStyleGameOver);
 			break;
 		}

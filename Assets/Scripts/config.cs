@@ -3,31 +3,43 @@ using System.Collections;
 
 public class config : MonoBehaviour
 {
-	INIFile file;
+	public GUISkin mySkin;
 	
-	string myname;
-	string ainame;
+	menu compMenu = null;
+	connect compConnect = null;
 	
+	string myname = "";
 	public string MyName
 	{
 		get { return myname; }
 	}
 
-	public string AiName
+	string serverip = "54.248.211.43";
+	public string ServerIP
 	{
-		get { return ainame; }
+		get { return serverip; }
 	}
-	
+
+	string serverport = "3000";
+	public string ServerPort
+	{
+		get { return serverport; }
+	}
+
 	void Awake ()
 	{
 		DontDestroyOnLoad (this);
+		compMenu = GetComponent<menu>();
+		compConnect = GetComponent<connect>();
+
+		byte[] nb = System.Convert.FromBase64String((PlayerPrefs.GetString("myname")));
+		myname = System.Text.Encoding.Unicode.GetString(nb);
 	}
 
 	// Use this for initialization
 	void Start ()
 	{
-		file = new INIFile("./othello.ini");
-		Check();
+		//Check();
 	}
 	
 	void Update ()
@@ -36,23 +48,31 @@ public class config : MonoBehaviour
 	
 	void OnGUI ()
 	{
-		GUILayout.BeginArea( new Rect (10, 10, 250, 400));
-		GUILayout.Space(10);
+		GUI.skin = mySkin;
+		
+		GUILayout.BeginArea( new Rect (10, 10, 700, 1260));
+		GUILayout.Space(50);
 
 		GUILayout.BeginHorizontal();
-		GUILayout.Label(StringTable.NAME + ":", GUILayout.MinWidth (90));
-		myname = GUILayout.TextField(myname, 16, GUILayout.MinWidth (150));
+		GUILayout.Label(StringTable.NAME + ":", GUILayout.MinWidth(200));
+		myname = GUILayout.TextField(myname);
 		GUILayout.EndHorizontal();
-			
-		GUILayout.BeginHorizontal();
-		GUILayout.Label(StringTable.AINAME + ":", GUILayout.MinWidth (90));
-		ainame = GUILayout.TextField(ainame, 16, GUILayout.MinWidth (150));
-		GUILayout.EndHorizontal();
+		GUILayout.Space(10);
 		
+		GUILayout.BeginHorizontal();
+		GUILayout.Label(StringTable.SERVERIP + ":", GUILayout.MinWidth(200));
+		serverip = GUILayout.TextField(serverip);
+		GUILayout.EndHorizontal();
+		GUILayout.Space(10);
+		
+		GUILayout.BeginHorizontal();
+		GUILayout.Label(StringTable.SERVERPORT + ":", GUILayout.MinWidth(200));
+		serverport = GUILayout.TextField(serverport);
+		GUILayout.EndHorizontal();
+		GUILayout.Space(10);
+			
 		if(GUILayout.Button(StringTable.REGIST))
 		{
-		 	file["config","name"] = myname;
-		 	file["config","ainame"] = ainame;
 			Check();
 		}
 		GUILayout.EndArea();	
@@ -60,14 +80,22 @@ public class config : MonoBehaviour
 	
 	void Check()
 	{
-		myname = file["config","name"];
-		ainame = file["config","ainame"];
-		if(name != "" && ainame != "")
+		if(myname != "")
 		{
 			Debug.Log(StringTable.NAME + ":" + myname);
-			Debug.Log(StringTable.AINAME + ":" + ainame);
+			Debug.Log(StringTable.SERVERIP + ":" + serverip);
+			Debug.Log(StringTable.SERVERPORT + ":" + serverport);
+			
+			byte[] nb = System.Text.Encoding.Unicode.GetBytes (myname);
+			
+			PlayerPrefs.SetString("myname", System.Convert.ToBase64String(nb));
+			PlayerPrefs.SetString("serverip", serverip);
+			PlayerPrefs.SetString("serverport", serverport);
+			PlayerPrefs.Save();
+			
 			this.enabled = false;
-			Application.LoadLevel("Menu");
+			compMenu.enabled = true;
+			compConnect.ConnectServer();
 		}
 	}
 }

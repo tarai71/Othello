@@ -24,7 +24,7 @@ public class controller : MonoBehaviour {
 			if (!compMain.IsAI()) {
 				if (Input.GetButtonDown("Fire1")) {
 					Vector3 screenPoint = Input.mousePosition;		
-					screenPoint.z = 10;
+					screenPoint.z = Camera.main.transform.position.y;
 		 			Vector3 v = Camera.main.ScreenToWorldPoint(screenPoint);
 					int key_x = Mathf.FloorToInt(v.x) + 4;
 					int key_y = Mathf.FloorToInt(v.z) + 4;

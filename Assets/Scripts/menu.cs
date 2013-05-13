@@ -4,6 +4,8 @@ using LitJson;
 
 public class menu : MonoBehaviour
 {
+	public GUISkin mySkin;
+
 	public enum LOCK_TYPE {
 		FREE = 0,
 		LOCK,
@@ -11,17 +13,18 @@ public class menu : MonoBehaviour
 	}
 	
 	Rect[] windowRect = {
-		new Rect (10, 60, 200, 20),
-		new Rect (10, 160, 200, 20),
-		new Rect (220, 60, 200, 20),
+		new Rect ( 10, 140, 345, 20),
+		new Rect (365, 140, 345, 20),//(10, 160, 200, 20),
+		new Rect (220,  60, 200, 20),
 		new Rect (220, 160, 200, 20),
-		new Rect (440, 60, 300, 20)
+		new Rect ( 10, 420, 700, 20)//(440, 60, 300, 20)
 	};
 	int[] option = {0,0,0,0,0};
 	float[] timeTable = {
 		0f, 5f, 10f, 15f, 20f, 25f, 30f
 	};
 		
+	config compConfig = null;
 	connect compConnect = null;
 
 	Hashtable entryList = new Hashtable();
@@ -46,25 +49,34 @@ public class menu : MonoBehaviour
 	
 	void OnGUI ()
 	{
-		windowRect[0] = GUILayout.Window (0, windowRect[0], MakeSelectWindow, StringTable.SENTE);
-		windowRect[1] = GUILayout.Window (1, windowRect[1], MakeSelectWindow, StringTable.GOTE);
-		windowRect[2] = GUILayout.Window (2, windowRect[2], MakeGuideWindow, StringTable.GUIDE);
-		windowRect[3] = GUILayout.Window (3, windowRect[3], MakeTimeWindow, StringTable.TIME);
-		windowRect[4] = GUILayout.Window (4, windowRect[4], MakeEntryWindow, StringTable.ENTRY);
+		GUI.skin = mySkin;
 
-		GUILayout.BeginArea( new Rect (10, 10, 410, 40));
+		GUILayout.BeginArea(new Rect (10, 10, 700, 1260));
 		GUILayout.Space(10);
 		if(lockType == LOCK_TYPE.LOCKED)
 		{
 			GUILayout.Label(GetYourName() + StringTable.LOCKED);
 		} else {
-			if(GUILayout.Button(StringTable.START + "[" + lockType.ToString() + ":" + myID + ":" + yourID + "]")) {
+			windowRect[0] = GUILayout.Window (0, windowRect[0], MakeSelectWindow, StringTable.SENTE);
+			windowRect[1] = GUILayout.Window (1, windowRect[1], MakeSelectWindow, StringTable.GOTE);
+//			windowRect[2] = GUILayout.Window (2, windowRect[2], MakeGuideWindow, StringTable.GUIDE);
+//			windowRect[3] = GUILayout.Window (3, windowRect[3], MakeTimeWindow, StringTable.TIME);
+			windowRect[4] = GUILayout.Window (4, windowRect[4], MakeEntryWindow, StringTable.ENTRY);
+
+			GUILayout.BeginHorizontal();
+			if(GUILayout.Button(StringTable.START)) {
 				StartGame(option);
 				if(lockType != LOCK_TYPE.FREE)
 				{
 					compConnect.Send("{\"type\":\"start\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[yourID]).id.ToString() + "\", \"option\":" + JsonMapper.ToJson(option) +  "}");
 				}
 			}
+			if(GUILayout.Button(StringTable.INITIALIZE, GUILayout.MaxWidth(200))) {
+				compConnect.DisconnectServer();
+				this.enabled = false;
+				compConfig.enabled= true;
+			}
+			GUILayout.EndHorizontal();
 		}
 		GUILayout.EndArea();	
 	}
@@ -72,11 +84,23 @@ public class menu : MonoBehaviour
 	void Awake ()
 	{
 		DontDestroyOnLoad (this);
+		
+		compConfig = GetComponent<config>();
+		compConnect = GetComponent<connect>();
 	}
 
 	// Use this for initialization
 	void Start () {
-		compConnect = GameObject.Find("Menu").GetComponent<connect>();
+		if(compConfig.MyName == "")
+		{
+			this.enabled = false;
+			compConfig.enabled= true;
+			compConnect.DisconnectServer();
+		}
+		else
+		{
+			compConnect.ConnectServer();
+		}
 	}
 	
 	void MakeSelectWindow (int id)

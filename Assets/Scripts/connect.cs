@@ -51,9 +51,6 @@ class PutBuffer
 
 public class connect : MonoBehaviour
 {
-	public string SERVER_IP = "54.248.211.43";
-	public string PORT = "3000";
-	
 	WebSocket websocket;
 		
 	PutBuffer PutList = new PutBuffer();
@@ -104,27 +101,13 @@ public class connect : MonoBehaviour
 	void Awake ()
 	{
 		DontDestroyOnLoad (this);
-		
-		compConfig = GameObject.Find("Config").GetComponent<config>();
+		compConfig = GetComponent<config>();
 		compMenu = GetComponent<menu>();
-		
-		Debug.Log("ws://" + SERVER_IP + ":" + PORT + "/");
-		websocket = new WebSocket("ws://" + SERVER_IP + ":" + PORT + "/");
-		websocket.Opened += new EventHandler(websocket_Opened);
-		websocket.Error += new EventHandler<SuperSocket.ClientEngine.ErrorEventArgs >(websocket_Error);
-		websocket.Closed += new EventHandler(websocket_Closed);
-		websocket.MessageReceived += new EventHandler<MessageReceivedEventArgs>(websocket_MessageReceived);
-		websocket.Open();
-
 	}
 
 	void OnDestroy ()
 	{
-		if (compMenu.GetYourID() != "") {
-			websocket.Send("{\"type\":\"vsunlock\", \"myid\":\"" + compMenu.GetMyID().ToString() + "\", \"id\":\"" + compMenu.GetYourID().ToString() + "\"}");
-		}
-		websocket.Send("{\"type\":\"defect\", \"myid\":\"" + compMenu.GetMyID().ToString() + "\"}");
-        websocket.Close();
+		DisconnectServer();
 	}
 	
 	public void Send(string message)
@@ -150,6 +133,29 @@ public class connect : MonoBehaviour
 	public void ResetPutList()
 	{
 		PutList.Reset();
+	}
+
+	public void ConnectServer()
+	{
+		Debug.Log("ws://" + compConfig.ServerIP + ":" + compConfig.ServerPort + "/");
+		websocket = new WebSocket("ws://" + compConfig.ServerIP + ":" + compConfig.ServerPort + "/");
+		websocket.Opened += new EventHandler(websocket_Opened);
+		websocket.Error += new EventHandler<SuperSocket.ClientEngine.ErrorEventArgs >(websocket_Error);
+		websocket.Closed += new EventHandler(websocket_Closed);
+		websocket.MessageReceived += new EventHandler<MessageReceivedEventArgs>(websocket_MessageReceived);
+		websocket.Open();
+	}
+
+	public void DisconnectServer()
+	{
+		//if(websocket != null)
+		{
+			if (compMenu.GetYourID() != "") {
+				websocket.Send("{\"type\":\"vsunlock\", \"myid\":\"" + compMenu.GetMyID().ToString() + "\", \"id\":\"" + compMenu.GetYourID().ToString() + "\"}");
+			}
+			websocket.Send("{\"type\":\"defect\", \"myid\":\"" + compMenu.GetMyID().ToString() + "\"}");
+	        websocket.Close();
+		}
 	}
 }
 
