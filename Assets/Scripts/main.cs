@@ -198,7 +198,6 @@ public class main : MonoBehaviour {
 	{
 		if(compMenu.getLockType() == menu.LOCK_TYPE.LOCK)
 		{
-			compConnect.Send("{\"type\":\"endgame\"}");
 			compConnect.Send("{\"type\":\"endgame\", \"myid\":\"" + compMenu.GetMyID().ToString() + "\", \"id\":\"" + compMenu.GetYourID().ToString() + "\"}");
 		}
 		compMenu.enabled = true;
