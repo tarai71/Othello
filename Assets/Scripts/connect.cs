@@ -93,7 +93,7 @@ public class connect : MonoBehaviour
 			compMenu.SetUnlock();
 		} else if( data.type == "startgame") {
 			compMenu.StartGame(data.option);
-		} else if( data.type == "emdgame") {
+		} else if( data.type == "endgame") {
 			compMenu.EndGame();
 		} else {
 			Debug.Log("[websocket_MessageReceived] Undeined type recieved");
