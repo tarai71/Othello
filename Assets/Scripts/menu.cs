@@ -53,19 +53,18 @@ public class menu : MonoBehaviour
 	{
 		GUI.skin = mySkin;
 
-			windowRect[0] = GUILayout.Window (0, new Rect ( 10, 140, (Screen.width-20)/2-5, 20), MakeSelectWindow, StringTable.SENTE);
-			windowRect[1] = GUILayout.Window (1, new Rect ( 20+(Screen.width-20)/2-5, 140, (Screen.width-20)/2-5, 20), MakeSelectWindow, StringTable.GOTE);
-//			windowRect[2] = GUILayout.Window (2, windowRect[2], MakeGuideWindow, StringTable.GUIDE);
-//			windowRect[3] = GUILayout.Window (3, windowRect[3], MakeTimeWindow, StringTable.TIME);
-			windowRect[4] = GUILayout.Window (4, new Rect ( 10, 420, Screen.width-20, Screen.height-(420+20)), MakeEntryWindow, StringTable.ENTRY);
-
 		GUILayout.BeginArea(new Rect (10, 10, Screen.width-20, Screen.height-20));
 		GUILayout.Space(10);
 		if(lockType == LOCK_TYPE.LOCKED)
 		{
 			GUILayout.Label(GetYourName() + StringTable.LOCKED);
 		} else {
-			
+			windowRect[0] = GUILayout.Window (0, new Rect ( 10, 140, (Screen.width-20)/2-5, 20), MakeSelectWindow, StringTable.SENTE);
+			windowRect[1] = GUILayout.Window (1, new Rect ( 20+(Screen.width-20)/2-5, 140, (Screen.width-20)/2-5, 20), MakeSelectWindow, StringTable.GOTE);
+//			windowRect[2] = GUILayout.Window (2, windowRect[2], MakeGuideWindow, StringTable.GUIDE);
+//			windowRect[3] = GUILayout.Window (3, windowRect[3], MakeTimeWindow, StringTable.TIME);
+			windowRect[4] = GUILayout.Window (4, new Rect ( 10, 420, Screen.width-20, Screen.height-(420+20)), MakeEntryWindow, StringTable.ENTRY);
+
 			GUILayout.BeginHorizontal();
 			if(GUILayout.Button(StringTable.START)) {
 				StartGame(option);
