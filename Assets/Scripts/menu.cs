@@ -43,6 +43,7 @@ public class menu : MonoBehaviour
 		if (IsGameStart)
 		{
 			IsGameStart = false;
+			IsGameEnd = false;
 			this.enabled = false;
 			compConnect.ResetPutList();
 			Application.LoadLevel("Main");
@@ -230,12 +231,22 @@ public class menu : MonoBehaviour
 	
 	public string GetYourName ()
 	{
-		return (yourID == "")? "" : ((Entry)entryList[yourID]).name;
+		if(entryList.Contains(yourID)) {
+			return (yourID == "")? "" : ((Entry)entryList[yourID]).name;
+		} else {
+			Debug.Log("Unfind yourID!");
+			return "";
+		}
 	}
 
 	public string GetMyName ()
 	{
-		return (myID == "")? "" : ((Entry)entryList[myID]).name;
+		if(entryList.Contains(myID)) {
+			return (myID == "")? "" : ((Entry)entryList[myID]).name;
+		} else {
+			Debug.Log("Unfind myID!");
+			return "";
+		}
 	}
 	
 	public LOCK_TYPE getLockType () 

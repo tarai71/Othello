@@ -154,9 +154,14 @@ public class main : MonoBehaviour {
 				SetGameEnd(GAME_STATUS.TimeOver);
 			}
 		}
-		// 対戦相手がいなくなったら不戦勝/
+		// 対戦相手がいなくなったらメニューに戻る/
 		if (gamestatus == GAME_STATUS.NetworkPlay && compMenu.getLockType() == menu.LOCK_TYPE.FREE) {
-			SetGameEnd(GAME_STATUS.WinByDefault);
+			//SetGameEnd(GAME_STATUS.WinByDefault);
+			ReturnMenu();
+		}
+		// 対戦相手がゲームを終了したらメニューに戻る/
+		if (compMenu.GetEndGame()) {
+			ReturnMenu();
 		}
 
 		
@@ -283,9 +288,9 @@ public class main : MonoBehaviour {
 			if(GUILayout.Button(StringTable.RETURNMENU)) {
 				ReturnMenu();
 			}
+			GUILayout.EndArea();
 		}
 		
-		GUILayout.EndArea();
 	}
 
 	public void SetGameEnd(GAME_STATUS status)
