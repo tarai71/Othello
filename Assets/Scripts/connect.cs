@@ -87,12 +87,14 @@ public class connect : MonoBehaviour
 		} else if( data.type == "put") {
 			putPiece(e.Message);
 			Debug.Log("[websocket_MessageReceived] \"Put\" type recieved");
-		} else if( data.type == "vslock") {
+		} else if( data.type == "lock") {
 			compMenu.SetLocked(data.myid);
-		} else if( data.type == "vsunlock") {
+		} else if( data.type == "unlock") {
 			compMenu.SetUnlock();
-		} else if( data.type == "start") {
+		} else if( data.type == "startgame") {
 			compMenu.StartGame(data.option);
+		} else if( data.type == "emdgame") {
+			compMenu.EndGame();
 		} else {
 			Debug.Log("[websocket_MessageReceived] Undeined type recieved");
 		}

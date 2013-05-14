@@ -34,6 +34,7 @@ public class menu : MonoBehaviour
 	
 	LOCK_TYPE lockType = LOCK_TYPE.FREE;
 	bool IsGameStart = false;
+	bool IsGameEnd = false;
 	string myID = "";
 	string yourID = "";
 	
@@ -70,7 +71,7 @@ public class menu : MonoBehaviour
 				StartGame(option);
 				if(lockType != LOCK_TYPE.FREE)
 				{
-					compConnect.Send("{\"type\":\"start\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[yourID]).id.ToString() + "\", \"option\":" + JsonMapper.ToJson(option) +  "}");
+					compConnect.Send("{\"type\":\"startgame\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[yourID]).id.ToString() + "\", \"option\":" + JsonMapper.ToJson(option) +  "}");
 				}
 			}
 
@@ -144,11 +145,11 @@ public class menu : MonoBehaviour
 				option[id] = old;
 			} else {
 				if (!((Entry)entryList[entryIdList[old]]).own) {
-					compConnect.Send("{\"type\":\"vsunlock\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[entryIdList[old]]).id.ToString() + "\"}");
+					compConnect.Send("{\"type\":\"unlock\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[entryIdList[old]]).id.ToString() + "\"}");
 					SetUnlock();
 				}
 				if (!((Entry)entryList[entryIdList[option[id]]]).own) {
-					compConnect.Send("{\"type\":\"vslock\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[entryIdList[option[id]]]).id.ToString() + "\"}");
+					compConnect.Send("{\"type\":\"lock\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[entryIdList[option[id]]]).id.ToString() + "\"}");
 					SetLock();
 				}
 			}
@@ -160,6 +161,14 @@ public class menu : MonoBehaviour
 	public void StartGame (int[] opt) {
 		IsGameStart = true;
 		option = opt;
+	}
+
+	public void EndGame () {
+		IsGameEnd = true;
+	}
+
+	public bool GetEndGame () {
+		return IsGameEnd;
 	}
 
 	public void SetUnlock()

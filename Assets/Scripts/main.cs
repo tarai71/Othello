@@ -31,20 +31,6 @@ public class main : MonoBehaviour {
 		WinByDefault		// 不戦勝表示中/
 	}
 	
-	// ゲーム終了処理クラス/
-	class GameEnd {
-		public string debug;
-		public GAME_STATUS status;
-		public float wait;
-		
-		public GameEnd(string debug, GAME_STATUS status, float wait)
-		{
-			this.debug = debug;
-			this.status = status;
-			this.wait = wait;
-		}
-	}
-	
 	// 駒のオブジェクトリスト/
 	PieceObject[,] pieceList = new PieceObject[8,8];
 		
@@ -208,20 +194,12 @@ public class main : MonoBehaviour {
 		compBoard.MarkerEnabled(IsMySide());
 	}
 	
-	IEnumerator GameOver(GameEnd obj) {
-		Debug.Log(obj.debug);
-		gamestatus = obj.status;
-		yield return new WaitForSeconds(obj.wait);
-		while (!Input.GetButtonDown("Fire1") && Input.touches.Length == 0)
-		{
-			yield return new WaitForSeconds(0f);
-		}
-		
-		ReturnMenu();
-	}
-	
 	void ReturnMenu()
 	{
+		if(compMenu.getLockType() == menu.LOCK_TYPE.LOCK)
+		{
+			compConnect.Send("{\"type\":\"endgame\"}");
+		}
 		compMenu.enabled = true;
 		Application.LoadLevel("Empty");
 	}
@@ -298,11 +276,15 @@ public class main : MonoBehaviour {
 			GUI.Label(rect_gameover, result, labelStyleGameOver);
 			break;
 		}
-
-		GUILayout.BeginArea(new Rect(10, Screen.height-40, Screen.width-20, 40));
-		if(GUILayout.Button(StringTable.RETURNMENU)) {
-			ReturnMenu();
+		
+		if(compMenu.getLockType() != menu.LOCK_TYPE.LOCKED)
+		{
+			GUILayout.BeginArea(new Rect(10, Screen.height-60, Screen.width-20, 60));
+			if(GUILayout.Button(StringTable.RETURNMENU)) {
+				ReturnMenu();
+			}
 		}
+		
 		GUILayout.EndArea();
 	}
 
@@ -311,13 +293,16 @@ public class main : MonoBehaviour {
 		switch(status)
 		{
 		case GAME_STATUS.GameOver:
-			StartCoroutine("GameOver", new GameEnd("game over", GAME_STATUS.GameOver, 2.5f));
+			Debug.Log("game over");
+			gamestatus = GAME_STATUS.GameOver;
 			break;
 		case GAME_STATUS.TimeOver:
-			StartCoroutine("GameOver", new GameEnd("time over", GAME_STATUS.TimeOver, 2.5f));
+			Debug.Log("time over");
+			gamestatus = GAME_STATUS.TimeOver;
 			break;
 		case GAME_STATUS.WinByDefault:
-			StartCoroutine("GameOver", new GameEnd("win by default", GAME_STATUS.WinByDefault, 2.5f));
+			Debug.Log("win by default");
+			gamestatus = GAME_STATUS.WinByDefault;
 			break;
 		}
 	}
