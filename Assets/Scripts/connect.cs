@@ -51,7 +51,7 @@ class PutBuffer
 
 public class connect : MonoBehaviour
 {
-	WebSocket websocket;
+	WebSocket websocket = null;
 		
 	PutBuffer PutList = new PutBuffer();
 		
@@ -148,13 +148,14 @@ public class connect : MonoBehaviour
 
 	public void DisconnectServer()
 	{
-		//if(websocket != null)
+		if(websocket != null)
 		{
 			if (compMenu.GetYourID() != "") {
 				websocket.Send("{\"type\":\"vsunlock\", \"myid\":\"" + compMenu.GetMyID().ToString() + "\", \"id\":\"" + compMenu.GetYourID().ToString() + "\"}");
 			}
 			websocket.Send("{\"type\":\"defect\", \"myid\":\"" + compMenu.GetMyID().ToString() + "\"}");
 	        websocket.Close();
+			websocket = null;
 		}
 	}
 }

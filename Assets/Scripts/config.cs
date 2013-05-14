@@ -39,7 +39,6 @@ public class config : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		//Check();
 	}
 	
 	void Update ()
@@ -50,7 +49,7 @@ public class config : MonoBehaviour
 	{
 		GUI.skin = mySkin;
 		
-		GUILayout.BeginArea( new Rect (10, 10, 700, 1260));
+		GUILayout.BeginArea(new Rect (10, 10, Screen.width-20, Screen.height-20));
 		GUILayout.Space(50);
 
 		GUILayout.BeginHorizontal();
@@ -70,10 +69,15 @@ public class config : MonoBehaviour
 		serverport = GUILayout.TextField(serverport);
 		GUILayout.EndHorizontal();
 		GUILayout.Space(10);
-			
+		
 		if(GUILayout.Button(StringTable.REGIST))
 		{
 			Check();
+		}
+		
+		if(GUILayout.Button(StringTable.CANCEL))
+		{
+			ReturnMenu();
 		}
 		GUILayout.EndArea();	
 	}
@@ -92,10 +96,15 @@ public class config : MonoBehaviour
 			PlayerPrefs.SetString("serverip", serverip);
 			PlayerPrefs.SetString("serverport", serverport);
 			PlayerPrefs.Save();
-			
-			this.enabled = false;
-			compMenu.enabled = true;
-			compConnect.ConnectServer();
+		
+			ReturnMenu();
 		}
+	}
+	
+	void ReturnMenu()
+	{
+		this.enabled = false;
+		compMenu.enabled = true;
+		compConnect.ConnectServer();
 	}
 }

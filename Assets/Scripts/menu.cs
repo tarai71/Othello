@@ -13,13 +13,14 @@ public class menu : MonoBehaviour
 	}
 	
 	Rect[] windowRect = {
-		new Rect ( 10, 140, 345, 20),
-		new Rect (365, 140, 345, 20),//(10, 160, 200, 20),
+		new Rect ( 10, 140, (Screen.width-20)/2-5, 20),
+		new Rect ( 20+(Screen.width-20)/2-5, 140, (Screen.width-20)/2-5, 20),//(10, 160, 200, 20),
 		new Rect (220,  60, 200, 20),
 		new Rect (220, 160, 200, 20),
-		new Rect ( 10, 420, 700, 20)//(440, 60, 300, 20)
+		new Rect ( 10, 420, 700, 200)//(440, 60, 300, 20)
 	};
 	int[] option = {0,0,0,0,0};
+	Vector2 scrollPosition = Vector2.zero;
 	float[] timeTable = {
 		0f, 5f, 10f, 15f, 20f, 25f, 30f
 	};
@@ -51,18 +52,19 @@ public class menu : MonoBehaviour
 	{
 		GUI.skin = mySkin;
 
-		GUILayout.BeginArea(new Rect (10, 10, 700, 1260));
+			windowRect[0] = GUILayout.Window (0, new Rect ( 10, 140, (Screen.width-20)/2-5, 20), MakeSelectWindow, StringTable.SENTE);
+			windowRect[1] = GUILayout.Window (1, new Rect ( 20+(Screen.width-20)/2-5, 140, (Screen.width-20)/2-5, 20), MakeSelectWindow, StringTable.GOTE);
+//			windowRect[2] = GUILayout.Window (2, windowRect[2], MakeGuideWindow, StringTable.GUIDE);
+//			windowRect[3] = GUILayout.Window (3, windowRect[3], MakeTimeWindow, StringTable.TIME);
+			windowRect[4] = GUILayout.Window (4, new Rect ( 10, 420, Screen.width-20, Screen.height-(420+20)), MakeEntryWindow, StringTable.ENTRY);
+
+		GUILayout.BeginArea(new Rect (10, 10, Screen.width-20, Screen.height-20));
 		GUILayout.Space(10);
 		if(lockType == LOCK_TYPE.LOCKED)
 		{
 			GUILayout.Label(GetYourName() + StringTable.LOCKED);
 		} else {
-			windowRect[0] = GUILayout.Window (0, windowRect[0], MakeSelectWindow, StringTable.SENTE);
-			windowRect[1] = GUILayout.Window (1, windowRect[1], MakeSelectWindow, StringTable.GOTE);
-//			windowRect[2] = GUILayout.Window (2, windowRect[2], MakeGuideWindow, StringTable.GUIDE);
-//			windowRect[3] = GUILayout.Window (3, windowRect[3], MakeTimeWindow, StringTable.TIME);
-			windowRect[4] = GUILayout.Window (4, windowRect[4], MakeEntryWindow, StringTable.ENTRY);
-
+			
 			GUILayout.BeginHorizontal();
 			if(GUILayout.Button(StringTable.START)) {
 				StartGame(option);
@@ -71,11 +73,13 @@ public class menu : MonoBehaviour
 					compConnect.Send("{\"type\":\"start\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[yourID]).id.ToString() + "\", \"option\":" + JsonMapper.ToJson(option) +  "}");
 				}
 			}
+
 			if(GUILayout.Button(StringTable.INITIALIZE, GUILayout.MaxWidth(200))) {
 				compConnect.DisconnectServer();
 				this.enabled = false;
 				compConfig.enabled= true;
 			}
+
 			GUILayout.EndHorizontal();
 		}
 		GUILayout.EndArea();	
@@ -127,8 +131,11 @@ public class menu : MonoBehaviour
 	void MakeEntryWindow (int id)
 	{
 		int old = option[id];
-		
+
 		GUILayout.Space (10);
+
+		scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.Width (Screen.width-40), GUILayout.Height (Screen.height-500));
+
 		option[id] = GUILayout.SelectionGrid(option[id], entryNameList, 1);
 		GUILayout.FlexibleSpace ();
 		
@@ -146,6 +153,8 @@ public class menu : MonoBehaviour
 				}
 			}
 		}
+		
+		GUILayout.EndScrollView();
 	}
 
 	public void StartGame (int[] opt) {

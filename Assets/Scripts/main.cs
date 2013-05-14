@@ -7,6 +7,9 @@ public class main : MonoBehaviour {
 	// Prefab定義/
 	public GameObject piecePrefab;
 	
+	// GUISkin/
+	public GUISkin mainSkin;
+	
 	// GUIStyle定義/
 	public GUIStyle labelStyleScoreBlack;
 	public GUIStyle labelStyleLabelBlack;
@@ -214,11 +217,18 @@ public class main : MonoBehaviour {
 			yield return new WaitForSeconds(0f);
 		}
 		
+		ReturnMenu();
+	}
+	
+	void ReturnMenu()
+	{
 		compMenu.enabled = true;
 		Application.LoadLevel("Empty");
 	}
 
 	void OnGUI() {
+		GUI.skin = mainSkin;
+		
 		int black = Board.Instance().GetBlackPiecies();
 		int white = Board.Instance().GetWhitePiecies();
 		
@@ -289,6 +299,11 @@ public class main : MonoBehaviour {
 			break;
 		}
 
+		GUILayout.BeginArea(new Rect(10, Screen.height-40, Screen.width-20, 40));
+		if(GUILayout.Button(StringTable.RETURNMENU)) {
+			ReturnMenu();
+		}
+		GUILayout.EndArea();
 	}
 
 	public void SetGameEnd(GAME_STATUS status)
