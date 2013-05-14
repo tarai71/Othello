@@ -245,7 +245,7 @@ public class main : MonoBehaviour {
 			}
 		}
 
-		Rect rect_gameover = new Rect((Screen.width-600)/2, Screen.height-80, 600, 100);
+		Rect rect_gameover = new Rect((Screen.width-600)/2, Screen.height-120, 600, 100);
 		switch (gamestatus) {
 		case GAME_STATUS.GameOver:
 			string result = "";
