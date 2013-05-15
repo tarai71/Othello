@@ -49,7 +49,7 @@ public class menu : MonoBehaviour
 			IsGameStart = false;
 			IsGameEnd = false;
 			this.enabled = false;
-			compConnect.ResetPutList();
+			oms.ResetPutList();
 			Application.LoadLevel("Main");
 		}
 	}
