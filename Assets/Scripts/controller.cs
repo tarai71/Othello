@@ -4,8 +4,6 @@ using Othello;
 
 public class controller : MonoBehaviour {
 
-	// コネクトコンポーネントキャッシュ用/
-	connect compConnect = null;
 	// メニューコンポーネントキャッシュ用/
 	menu compMenu = null;
 	// メインコンポーネントキャッシュ用/
@@ -13,7 +11,6 @@ public class controller : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		compConnect = GameObject.Find("Menu").GetComponent<connect>();
 		compMenu = GameObject.Find("Menu").GetComponent<menu>();
 		compMain = GetComponent<main>();
 	}
@@ -36,10 +33,9 @@ public class controller : MonoBehaviour {
 					{
 						if(Board.Instance().IsPutEnable(compMain.GetPieceSide(), key_x, key_y))
 						{
-							string put = "{\"type\":\"put\",\"id\":\"" + compMenu.GetYourID().ToString() + "\",\"place\":\"" + place + "\"}";
-							compConnect.putPiece(put);
+							compMenu.oms.WritePutList(place);
 							if (compMenu.getLockType() != menu.LOCK_TYPE.FREE) {
-								compConnect.Send(put);
+								compMenu.oms.PutPiece(compMenu.GetYourID(), place);
 							}
 						}
 					}

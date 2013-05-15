@@ -1,6 +1,8 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using LitJson;
+using OMS;
 
 public class menu : MonoBehaviour
 {
@@ -11,6 +13,8 @@ public class menu : MonoBehaviour
 		LOCK,
 		LOCKED
 	}
+	
+	public OMS.connect oms;
 	
 	Rect[] windowRect = {
 		new Rect ( 10, 140, (Screen.width-20)/2-5, 20),
@@ -71,16 +75,18 @@ public class menu : MonoBehaviour
 				StartGame(option);
 				if(lockType != LOCK_TYPE.FREE)
 				{
-					compConnect.Send("{\"type\":\"startgame\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[yourID]).id.ToString() + "\", \"option\":" + JsonMapper.ToJson(option) +  "}");
+					oms.StartGame(myID, ((Entry)entryList[yourID]).id, option);
 				}
 				else
 				{
-					compConnect.DisconnectServer();
+					//compConnect.DisconnectServer();
+					oms.DisconnectServer(myID);
 				}
 			}
 
 			if(GUILayout.Button(StringTable.INITIALIZE, GUILayout.MaxWidth(200))) {
-				compConnect.DisconnectServer();
+				//compConnect.DisconnectServer();
+				oms.DisconnectServer(myID);
 				this.enabled = false;
 				compConfig.enabled= true;
 			}
@@ -95,7 +101,38 @@ public class menu : MonoBehaviour
 		DontDestroyOnLoad (this);
 		
 		compConfig = GetComponent<config>();
-		compConnect = GetComponent<connect>();
+		
+		oms = new OMS.connect();
+		oms.OnLock = othello_OnLock;
+		oms.OnUnlock = othello_OnUnlock;
+		oms.OnStartGame = othello_OnStartGame;
+		oms.OnEndGame = othello_OnEndGame;
+		oms.OnPutPiece = othello_OnPutPiece;
+		oms.OnUpdateEntry = othello_OnUpdateEntry;
+	}
+	
+	private void othello_OnLock(string myid)
+	{
+		SetLocked(myid);
+	}
+	private void othello_OnUnlock()
+	{
+		SetUnlock();
+	}
+	private void othello_OnStartGame(int[] option)
+	{
+		StartGame(option);
+	}
+	private void othello_OnEndGame()
+	{
+		EndGame();
+	}
+	private void othello_OnPutPiece(string location)
+	{
+	}
+	private void othello_OnUpdateEntry(OMS.Entry[] list)
+	{
+		UpdateEntryList(list);
 	}
 
 	// Use this for initialization
@@ -104,17 +141,25 @@ public class menu : MonoBehaviour
 		{
 			this.enabled = false;
 			compConfig.enabled= true;
-			compConnect.DisconnectServer();
+			//compConnect.DisconnectServer();
+			oms.DisconnectServer(myID);
 		}
 		else
 		{
-			compConnect.ConnectServer();
+			//compConnect.ConnectServer();
+			oms.ConnectServer("ws://" + compConfig.ServerIP + ":" + compConfig.ServerPort + "/", compConfig.MyName);
 		}
+	}
+
+	void OnDestroy ()
+	{
+		oms.DisconnectServer(myID);
 	}
 
 	void OnEnable () {
 		if(compConfig.MyName != "") {
-			compConnect.ConnectServer();
+			//compConnect.ConnectServer();
+			oms.ConnectServer("ws://" + compConfig.ServerIP + ":" + compConfig.ServerPort + "/", compConfig.MyName);
 		}
 	}
 	
@@ -155,11 +200,11 @@ public class menu : MonoBehaviour
 				option[id] = old;
 			} else {
 				if (!((Entry)entryList[entryIdList[old]]).own) {
-					compConnect.Send("{\"type\":\"unlock\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[entryIdList[old]]).id.ToString() + "\"}");
+					oms.Unlock(myID, ((Entry)entryList[entryIdList[old]]).id);
 					SetUnlock();
 				}
 				if (!((Entry)entryList[entryIdList[option[id]]]).own) {
-					compConnect.Send("{\"type\":\"lock\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[entryIdList[option[id]]]).id.ToString() + "\"}");
+					oms.Lock(myID, ((Entry)entryList[entryIdList[option[id]]]).id.ToString());
 					SetLock();
 				}
 			}
@@ -168,12 +213,12 @@ public class menu : MonoBehaviour
 		GUILayout.EndScrollView();
 	}
 
-	public void StartGame (int[] opt) {
+	void StartGame (int[] opt) {
 		IsGameStart = true;
 		option = opt;
 	}
 
-	public void EndGame () {
+	void EndGame () {
 		IsGameEnd = true;
 	}
 
@@ -181,22 +226,45 @@ public class menu : MonoBehaviour
 		return IsGameEnd;
 	}
 
-	public void SetUnlock()
+	void SetUnlock()
 	{
 		lockType = LOCK_TYPE.FREE;
 		yourID = "";
 	}
-	public void SetLock()
+	void SetLock()
 	{
 		lockType = LOCK_TYPE.LOCK;
 		yourID = ((Entry)entryList[entryIdList[option[4]]]).id;
 	}
-	public void SetLocked(string id)
+	void SetLocked(string id)
 	{
 		lockType = LOCK_TYPE.LOCKED;
 		yourID = id;
 	}
 	
+	void UpdateEntryList(OMS.Entry[] list)
+	{
+		entryList.Clear() ;
+		entryNameList = new string[list.Length];
+		entryIdList = new string[list.Length];
+		for(int i=0; i<list.Length; i++) {
+			entryList[list[i].id] = list[i];
+			entryIdList[i] = list[i].id;
+			if (list[i].own) {
+				entryNameList[i] = StringTable.NO_VS + "[" + list[i].id + "]";
+				//if(!isLock) {
+					option[4] = i;
+				//}
+				myID = list[i].id;
+			} else {
+				entryNameList[i] = list[i].name + "[" + list[i].id + "]";
+			}
+			if (list[i].locked && (!list[i].own || (lockType != LOCK_TYPE.LOCK))) {
+				entryNameList[i] += "*";
+			}
+		}
+	}
+
 	public void SetEntry(Entry[] list, bool isLock)
 	{
 		entryList.Clear() ;

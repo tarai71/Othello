@@ -45,14 +45,12 @@ public class main : MonoBehaviour {
 	float restTime;
 	// メニューコンポーネントキャッシュ用/
 	menu compMenu = null;
-	connect compConnect = null;
 	board compBoard = null;
 		
 	// Use this for initialization
 	void Start () {
 		// メニューコンポーネントをキャッシュ/
 		compMenu = GameObject.Find("Menu").GetComponent<menu>();
-		compConnect = GameObject.Find("Menu").GetComponent<connect>();
 		compBoard = GetComponent<board>();
 		
 		// 駒オブジェクト生成/
@@ -166,19 +164,23 @@ public class main : MonoBehaviour {
 
 		
 		// 駒更新/
-		Board.Position pos;
-		if (compConnect.ReadPutList(out pos)) {
-			
-			// 駒を置く/
-			if(Board.Instance().putPiece(pieceSide, pos.x, pos.y))
+		string location;
+		if (compMenu.oms.ReadPutList(out location))
+		{
+			Board.Position pos = new Board.Position(0,0);
+			if(Board.Instance().codeToPos(location, out pos.x, out pos.y))
 			{
-				// 駒オブジェクトを置く/
-				pieceList[pos.x, pos.y].Enabled(true);
-				pieceList[pos.x, pos.y].SetHight(10f);
-				if(pieceSide == Piece.TYPE.Black)
-					pieceList[pos.x, pos.y].ToBlack(false);
-				else
-					pieceList[pos.x, pos.y].ToWhite(false);
+				// 駒を置く/
+				if(Board.Instance().putPiece(pieceSide, pos.x, pos.y))
+				{
+					// 駒オブジェクトを置く/
+					pieceList[pos.x, pos.y].Enabled(true);
+					pieceList[pos.x, pos.y].SetHight(10f);
+					if(pieceSide == Piece.TYPE.Black)
+						pieceList[pos.x, pos.y].ToBlack(false);
+					else
+						pieceList[pos.x, pos.y].ToWhite(false);
+				}
 				
 				// ターンを初期化/
 				InitializeTurn();
@@ -203,7 +205,7 @@ public class main : MonoBehaviour {
 	{
 		if(compMenu.getLockType() == menu.LOCK_TYPE.LOCK)
 		{
-			compConnect.Send("{\"type\":\"endgame\", \"myid\":\"" + compMenu.GetMyID().ToString() + "\", \"id\":\"" + compMenu.GetYourID().ToString() + "\"}");
+			compMenu.oms.EndGame(compMenu.GetMyID(), compMenu.GetYourID());
 		}
 		compMenu.enabled = true;
 		Application.LoadLevel("Empty");
