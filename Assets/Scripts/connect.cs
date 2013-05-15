@@ -139,13 +139,20 @@ public class connect : MonoBehaviour
 
 	public void ConnectServer()
 	{
-		Debug.Log("ws://" + compConfig.ServerIP + ":" + compConfig.ServerPort + "/");
-		websocket = new WebSocket("ws://" + compConfig.ServerIP + ":" + compConfig.ServerPort + "/");
-		websocket.Opened += new EventHandler(websocket_Opened);
-		websocket.Error += new EventHandler<SuperSocket.ClientEngine.ErrorEventArgs >(websocket_Error);
-		websocket.Closed += new EventHandler(websocket_Closed);
-		websocket.MessageReceived += new EventHandler<MessageReceivedEventArgs>(websocket_MessageReceived);
-		websocket.Open();
+		if(websocket == null)
+		{
+			Debug.Log("ws://" + compConfig.ServerIP + ":" + compConfig.ServerPort + "/");
+			websocket = new WebSocket("ws://" + compConfig.ServerIP + ":" + compConfig.ServerPort + "/");
+			websocket.Opened += new EventHandler(websocket_Opened);
+			websocket.Error += new EventHandler<SuperSocket.ClientEngine.ErrorEventArgs >(websocket_Error);
+			websocket.Closed += new EventHandler(websocket_Closed);
+			websocket.MessageReceived += new EventHandler<MessageReceivedEventArgs>(websocket_MessageReceived);
+			websocket.Open();
+		}
+		else
+		{
+			Debug.Log("It is already connected!");
+		}	
 	}
 
 	public void DisconnectServer()

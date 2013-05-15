@@ -73,6 +73,10 @@ public class menu : MonoBehaviour
 				{
 					compConnect.Send("{\"type\":\"startgame\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + ((Entry)entryList[yourID]).id.ToString() + "\", \"option\":" + JsonMapper.ToJson(option) +  "}");
 				}
+				else
+				{
+					compConnect.DisconnectServer();
+				}
 			}
 
 			if(GUILayout.Button(StringTable.INITIALIZE, GUILayout.MaxWidth(200))) {
@@ -104,6 +108,12 @@ public class menu : MonoBehaviour
 		}
 		else
 		{
+			compConnect.ConnectServer();
+		}
+	}
+
+	void OnEnable () {
+		if(compConfig.MyName != "") {
 			compConnect.ConnectServer();
 		}
 	}
