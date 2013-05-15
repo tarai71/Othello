@@ -30,7 +30,6 @@ public class menu : MonoBehaviour
 	};
 		
 	config compConfig = null;
-	connect compConnect = null;
 
 	Hashtable entryList = new Hashtable();
 	string[] entryIdList = {};
@@ -79,13 +78,11 @@ public class menu : MonoBehaviour
 				}
 				else
 				{
-					//compConnect.DisconnectServer();
 					oms.DisconnectServer(myID);
 				}
 			}
 
 			if(GUILayout.Button(StringTable.INITIALIZE, GUILayout.MaxWidth(200))) {
-				//compConnect.DisconnectServer();
 				oms.DisconnectServer(myID);
 				this.enabled = false;
 				compConfig.enabled= true;
@@ -141,24 +138,25 @@ public class menu : MonoBehaviour
 		{
 			this.enabled = false;
 			compConfig.enabled= true;
-			//compConnect.DisconnectServer();
 			oms.DisconnectServer(myID);
 		}
 		else
 		{
-			//compConnect.ConnectServer();
 			oms.ConnectServer("ws://" + compConfig.ServerIP + ":" + compConfig.ServerPort + "/", compConfig.MyName);
 		}
 	}
 
 	void OnDestroy ()
 	{
+		if(lockType != LOCK_TYPE.FREE)
+		{
+			oms.Unlock(myID, yourID);
+		}
 		oms.DisconnectServer(myID);
 	}
 
 	void OnEnable () {
 		if(compConfig.MyName != "") {
-			//compConnect.ConnectServer();
 			oms.ConnectServer("ws://" + compConfig.ServerIP + ":" + compConfig.ServerPort + "/", compConfig.MyName);
 		}
 	}
