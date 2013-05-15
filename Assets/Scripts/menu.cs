@@ -130,9 +130,9 @@ public class menu : MonoBehaviour
 	private void othello_OnPutPiece(string location)
 	{
 	}
-	private void othello_OnUpdateEntry(OMS.Entry[] list)
+	private void othello_OnUpdateEntry(OMS.Entry[] list, bool isLock)
 	{
-		UpdateEntryList(list);
+		UpdateEntryList(list, isLock);
 	}
 
 	// Use this for initialization
@@ -242,7 +242,7 @@ public class menu : MonoBehaviour
 		yourID = id;
 	}
 	
-	void UpdateEntryList(OMS.Entry[] list)
+	void UpdateEntryList(OMS.Entry[] list, bool isLock)
 	{
 		entryList.Clear() ;
 		entryNameList = new string[list.Length];
@@ -252,9 +252,9 @@ public class menu : MonoBehaviour
 			entryIdList[i] = list[i].id;
 			if (list[i].own) {
 				entryNameList[i] = StringTable.NO_VS + "[" + list[i].id + "]";
-				//if(!isLock) {
+				if(!isLock) {
 					option[4] = i;
-				//}
+				}
 				myID = list[i].id;
 			} else {
 				entryNameList[i] = list[i].name + "[" + list[i].id + "]";

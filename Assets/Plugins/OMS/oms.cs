@@ -62,7 +62,7 @@ namespace OMS
 
 	public class connect
 	{
-		public delegate void CallbackUpdateEntry(Entry[] list);
+		public delegate void CallbackUpdateEntry(Entry[] list, bool isLock);
 		public delegate void CallbackLock(string id);
 		public delegate void CallbackUnlock();
 		public delegate void CallbackStartGame(int[] opt);
@@ -101,30 +101,28 @@ namespace OMS
 			if (data.type == "join") {
 			} else if( data.type == "entrylist") {
 				if(OnUpdateEntry != null) {
-					OnUpdateEntry(data.list);
+					OnUpdateEntry(data.list, false);
 				}
 			} else if( data.type == "updatelock") {
 				if(OnUpdateEntry != null) {
-					OnUpdateEntry(data.list);
+					OnUpdateEntry(data.list, true);
 				}
 			} else if( data.type == "put") {
-				if(OnUpdateEntry != null) {
-					WritePutList(data.place);
-				}
+				WritePutList(data.place);
 			} else if( data.type == "lock") {
-				if(OnUpdateEntry != null) {
+				if(OnLock != null) {
 					OnLock(data.myid);
 				}
 			} else if( data.type == "unlock") {
-				if(OnUpdateEntry != null) {
+				if(OnUnlock != null) {
 					OnUnlock();
 				}
 			} else if( data.type == "startgame") {
-				if(OnUpdateEntry != null) {
+				if(OnStartGame != null) {
 					OnStartGame(data.option);
 				}
 			} else if( data.type == "endgame") {
-				if(OnUpdateEntry != null) {
+				if(OnEndGame != null) {
 					OnEndGame();
 				}
 			} else {
