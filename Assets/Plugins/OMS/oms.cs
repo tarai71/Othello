@@ -77,13 +77,13 @@ namespace OMS
 		public CallbackPutPiece OnPutPiece = null;
 
 		WebSocket websocket = null;
+		string myname = "";
 			
 		PutBuffer PutList = new PutBuffer();
 			
 		private void websocket_Opened(object sender, EventArgs e)
 		{
-	//		websocket.Send("{\"type\":\"entry\", \"name\":\"" + compConfig.MyName + "\"}");
-			websocket.Send("{\"type\":\"entry\", \"name\":\""  + "\"}");
+			websocket.Send("{\"type\":\"entry\", \"name\":\"" + myname + "\"}");
 		}
 		
 		private void websocket_Closed(object sender, EventArgs e)
@@ -137,6 +137,7 @@ namespace OMS
 		{
 			if(websocket == null)
 			{
+				myname = name;
 				//Debug.Log("ws://" + compConfig.ServerIP + ":" + compConfig.ServerPort + "/");
 				websocket = new WebSocket(url);
 				websocket.Opened += new EventHandler(websocket_Opened);
@@ -158,6 +159,7 @@ namespace OMS
 				websocket.Send("{\"type\":\"defect\", \"myid\":\"" + myID.ToString() + "\"}");
 		        websocket.Close();
 				websocket = null;
+				myname = "";
 			}
 		}
 	
