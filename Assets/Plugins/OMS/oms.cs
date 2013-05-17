@@ -133,6 +133,7 @@ namespace OMS
 		
 		public void ConnectServer(string url, string name)
 		{
+#if NETWORK_ENABLE
 			if(websocket == null)
 			{
 				myname = name;
@@ -148,42 +149,55 @@ namespace OMS
 			{
 				//Debug.Log("It is already connected!");
 			}	
+#endif
 		}
 	
 		public void DisconnectServer(string myID)
 		{
-			if(websocket.State != WebSocketState.Closed && websocket.State != WebSocketState.Closing)
+#if NETWORK_ENABLE
+			if(websocket != null && websocket.State != WebSocketState.Closed && websocket.State != WebSocketState.Closing)
 			{
 				websocket.Send("{\"type\":\"defect\", \"myid\":\"" + myID.ToString() + "\"}");
 		        websocket.Close();
 				websocket = null;
 				myname = "";
 			}
+#endif
 		}
 	
 		public void Lock(string myID, string yourID)
 		{
+#if NETWORK_ENABLE
 			websocket.Send("{\"type\":\"lock\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + yourID.ToString() + "\"}");
+#endif
 		}		
 	
 		public void Unlock(string myID, string yourID)
 		{
+#if NETWORK_ENABLE
 			websocket.Send("{\"type\":\"unlock\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + yourID.ToString() + "\"}");
+#endif
 		}		
 	
 		public void StartGame(string myID, string yourID, int[] option)
 		{
+#if NETWORK_ENABLE
 			websocket.Send("{\"type\":\"startgame\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + yourID.ToString() + "\", \"option\":" + JsonMapper.ToJson(option) +  "}");
+#endif
 		}		
 	
 		public void EndGame(string myID, string yourID)
 		{
+#if NETWORK_ENABLE
 			websocket.Send("{\"type\":\"endgame\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + yourID.ToString() + "\"}");
+#endif
 		}		
 	
 		public void PutPiece(string yourID, string location)
 		{
+#if NETWORK_ENABLE
 			websocket.Send("{\"type\":\"put\",\"id\":\"" + yourID.ToString() + "\",\"place\":\"" + location + "\"}");
+#endif
 		}		
 
 		public void WritePutList(string location)

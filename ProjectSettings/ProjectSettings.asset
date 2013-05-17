@@ -147,10 +147,13 @@ PlayerSettings:
   scriptingDefineSymbols:
     data:
       first: 1
-      second: 
+      second: AI_ENABLE;NETWORK_ENABLE
     data:
       first: 2
       second: 
+    data:
+      first: 7
+      second: AI_ENABLE;NETWORK_ENABLE
   metroPackageName: 
   metroPackageLogo: 
   metroPackageVersion: 

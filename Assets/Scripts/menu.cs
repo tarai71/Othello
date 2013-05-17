@@ -15,7 +15,7 @@ public class menu : MonoBehaviour
 	}
 	
 	public OMS.connect oms;
-	
+
 	Rect[] windowRect = {
 		new Rect ( 10, 140, (Screen.width-20)/2-5, 20),
 		new Rect ( 20+(Screen.width-20)/2-5, 140, (Screen.width-20)/2-5, 20),//(10, 160, 200, 20),
@@ -63,12 +63,15 @@ public class menu : MonoBehaviour
 		{
 			GUILayout.Label(GetYourName() + StringTable.LOCKED);
 		} else {
+#if AI_ENABLE
 			windowRect[0] = GUILayout.Window (0, new Rect ( 10, 140, (Screen.width-20)/2-5, 20), MakeSelectWindow, StringTable.SENTE);
 			windowRect[1] = GUILayout.Window (1, new Rect ( 20+(Screen.width-20)/2-5, 140, (Screen.width-20)/2-5, 20), MakeSelectWindow, StringTable.GOTE);
+#endif
 //			windowRect[2] = GUILayout.Window (2, windowRect[2], MakeGuideWindow, StringTable.GUIDE);
 //			windowRect[3] = GUILayout.Window (3, windowRect[3], MakeTimeWindow, StringTable.TIME);
+#if NETWORK_ENABLE
 			windowRect[4] = GUILayout.Window (4, new Rect ( 10, 420, Screen.width-20, Screen.height-(420+20)), MakeEntryWindow, StringTable.ENTRY);
-
+#endif
 			GUILayout.BeginHorizontal();
 			if(GUILayout.Button(StringTable.START)) {
 				StartGame(option);
@@ -82,12 +85,14 @@ public class menu : MonoBehaviour
 				}
 			}
 
+#if NETWORK_ENABLE
 			if(GUILayout.Button(StringTable.INITIALIZE, GUILayout.MaxWidth(200))) {
 				oms.DisconnectServer(myID);
 				this.enabled = false;
 				compConfig.enabled= true;
 			}
-
+#endif
+			
 			GUILayout.EndHorizontal();
 		}
 		GUILayout.EndArea();	
@@ -134,6 +139,7 @@ public class menu : MonoBehaviour
 
 	// Use this for initialization
 	void Start () {
+#if NETWORK_ENABLE
 		if(compConfig.MyName == "")
 		{
 			this.enabled = false;
@@ -144,6 +150,7 @@ public class menu : MonoBehaviour
 		{
 			oms.ConnectServer("ws://" + compConfig.ServerIP + ":" + compConfig.ServerPort + "/", compConfig.MyName);
 		}
+#endif
 	}
 
 	void OnDestroy ()
