@@ -6,11 +6,11 @@ using Othello;
 public class ai : MonoBehaviour {
 
 	const int MPC_NUM = 14;
-    const string MPC_FILE = "data/mpc.dat";
-    const string MPC_LEARN_FILE = "data/mpc_learn.dat";
-    const string EVALUATOR_FILE = "data/eval.dat";
-    const string OPENING_TRANSCRIPT_FILE = "data/open_trans.txt";
-    const string OPENING_FILE = "data/open.dat";
+    const string MPC_FILE = "Assets/Scripts/othello/data/mpc.dat";
+    const string MPC_LEARN_FILE = "Assets/Scripts/othello/data/mpc_learn.dat";
+    const string EVALUATOR_FILE = "Assets/Scripts/othello/data/eval.dat";
+    const string OPENING_TRANSCRIPT_FILE = "Assets/Scripts/othello/ata/open_trans.txt";
+    const string OPENING_FILE = "Assets/Scripts/othello/data/open.dat";
     const int TRANSCRIPT_SIZE = 128;
 	
 	// メニューコンポーネントキャッシュ用/
@@ -33,12 +33,12 @@ public class ai : MonoBehaviour {
 		compMenu = GameObject.Find("Menu").GetComponent<menu>();
 		compMain = GetComponent<main>();
 
-		Othello2.Board board = new Othello2.Board();
-		Othello2.Evaluator evaluator = new Othello2.Evaluator();
+		board = new Othello2.Board();
+		evaluator = new Othello2.Evaluator();
         evaluator.Load(EVALUATOR_FILE);
-		Othello2.Opening opening = new Othello2.Opening();
+		opening = new Othello2.Opening();
         opening.Load(OPENING_FILE);
-		Othello2.Com com = new Othello2.Com(ref evaluator, ref opening);	
+		com = new Othello2.Com(ref evaluator, ref opening);	
 		com.SetLevel(14, 18, 20);
         com.SetOpening(true);
         com.LoadMPCInfo(MPC_FILE);
