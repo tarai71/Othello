@@ -4,6 +4,14 @@ using System.Threading;
 using Othello;
 
 public class ai : MonoBehaviour {
+
+	const int MPC_NUM = 14;
+    const string MPC_FILE = "data/mpc.dat";
+    const string MPC_LEARN_FILE = "data/mpc_learn.dat";
+    const string EVALUATOR_FILE = "data/eval.dat";
+    const string OPENING_TRANSCRIPT_FILE = "data/open_trans.txt";
+    const string OPENING_FILE = "data/open.dat";
+    const int TRANSCRIPT_SIZE = 128;
 	
 	// メニューコンポーネントキャッシュ用/
 	menu compMenu = null;
@@ -14,11 +22,26 @@ public class ai : MonoBehaviour {
 	bool IsThinking = false;
 	bool IsCompleteThink = false;
 	float clock_start = 0f, clock_end = 0f;		
-	
+
+	Othello2.Board board;
+	Othello2.Evaluator evaluator;
+	Othello2.Opening opening;
+	Othello2.Com com;
+
 	// Use this for initialization
 	void Start () {
 		compMenu = GameObject.Find("Menu").GetComponent<menu>();
 		compMain = GetComponent<main>();
+
+		Othello2.Board board = new Othello2.Board();
+		Othello2.Evaluator evaluator = new Othello2.Evaluator();
+        evaluator.Load(EVALUATOR_FILE);
+		Othello2.Opening opening = new Othello2.Opening();
+        opening.Load(OPENING_FILE);
+		Othello2.Com com = new Othello2.Com(ref evaluator, ref opening);	
+		com.SetLevel(14, 18, 20);
+        com.SetOpening(true);
+        com.LoadMPCInfo(MPC_FILE);
 	}
 	
 	// Update is called once per frame
@@ -44,8 +67,6 @@ public class ai : MonoBehaviour {
 	void defaultAI () {
 		Debug.Log("AI Thinking...\n");
 		
-		Othello2.Board board = new Othello2.Board();	
-		Com com = new Com();	
 		int color = (compMain.GetPieceSide() == Othello.Piece.TYPE.Black)? 
 			Othello2.Board.BLACK : Othello2.Board.WHITE;
 		int move;
@@ -57,25 +78,24 @@ public class ai : MonoBehaviour {
 				switch(Board.Instance().GetPiece(j, 7-i))
 				{
 				case Piece.TYPE.Black:
-					board.Disk[board.Pos(j,i)] = 1;
+					board.Disk[Othello2.Board.Pos(j,i)] = 1;
 					break;
 				case Piece.TYPE.White:
-					board.Disk[board.Pos(j,i)] = 2;
+					board.Disk[Othello2.Board.Pos(j,i)] = 2;
 					break;
 				}
 			}
 		}
 
-		com.SetLevel(8, 12, 12);
 	
 		if (board.CanPlay(color)) {
 			move = com.NextMove(board, color, out score);
-			Debug.Log(("ABCDEFGH"[board.X(move)]).ToString() + ("12345678"[board.Y(move)]).ToString() + ":" + move.ToString() + " puted\n");
+			Debug.Log(("ABCDEFGH"[Othello2.Board.X(move)]).ToString() + ("12345678"[Othello2.Board.Y(move)]).ToString() + ":" + move.ToString() + " puted\n");
 			Debug.Log("Eval: " + score.ToString() + "\n");
 			board.Flip(color, move);
 			
-			int x = board.X(move);
-			int y = 7 - board.Y(move);
+			int x = Othello2.Board.X(move);
+			int y = 7 - Othello2.Board.Y(move);
 			string place = "";
 			if(Board.Instance().posToCode(x, y, out place))
 			{
