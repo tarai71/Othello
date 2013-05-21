@@ -71,10 +71,10 @@ namespace Othello2
 //struct _Evaluator
 //{
 	int[][] Value = new int[(int)PATTERN_ID.NUM][];
-	int[][] PatternNum = new int[(int)PATTERN_ID.NUM][];
-	double[][] PatternSum = new double[(int)PATTERN_ID.NUM][];
-	int[] MirrorLine = new int[(int)POW_3_8];
-	int[] MirrorCorner = new int[(int)POW_3_8];
+//	int[][] PatternNum = new int[(int)PATTERN_ID.NUM][];
+//	double[][] PatternSum = new double[(int)PATTERN_ID.NUM][];
+//	int[] MirrorLine = new int[(int)POW_3_8];
+//	int[] MirrorCorner = new int[(int)POW_3_8];
 //};
 /*
 static int Evaluator_Initialize(Evaluator *self);

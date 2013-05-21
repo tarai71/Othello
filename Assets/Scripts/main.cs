@@ -175,7 +175,7 @@ public class main : MonoBehaviour {
 				{
 					// 駒オブジェクトを置く/
 					pieceList[pos.x, pos.y].Enabled(true);
-					pieceList[pos.x, pos.y].SetHight(10f);
+					pieceList[pos.x, pos.y].SetHight(5f);
 					if(pieceSide == Piece.TYPE.Black)
 						pieceList[pos.x, pos.y].ToBlack(false);
 					else
