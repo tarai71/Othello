@@ -136,7 +136,7 @@ public class board : MonoBehaviour
 			}
 		}
 		// 着手可能場所マーカーのオブジェクトを生成/
-		if (compMenu.GetGuideEnable()) {
+		if (compMenu.GetGuideEnable() && !compMain.IsAI()) {
 			foreach(Board.Position v in PutableList) {
 				Vector3 position = new Vector3(v.x -4.0f + 0.5f, 0.3f, v.y -4.0f + 0.5f);
 				markerList.Add(Instantiate(markerPrefab, position, Quaternion.identity));

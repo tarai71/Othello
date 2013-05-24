@@ -32,7 +32,7 @@ public class main : MonoBehaviour {
 	}
 	
 	// 駒のオブジェクトリスト/
-	PieceObject[,] pieceList = new PieceObject[8,8];
+	public PieceObject[,] pieceList = new PieceObject[8,8];
 		
 	// 現在の手順/
 	Piece.TYPE pieceSide = Piece.TYPE.Black;
@@ -46,12 +46,16 @@ public class main : MonoBehaviour {
 	// メニューコンポーネントキャッシュ用/
 	menu compMenu = null;
 	board compBoard = null;
+	ai  compAI = null;
+	controller compController = null;
 		
 	// Use this for initialization
 	void Start () {
 		// メニューコンポーネントをキャッシュ/
 		compMenu = GameObject.Find("Menu").GetComponent<menu>();
 		compBoard = GetComponent<board>();
+		compAI = GetComponent<ai>();
+		compController = GetComponent<controller>();
 		
 		// 駒オブジェクト生成/
 		for (int i=0; i<8; i++)
@@ -98,6 +102,14 @@ public class main : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		
+		if (IsMySide()) {
+			if (IsAI()) {
+				compAI.UpdateAI();
+			} else {
+				compController.UpdateHuman();
+			}
+		}
 		
 		// 駒オブジェクト表示制御/
 		bool inDrop = false;
@@ -188,7 +200,7 @@ public class main : MonoBehaviour {
 		}
 	}
 	
-	void InitializeTurn()
+	public void InitializeTurn()
 	{
 		// ターンを入れ替える/
 		pieceSide = (pieceSide == Piece.TYPE.Black)? Piece.TYPE.White : Piece.TYPE.Black;

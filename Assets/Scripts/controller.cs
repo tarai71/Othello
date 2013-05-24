@@ -16,7 +16,7 @@ public class controller : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	public void UpdateHuman () {
 		if (compMain.IsMySide()) {
 			if (!compMain.IsAI()) {
 				if (Input.GetButtonDown("Fire1")) {
@@ -33,7 +33,21 @@ public class controller : MonoBehaviour {
 					{
 						if(Board.Instance().IsPutEnable(compMain.GetPieceSide(), key_x, key_y))
 						{
-							compMenu.oms.WritePutList(place);
+							//compMenu.oms.WritePutList(place);
+				// 駒を置く/
+				if(Board.Instance().putPiece(compMain.GetPieceSide(), key_x, key_y))
+				{
+					// 駒オブジェクトを置く/
+					compMain.pieceList[key_x, key_y].Enabled(true);
+					compMain.pieceList[key_x, key_y].SetHight(5f);
+					if(compMain.GetPieceSide() == Piece.TYPE.Black)
+						compMain.pieceList[key_x, key_y].ToBlack(false);
+					else
+						compMain.pieceList[key_x, key_y].ToWhite(false);
+				}
+				
+				// ターンを初期化/
+				compMain.InitializeTurn();
 							if (compMenu.getLockType() != menu.LOCK_TYPE.FREE) {
 								compMenu.oms.PutPiece(compMenu.GetYourID(), place);
 							}

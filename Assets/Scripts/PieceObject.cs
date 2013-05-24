@@ -60,7 +60,7 @@ public class PieceObject
 	
 	public void ToDrop()
 	{
-		hight -= hight*0.4f * (60f * Time.deltaTime);
+		hight -= hight*0.2f * (60f * Time.deltaTime);
 		if(hight <= 0.01f)
 		{
 			drop = false;
