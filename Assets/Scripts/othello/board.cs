@@ -558,11 +558,11 @@ namespace Othello2
                 ((uint)get_rand(256) << 16) | ((uint)get_rand(256) << 24); ;
             for (i = 0; i < NUM_DISK; i++) {
                 HashDiffBlack[i].Low = (uint)get_rand(256) | ((uint)get_rand(256) << 8) |
-                    ((uint)get_rand(256) << 16) | ((ulong)get_rand(256) << 24);
+                    ((uint)get_rand(256) << 16) | ((uint)get_rand(256) << 24);
                 HashDiffBlack[i].High = (uint)get_rand(256) | ((uint)get_rand(256) << 8) |
-                    ((uint)get_rand(256) << 16) | ((ulong)get_rand(256) << 24);
+                    ((uint)get_rand(256) << 16) | ((uint)get_rand(256) << 24);
                 HashDiffWhite[i].Low = (uint)get_rand(256) | ((uint)get_rand(256) << 8) |
-                    ((uint)get_rand(256) << 16) | ((ulong)get_rand(256) << 24);
+                    ((uint)get_rand(256) << 16) | ((uint)get_rand(256) << 24);
                 HashDiffWhite[i].High = (uint)get_rand(256) | ((uint)get_rand(256) << 8) |
                     ((uint)get_rand(256) << 16) | ((uint)get_rand(256) << 24);
             }

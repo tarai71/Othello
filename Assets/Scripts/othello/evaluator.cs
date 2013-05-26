@@ -9,19 +9,19 @@ namespace Othello2
 	class Evaluator
 	{
 
-        /* PÎ œèÌ]¿l */
-        public const int DISK_VALUE = 100;
+        /* １石あたりの評価値 */
+        public const int DISK_VALUE = 1000;
 
-        // ]¿p[^XVÌx¢/
+        // 評価パラメータ更新の度合い */
         const float UPDATE_RATIO = 0.005f;
 
-        // p^[ÌÅå]¿l/
+        // パターンの最大評価値 */
         const int MAX_PATTERN_VALUE = (DISK_VALUE * 20);
 
-        // ]¿lXVÉKvÈo»/
+        // 評価値更新に必要な出現数 */
         const int MIN_FREQUENCY = 10;
 
-        // 3Ìpð\»·éè/
+        // 3の冪を表現する定数 */
         const int POW_3_0	=	1;
         const int POW_3_1	=	3;
         const int POW_3_2	=	9;
@@ -34,7 +34,7 @@ namespace Othello2
         const int POW_3_9	=	19683;
         const int POW_3_10	=   59049;
 
-        // p^[ID/
+        // パターンID */
         enum PATTERN_ID
         {
             LINE4,
@@ -51,7 +51,7 @@ namespace Othello2
             NUM
         };
 
-        // ep^[ÌóÔ/
+        // 各パターンの状態数 */
         int[] PatternSize = new int[]
         {
 	        POW_3_8,		// A4-H4

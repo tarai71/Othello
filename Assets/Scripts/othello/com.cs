@@ -28,7 +28,7 @@ namespace Othello2
             public int Pos;
         };
 
-        class MoveInfo
+        struct MoveInfo
         {
             public MoveList Move;
             public int Value;
@@ -59,6 +59,11 @@ namespace Othello2
         static void RecoverList(MoveList *self);
         #define get_rand(in_max) ((int)((double)(in_max) * rand() / (RAND_MAX + 1.0)))
 */
+        int get_rand(int in_max)
+        {
+            return rand.Next(in_max);
+        }
+
         public Com(ref Evaluator _evaluator, ref Opening _opening)
         {
             Initialize(ref _evaluator, ref _opening);
@@ -156,7 +161,7 @@ namespace Othello2
             int count = 0;
 
             out_move = Board.NOMOVE;
-            if (!UseOpening || opening != null) {
+            if (!UseOpening || opening == null) {
                 return max;
             }
             for (p = Moves[0].Next; p != null; p = p.Next) {
@@ -169,7 +174,7 @@ namespace Othello2
                             count = 1;
                         } else if (value == max) {
                             count++;
-                            if (rand.NextDouble() * count < 1) {
+                            if (get_rand(count) < 1) {
                                 out_move = p.Pos;
                             }
                         }
@@ -257,17 +262,17 @@ namespace Othello2
             }
             out_move = Board.NOMOVE;
             if (in_depth > 2) {
-                info_num = Sort(in_color, info);
+                info_num = Sort(in_color, ref info);
                 if (info_num > 0) {
                     out_move = info[0].Move.Pos;
                     can_move = true;
                 }
                 for (i = 0; i < info_num; i++) {
                     board.FlipPattern(in_color, info[i].Move.Pos);
-                    RemoveList(info[i].Move);
+                    RemoveList(ref info[i].Move);
                     value = -MidSearch(in_depth - 1, -in_beta, -max, in_opponent, in_color, false, out move);
                     board.UnflipPattern();
-                    RecoverList(info[i].Move);
+                    RecoverList(ref info[i].Move);
                     if (value > max) {
                         max = value;
                         out_move = info[i].Move.Pos;
@@ -287,14 +292,14 @@ namespace Othello2
             } else {
                 for (p = Moves[0].Next; p != null; p = p.Next) {
                     if (board.FlipPattern(in_color, p.Pos)>0) {
-                        RemoveList(p);
+                        RemoveList(ref p);
                         if (!can_move) {
                             out_move = p.Pos;
                             can_move = true;
                         }
                         value = -MidSearch(in_depth - 1, -in_beta, -max, in_opponent, in_color, false, out move);
                         board.UnflipPattern();
-                        RecoverList(p);
+                        RecoverList(ref p);
                         if (value > max) {
                             max = value;
                             out_move = p.Pos;
@@ -383,17 +388,17 @@ namespace Othello2
                     hash_info.Lower = -MAX_VALUE;
                     hash_info.Upper = MAX_VALUE;
                 }
-                info_num = Sort(in_color, info);
+                info_num = Sort(in_color, ref info);
                 if (info_num > 0) {
                     out_move = info[0].Move.Pos;
                     can_move = true;
                 }
                 for (i = 0; i < info_num; i++) {
                     board.FlipPattern(in_color, info[i].Move.Pos);
-                    RemoveList(info[i].Move);
+                    RemoveList(ref info[i].Move);
                     value = -EndSearch(in_depth - 1, -in_beta, -max, in_opponent, in_color, false, out move);
                     board.UnflipPattern();
-                    RecoverList(info[i].Move);
+                    RecoverList(ref info[i].Move);
                     if (value > max) {
                         max = value;
                         out_move = info[i].Move.Pos;
@@ -413,14 +418,14 @@ namespace Othello2
             } else {
                 for (p = Moves[0].Next; p != null; p = p.Next) {
                     if (board.Flip(in_color, p.Pos)>0) {
-                        RemoveList(p);
+                        RemoveList(ref p);
                         if (!can_move) {
                             out_move = p.Pos;
                             can_move = true;
                         }
                         value = -EndSearch(in_depth - 1, -in_beta, -max, in_opponent, in_color, false, out move);
                         board.Unflip();
-                        RecoverList(p);
+                        RecoverList(ref p);
                         if (value > max) {
                             max = value;
                             out_move = p.Pos;
@@ -493,7 +498,7 @@ namespace Othello2
             }
         }
 
-        static void RemoveList(MoveList self)
+        static void RemoveList(ref MoveList self)
         {
             if (self.Prev != null)
             {
@@ -505,7 +510,7 @@ namespace Othello2
             }
         }
 
-        static void RecoverList(MoveList self)
+        static void RecoverList(ref MoveList self)
         {
             if (self.Prev != null)
             {
@@ -517,11 +522,12 @@ namespace Othello2
             }
         }
 
-        int Sort(int in_color, MoveInfo[] out_info)
+        int Sort(int in_color, ref MoveInfo[] out_info)
         {
             int info_num = 0;
             MoveList p;
-            MoveInfo info_tmp, best_info;
+            MoveInfo info_tmp;
+            int best_info;
             int i, j;
 
             for (p = Moves[0].Next; p != null; p = p.Next) {
@@ -538,14 +544,15 @@ namespace Othello2
                 }
             }
             for (i = 0; i < info_num; i++) {
-                best_info = out_info[i];
+                best_info = i;
                 for (j = i + 1; j < info_num; j++) {
-                    if (out_info[j].Value > best_info.Value) {
-                        best_info = out_info[j];
+                    if (out_info[j].Value > out_info[best_info].Value)
+                    {
+                        best_info = j;
                     }
                 }
-                info_tmp = best_info;
-                best_info = out_info[i];
+                info_tmp = out_info[best_info];
+                out_info[best_info] = out_info[i];
                 out_info[i] = info_tmp;
             }
             return info_num;

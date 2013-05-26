@@ -103,11 +103,14 @@ public class main : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		
-		if (IsMySide()) {
-			if (IsAI()) {
-				compAI.UpdateAI();
-			} else {
-				compController.UpdateHuman();
+		if(gamestatus == GAME_STATUS.LocalPlay || gamestatus == GAME_STATUS.NetworkPlay)
+		{
+			if (IsMySide()) {
+				if (IsAI()) {
+					compAI.UpdateAI();
+				} else {
+					compController.UpdateHuman();
+				}
 			}
 		}
 		

@@ -10,8 +10,8 @@ namespace Othello2
         // ハッシュ値
         public struct Value
         {
-            public ulong Low;		/* 下32bit */
-            public ulong High;		/* 上32bit */
+            public uint Low;		/* 下32bit */
+            public uint High;		/* 上32bit */
         };
 
         // 局面情報
@@ -58,7 +58,7 @@ namespace Othello2
             int i;
 
             for (i=0; i<Num; i++) {
-                data[i].Val.Low = (ulong)~i;
+                data[i].Val.Low = (uint)~i;
             }
             GetNum = 0;
             HitNum = 0;
