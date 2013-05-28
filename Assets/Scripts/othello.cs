@@ -1,6 +1,7 @@
 ﻿namespace Othello
 {
 	using System.Collections;
+	using System.Collections.Generic;
 	
 	public class Piece
 	{
@@ -50,6 +51,19 @@
 		// 黒駒数/
 		int black = 0;
 		
+		// 棋譜の記録/
+		public struct MoveForm {
+			public Piece.TYPE	type;
+			public string		location;
+			
+			public MoveForm(Piece.TYPE t, string l)
+			{
+				type = t;
+				location = l;
+			}
+		}
+		List<MoveForm> moveList = new List<MoveForm>();
+		
 		// 盤面初期化/
 		public void Initialize()
 		{
@@ -70,6 +84,9 @@
 			board[4,4] = Piece.TYPE.Black;
 			board[4,3] = Piece.TYPE.White;
 			calcPiecies();
+
+			// 棋譜初期化
+			moveList.Clear();
 		}
 		
 		// 駒を指定位場所に置けるか確認/
@@ -109,6 +126,7 @@
 			Board.Instance().posToCode(x, y, out place);
 			
 			board[x,y] = pieceType;
+			moveList.Add(new MoveForm(pieceType, place));
 			if(!updateBoard(pieceType, x, y, true))
 			{
 				board[x,y] = Piece.TYPE.Empty;
@@ -364,6 +382,12 @@
 			x =(int)code[0]-'a';
 			y = 8-((int)code[1]-'0');
 			return true;
+		}
+		
+		// 棋譜の取得/
+		public List<MoveForm> GetMoveList()
+		{
+			return moveList;
 		}
 	}
 }
