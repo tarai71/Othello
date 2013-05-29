@@ -23,6 +23,7 @@ public class main : MonoBehaviour {
 	public GUIStyle labelStyleTimer;
 	public GUIStyle labelStyleMoveBlack;
 	public GUIStyle labelStyleMoveWhite;
+	public GUIStyle labelStyleMyName;
 	
 	// ゲームの状態を列挙/
 	public enum GAME_STATUS {
@@ -233,7 +234,9 @@ public class main : MonoBehaviour {
 
 	void OnGUI() {
 		GUI.skin = mainSkin;
-		
+
+		GUI.Label(new Rect(0,10,Screen.width, 40), StringTable.MYNAME, labelStyleMyName);
+
 		int black = Board.Instance().GetBlackPiecies();
 		int white = Board.Instance().GetWhitePiecies();
 		
@@ -313,8 +316,8 @@ public class main : MonoBehaviour {
 			GUILayout.EndArea();
 		}
 		
-		// 棋譜の表示
-		GUILayout.BeginArea(new Rect(10, 100, 100, Screen.height));
+		// 棋譜の表示/
+		GUILayout.BeginArea(new Rect(Screen.width-60, 100, 100, Screen.height));
 		scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.Width (50), GUILayout.Height (Screen.height - 180));
 		List<Board.MoveForm> moveList = Board.Instance().GetMoveList();
 		for(int i=moveList.Count-1; i>=0; i--)
