@@ -317,8 +317,8 @@ public class main : MonoBehaviour {
 		}
 		
 		// 棋譜の表示/
-		GUILayout.BeginArea(new Rect(Screen.width-60, 100, 100, Screen.height));
-		scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.Width (50), GUILayout.Height (Screen.height - 180));
+		GUILayout.BeginArea(new Rect(Screen.width-60, 120, 100, Screen.height));
+		scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.Width (50), GUILayout.Height (Screen.height - 200));
 		List<Board.MoveForm> moveList = Board.Instance().GetMoveList();
 		for(int i=moveList.Count-1; i>=0; i--)
 		{
