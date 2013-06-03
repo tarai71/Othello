@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 using Othello;
 
 public class main : MonoBehaviour {
@@ -21,9 +20,6 @@ public class main : MonoBehaviour {
 	public GUIStyle labelStyleGameOver;
 	public GUIStyle labelStyleLabelTimer;
 	public GUIStyle labelStyleTimer;
-	public GUIStyle labelStyleMoveBlack;
-	public GUIStyle labelStyleMoveWhite;
-	public GUIStyle labelStyleMyName;
 	
 	// ゲームの状態を列挙/
 	public enum GAME_STATUS {
@@ -37,8 +33,6 @@ public class main : MonoBehaviour {
 	
 	// 駒のオブジェクトリスト/
 	public PieceObject[,] pieceList = new PieceObject[8,8];
-	// 棋譜の表示/
-	Vector2 scrollPosition = Vector2.zero;
 		
 	// 現在の手順/
 	Piece.TYPE pieceSide = Piece.TYPE.Black;
@@ -234,9 +228,7 @@ public class main : MonoBehaviour {
 
 	void OnGUI() {
 		GUI.skin = mainSkin;
-
-		GUI.Label(new Rect(0,10,Screen.width, 40), StringTable.MYNAME, labelStyleMyName);
-
+		
 		int black = Board.Instance().GetBlackPiecies();
 		int white = Board.Instance().GetWhitePiecies();
 		
@@ -316,16 +308,6 @@ public class main : MonoBehaviour {
 			GUILayout.EndArea();
 		}
 		
-		// 棋譜の表示/
-		GUILayout.BeginArea(new Rect(Screen.width-60, 120, 100, Screen.height));
-		scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.Width (50), GUILayout.Height (Screen.height - 200));
-		List<Board.MoveForm> moveList = Board.Instance().GetMoveList();
-		for(int i=moveList.Count-1; i>=0; i--)
-		{
-			GUILayout.Label((i+1).ToString("D2") + ":" + moveList[i].location, (moveList[i].type == Piece.TYPE.Black)? labelStyleMoveBlack : labelStyleMoveWhite);
-		}
-		GUILayout.EndScrollView();
-		GUILayout.EndArea();
 	}
 
 	public void SetGameEnd(GAME_STATUS status)

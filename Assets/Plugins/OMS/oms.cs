@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Threading;
 using WebSocket4Net;
 using LitJson;
 
@@ -68,6 +69,7 @@ namespace OMS
 		public delegate void CallbackStartGame(int[] opt);
 		public delegate void CallbackEndGame();
 		public delegate void CallbackPutPiece(string location);
+		public delegate void CallbackTimeOut();
 
 		public CallbackUpdateEntry OnUpdateEntry = null;
 		public CallbackLock OnLock = null;
@@ -75,6 +77,7 @@ namespace OMS
 		public CallbackStartGame OnStartGame = null;
 		public CallbackEndGame OnEndGame = null;
 		public CallbackPutPiece OnPutPiece = null;
+		public CallbackTimeOut OnTimeOut = null;
 
 		WebSocket websocket = null;
 		string myname = "";
@@ -125,6 +128,8 @@ namespace OMS
 				if(OnEndGame != null) {
 					OnEndGame();
 				}
+			} else if( data.type == "keepalive") {
+				websocket.Send("{\"type\":\"keepalive\", \"myid\":\"" + data.myid + "\", \"name\":\"" + myname + "\"}");
 			} else {
 				//Debug.Log("[websocket_MessageReceived] Undeined type recieved");
 			}
@@ -144,6 +149,10 @@ namespace OMS
 				websocket.Closed += new EventHandler(websocket_Closed);
 				websocket.MessageReceived += new EventHandler<MessageReceivedEventArgs>(websocket_MessageReceived);
 				websocket.Open();
+
+     TimerCallback timerDelegate = new TimerCallback(MyClock);
+     Timer timer = new Timer(timerDelegate, null , 0, 8000);
+				
 			}
 			else
 			{
@@ -151,7 +160,16 @@ namespace OMS
 			}	
 #endif
 		}
-	
+
+   public void MyClock(object o) {
+     Console.WriteLine(DateTime.Now);
+     // 出力例：/
+    // 2005/11/08 19:59:10
+     // 2005/11/08 19:59:11
+     // 2005/11/08 19:59:12
+     // ……
+  }
+
 		public void DisconnectServer(string myID)
 		{
 #if NETWORK_ENABLE
