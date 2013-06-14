@@ -558,9 +558,9 @@ namespace Othello2
             return info_num;
         }
 
-        public bool LoadMPCInfo(string in_file_name)
+        public bool LoadMPCInfo(Stream stream)
         {
-            using (BinaryReader reader = new BinaryReader(File.OpenRead(@in_file_name)))
+		    using (BinaryReader reader = new BinaryReader(stream))
             {
                 try
                 {

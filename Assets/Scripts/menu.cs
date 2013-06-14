@@ -111,6 +111,7 @@ public class menu : MonoBehaviour
 		oms.OnEndGame = othello_OnEndGame;
 		oms.OnPutPiece = othello_OnPutPiece;
 		oms.OnUpdateEntry = othello_OnUpdateEntry;
+		oms.OnTimeOut = othello_OnTimeOut;
 	}
 	
 	private void othello_OnLock(string myid)
@@ -136,6 +137,13 @@ public class menu : MonoBehaviour
 	{
 		UpdateEntryList(list, isLock);
 	}
+	private void othello_OnTimeOut()
+	{
+		Debug.Log("TimeOut");
+		Debug.Log("Try Re-connenct!");
+		oms.ConnectServer("ws://" + compConfig.ServerIP + ":" + compConfig.ServerPort + "/", compConfig.MyName);
+	}
+	
 
 	// Use this for initialization
 	void Start () {

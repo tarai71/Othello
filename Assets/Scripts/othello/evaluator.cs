@@ -171,9 +171,9 @@ void Evaluator_Delete(Evaluator *self)
 	free(self);
 }
 */
-public bool Load(string in_file_name)
+public bool Load(Stream stream)
 {
-    using (BinaryReader w = new BinaryReader(File.OpenRead(@in_file_name)))
+    using (BinaryReader reader = new BinaryReader(stream))
     {
         try
         {
@@ -183,7 +183,7 @@ public bool Load(string in_file_name)
 
                 for (int j = 0; j < PatternSize[i]; j++)
                 {
-                    Value[i][j] = w.ReadInt32();
+                    Value[i][j] = reader.ReadInt32();
                 }
             }
         }
@@ -195,6 +195,7 @@ public bool Load(string in_file_name)
 
     return true;
 }
+		
 /*
 int Evaluator_Save(const Evaluator *self, const char *in_file_name)
 {

@@ -75,10 +75,10 @@ namespace Othello2
             }
             return true;
         }
-
-        public bool Load(string in_file_name)
+		
+        public bool Load(Stream stream)
         {
-            using (BinaryReader reader = new BinaryReader(File.OpenRead(@in_file_name)))
+		    using (BinaryReader reader = new BinaryReader(stream))
             {
                 try
                 {
@@ -110,6 +110,43 @@ namespace Othello2
            
             return true;
         }
+/*
+        public bool Load(byte[] buf)
+        {
+            MemoryStream ms = new MemoryStream(buf);
+            using (BinaryReader reader = new BinaryReader(ms))
+            {
+                try
+                {
+                    Num = reader.ReadInt32();
+                    if (Num % NUM_INFO_BLOCK == 0)
+                    {
+                        Max = (Num / NUM_INFO_BLOCK + 1) * NUM_INFO_BLOCK;
+                    }
+                    else
+                    {
+                        Max = (Num / NUM_INFO_BLOCK + 2) * NUM_INFO_BLOCK;
+                    }
+                    Array.Resize(ref Data, Max);
+                    for (int i = 0; i < Num; i++)
+                    {
+                        Data[i].key.bl = (uint)reader.ReadInt32();
+                        Data[i].key.bh = (uint)reader.ReadInt32();
+                        Data[i].key.wl = (uint)reader.ReadInt32();
+                        Data[i].key.wh = (uint)reader.ReadInt32();
+                        Data[i].info = new PositionInfo();
+                        Data[i].info.Value = reader.ReadInt32();
+                    }
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+           
+            return true;
+        }
+*/
 /*
         static int Opening_Write(const Opening *self, FILE *fp)
         {

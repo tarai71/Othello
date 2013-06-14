@@ -81,6 +81,8 @@ namespace OMS
 
 		WebSocket websocket = null;
 		string myname = "";
+		Timer timer = null;
+		bool keepalive = true;
 			
 		PutBuffer PutList = new PutBuffer();
 			
@@ -129,6 +131,7 @@ namespace OMS
 					OnEndGame();
 				}
 			} else if( data.type == "keepalive") {
+				keepalive = true;
 				websocket.Send("{\"type\":\"keepalive\", \"myid\":\"" + data.myid + "\", \"name\":\"" + myname + "\"}");
 			} else {
 				//Debug.Log("[websocket_MessageReceived] Undeined type recieved");
@@ -150,8 +153,8 @@ namespace OMS
 				websocket.MessageReceived += new EventHandler<MessageReceivedEventArgs>(websocket_MessageReceived);
 				websocket.Open();
 
-     TimerCallback timerDelegate = new TimerCallback(MyClock);
-     Timer timer = new Timer(timerDelegate, null , 0, 8000);
+				TimerCallback timerDelegate = new TimerCallback(CheckKeepAlive);
+ 			    timer = new Timer(timerDelegate, null , 0, 6000);
 				
 			}
 			else
@@ -161,14 +164,15 @@ namespace OMS
 #endif
 		}
 
-   public void MyClock(object o) {
-     Console.WriteLine(DateTime.Now);
-     // 出力例：/
-    // 2005/11/08 19:59:10
-     // 2005/11/08 19:59:11
-     // 2005/11/08 19:59:12
-     // ……
-  }
+	public void CheckKeepAlive(object o) {
+		if(keepalive)
+		{
+			keepalive = false;
+			return;
+		}
+
+		OnTimeOut();
+	}
 
 		public void DisconnectServer(string myID)
 		{
@@ -179,6 +183,8 @@ namespace OMS
 		        websocket.Close();
 				websocket = null;
 				myname = "";
+				timer.Dispose();
+				timer = null;
 			}
 #endif
 		}
@@ -255,6 +261,7 @@ namespace OMS
 		public bool own = false;
 		public bool locked = false;
 		public string id = "";
+		public bool keepalive = false;
 	}
 	
 }
