@@ -56,7 +56,7 @@ namespace OMS
 				return true;
 			}
 	
-	//		Debug.LogError("PutBuffer Overflow!");
+			Console.WriteLine("PutBuffer Overflow!");
 			return false;
 		}
 	}
@@ -81,7 +81,7 @@ namespace OMS
 
 		WebSocket websocket = null;
 		string myname = "";
-		Timer timer = null;
+		Timer tm = null;
 		bool keepalive = true;
 			
 		PutBuffer PutList = new PutBuffer();
@@ -97,7 +97,7 @@ namespace OMS
 		
 		private void websocket_Error(object sender, SuperSocket.ClientEngine.ErrorEventArgs e)
 		{
-	//		Debug.Log(StringTable.CANT_CONNECT);
+			Console.WriteLine("Can't connet");
 		}
 		
 		private void websocket_MessageReceived(object sender, MessageReceivedEventArgs e)
@@ -134,7 +134,7 @@ namespace OMS
 				keepalive = true;
 				websocket.Send("{\"type\":\"keepalive\", \"myid\":\"" + data.myid + "\", \"name\":\"" + myname + "\"}");
 			} else {
-				//Debug.Log("[websocket_MessageReceived] Undeined type recieved");
+				Console.WriteLine("[websocket_MessageReceived] Undeined type recieved");
 			}
 		}
 	
@@ -145,7 +145,7 @@ namespace OMS
 			if(websocket == null)
 			{
 				myname = name;
-				//Debug.Log("ws://" + compConfig.ServerIP + ":" + compConfig.ServerPort + "/");
+				Console.WriteLine(url);
 				websocket = new WebSocket(url);
 				websocket.Opened += new EventHandler(websocket_Opened);
 				websocket.Error += new EventHandler<SuperSocket.ClientEngine.ErrorEventArgs >(websocket_Error);
@@ -153,27 +153,32 @@ namespace OMS
 				websocket.MessageReceived += new EventHandler<MessageReceivedEventArgs>(websocket_MessageReceived);
 				websocket.Open();
 
-				TimerCallback timerDelegate = new TimerCallback(CheckKeepAlive);
- 			    timer = new Timer(timerDelegate, null , 0, 6000);
+				// 一定間隔ごとに呼び出すメソッドをTimerCallbackとして登録.
+				TimerCallback timerCallback = new TimerCallback(ThreadMethod);
 				
+				// 5秒待ってから、2秒ごとにtimerCallbackメソッドを呼び出す.
+				tm = new Timer(timerCallback, this, 5 * 1000, 6 * 1000);
 			}
 			else
 			{
-				//Debug.Log("It is already connected!");
+				Console.WriteLine("It is already connected!");
 			}	
 #endif
 		}
 
-	public void CheckKeepAlive(object o) {
-		if(keepalive)
+		// 2秒ごとに実行されるメソッド.
+		private static void ThreadMethod(object state)
 		{
-			keepalive = false;
-			return;
+				connect c = (connect)state;
+				if(c.keepalive)
+				{
+					c.keepalive = false;
+					return;
+				}
+		
+				c.OnTimeOut();
 		}
-
-		OnTimeOut();
-	}
-
+		
 		public void DisconnectServer(string myID)
 		{
 #if NETWORK_ENABLE
@@ -181,11 +186,11 @@ namespace OMS
 			{
 				websocket.Send("{\"type\":\"defect\", \"myid\":\"" + myID.ToString() + "\"}");
 		        websocket.Close();
-				websocket = null;
-				myname = "";
-				timer.Dispose();
-				timer = null;
 			}
+			websocket = null;
+			myname = "";
+			tm.Dispose();
+			tm = null;
 #endif
 		}
 	

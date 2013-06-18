@@ -140,6 +140,7 @@ public class menu : MonoBehaviour
 	private void othello_OnTimeOut()
 	{
 		Debug.Log("TimeOut");
+		oms.DisconnectServer(myID);
 		Debug.Log("Try Re-connenct!");
 		oms.ConnectServer("ws://" + compConfig.ServerIP + ":" + compConfig.ServerPort + "/", compConfig.MyName);
 	}

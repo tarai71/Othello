@@ -30,7 +30,7 @@ namespace Othello2
         };
 
         int Num;
-        ulong Mask;
+        uint Mask;
         Data[] data;
         int GetNum;
         int HitNum;
@@ -43,7 +43,7 @@ namespace Othello2
         bool Initialize(int in_size)
         {
             Num = 1 << in_size;
-            Mask = (ulong)((1 << in_size) - 1);
+            Mask = (uint)((1 << in_size) - 1);
             data = new Data[Num];
             if (data == null)
             {
