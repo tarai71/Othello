@@ -197,35 +197,50 @@ namespace OMS
 		public void Lock(string myID, string yourID)
 		{
 #if NETWORK_ENABLE
-			websocket.Send("{\"type\":\"lock\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + yourID.ToString() + "\"}");
+			if(websocket != null)
+			{
+				websocket.Send("{\"type\":\"lock\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + yourID.ToString() + "\"}");
+			}
 #endif
 		}		
 	
 		public void Unlock(string myID, string yourID)
 		{
 #if NETWORK_ENABLE
-			websocket.Send("{\"type\":\"unlock\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + yourID.ToString() + "\"}");
+			if(websocket != null)
+			{
+				websocket.Send("{\"type\":\"unlock\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + yourID.ToString() + "\"}");
+			}
 #endif
 		}		
 	
 		public void StartGame(string myID, string yourID, int[] option)
 		{
 #if NETWORK_ENABLE
-			websocket.Send("{\"type\":\"startgame\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + yourID.ToString() + "\", \"option\":" + JsonMapper.ToJson(option) +  "}");
+			if(websocket != null)
+			{
+				websocket.Send("{\"type\":\"startgame\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + yourID.ToString() + "\", \"option\":" + JsonMapper.ToJson(option) +  "}");
+			}
 #endif
 		}		
 	
 		public void EndGame(string myID, string yourID)
 		{
 #if NETWORK_ENABLE
-			websocket.Send("{\"type\":\"endgame\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + yourID.ToString() + "\"}");
+			if(websocket != null)
+			{
+				websocket.Send("{\"type\":\"endgame\", \"myid\":\"" + myID.ToString() + "\", \"id\":\"" + yourID.ToString() + "\"}");
+			}
 #endif
 		}		
 	
 		public void PutPiece(string yourID, string location)
 		{
 #if NETWORK_ENABLE
-			websocket.Send("{\"type\":\"put\",\"id\":\"" + yourID.ToString() + "\",\"place\":\"" + location + "\"}");
+			if(websocket != null)
+			{
+				websocket.Send("{\"type\":\"put\",\"id\":\"" + yourID.ToString() + "\",\"place\":\"" + location + "\"}");
+			}
 #endif
 		}		
 

@@ -140,7 +140,14 @@ public class menu : MonoBehaviour
 	private void othello_OnTimeOut()
 	{
 		Debug.Log("TimeOut");
+		EndGame();
 		oms.DisconnectServer(myID);
+		entryList.Clear();
+		entryNameList = new string[0];
+		entryIdList = new string[0];
+		yourID = "";
+		myID = "";
+		option[4] = 0;
 		Debug.Log("Try Re-connenct!");
 		oms.ConnectServer("ws://" + compConfig.ServerIP + ":" + compConfig.ServerPort + "/", compConfig.MyName);
 	}
@@ -153,27 +160,40 @@ public class menu : MonoBehaviour
 		{
 			this.enabled = false;
 			compConfig.enabled= true;
-			oms.DisconnectServer(myID);
+			if(oms != null)
+			{
+				oms.DisconnectServer(myID);
+			}
 		}
 		else
 		{
-			oms.ConnectServer("ws://" + compConfig.ServerIP + ":" + compConfig.ServerPort + "/", compConfig.MyName);
+			if(oms != null)
+			{
+				oms.ConnectServer("ws://" + compConfig.ServerIP + ":" + compConfig.ServerPort + "/", compConfig.MyName);
+			}
 		}
 #endif
 	}
 
 	void OnDestroy ()
 	{
-		if(lockType != LOCK_TYPE.FREE)
+		if(oms != null)
 		{
-			oms.Unlock(myID, yourID);
+			if(lockType != LOCK_TYPE.FREE)
+			{
+				oms.Unlock(myID, yourID);
+			}
+			oms.DisconnectServer(myID);
 		}
-		oms.DisconnectServer(myID);
 	}
 
 	void OnEnable () {
-		if(compConfig.MyName != "") {
-			oms.ConnectServer("ws://" + compConfig.ServerIP + ":" + compConfig.ServerPort + "/", compConfig.MyName);
+		if(compConfig.MyName != "")
+		{
+			if(oms != null)
+			{
+				oms.ConnectServer("ws://" + compConfig.ServerIP + ":" + compConfig.ServerPort + "/", compConfig.MyName);
+			}
 		}
 	}
 	

@@ -164,14 +164,15 @@ pip-log.txt
 
 Library
 Temp
+*.csproj
 *.pidb
-*.unityproj
 *.sln
+*.unityproj
 *.userprefs
 
 
 
-/Assets/Scenes/*.unity
-/Assets/Prefabs/*.prefab
-/Assets/Materials/*.mat
+#/Assets/Scenes/*.unity
+#/Assets/Prefabs/*.prefab
+#/Assets/Materials/*.mat
 
