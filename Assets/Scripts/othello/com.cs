@@ -150,7 +150,7 @@ namespace Othello2
             }
             out_value = value;
 
-            return result;
+			return result;
         }
 
         int OpeningSearch(int in_color, int in_opponent, out int out_move)
@@ -187,7 +187,7 @@ namespace Othello2
 
         int MidSearch(int in_depth, int in_alpha, int in_beta, int in_color, int in_opponent, bool in_pass, out int out_move)
         {
-            MoveList p;
+			MoveList p;
             int value, max = in_alpha;
             bool can_move = false;
             int move;
@@ -204,15 +204,16 @@ namespace Othello2
             hash_info.Upper = 0;
             hash_info.Move = 0;
 
-            for (i = 0; i < Board.BOARD_SIZE * Board.BOARD_SIZE / 2; i++)
-            {
-                info[i] = new MoveInfo();
-            }
+//            for (i = 0; i < Board.BOARD_SIZE * Board.BOARD_SIZE / 2; i++)
+//            {
+//                info[i] = new MoveInfo();
+//            }
 
             out_move = Board.NOMOVE;
             if (in_depth == 0)
             {
                 Node++;
+info = null;
                 return evaluator.GetValue(board);
             }
             if (in_depth > 2) {
@@ -221,12 +222,15 @@ namespace Othello2
                     if (hash_info.Depth >= in_depth) {
                         if (hash_info.Upper <= in_alpha) {
                             out_move = hash_info.Move;
+info = null;
                             return in_alpha;
                         } else if (hash_info.Lower >= in_beta) {
                             out_move = hash_info.Move;
+info = null;
                             return in_beta;
                         } else if (hash_info.Lower >= hash_info.Upper) {
                             out_move = hash_info.Move;
+info = null;
                             return hash_info.Lower;
                         }
                         if (hash_info.Upper < in_beta) {
@@ -252,12 +256,14 @@ namespace Othello2
                 value = in_alpha - mpc_info.Deviation + mpc_info.Offset;
                 if (MidSearch(mpc_info.Depth, value - 1, value, in_color, in_opponent, in_pass, out out_move) < value)
                 {
+info = null;
                     return in_alpha;
                 }
                 value = in_beta + mpc_info.Deviation + mpc_info.Offset;
                 if (MidSearch(mpc_info.Depth, value, value + 1, in_color, in_opponent, in_pass, out out_move) > value)
                 {
-                    return in_beta;
+info = null;
+                   return in_beta;
                 }
             }
             out_move = Board.NOMOVE;
@@ -280,7 +286,8 @@ namespace Othello2
                             hash_info.Lower = max;
                             hash_info.Move = (byte)out_move;
                             hash.Set(hash_value, hash_info);
-                            return in_beta;
+info = null;
+                           return in_beta;
                         }
                     }
                 }
@@ -304,6 +311,7 @@ namespace Othello2
                             max = value;
                             out_move = p.Pos;
                             if (max >= in_beta) {
+info = null;
                                 return in_beta;
                             }
                         }
@@ -320,6 +328,7 @@ namespace Othello2
                     max = -MidSearch(in_depth - 1, -in_beta, -max, in_opponent, in_color, true, out move);
                 }
             }
+info = null;
             return max;
         }
 
@@ -334,10 +343,10 @@ namespace Othello2
             Hash.Value hash_value;
             Hash.Info hash_info;
 
-            for (i = 0; i < Board.BOARD_SIZE * Board.BOARD_SIZE / 2; i++)
-            {
-                info[i] = new MoveInfo();
-            }
+//            for (i = 0; i < Board.BOARD_SIZE * Board.BOARD_SIZE / 2; i++)
+//            {
+//                info[i] = new MoveInfo();
+//            }
 
             if (in_depth == 1)
             {
@@ -347,14 +356,17 @@ namespace Othello2
                 max = board.CountDisks(in_color) - board.CountDisks(in_opponent);
                 if (value > 0) {
                     out_move = p.Pos;
+info = null;
                     return max + value + value + 1;
                 }
                 value = board.CountFlips(in_opponent, Moves[0].Next.Pos);
                 if (value > 0) {
                     out_move = Board.PASS;
-                    return max - value - value - 1;
+info = null;
+                   return max - value - value - 1;
                 }
                 out_move = Board.NOMOVE;
+info = null;
                 return max;
             }
             out_move = Board.NOMOVE;
@@ -364,12 +376,15 @@ namespace Othello2
                     if (hash_info.Depth >= in_depth) {
                         if (hash_info.Upper <= in_alpha) {
                             out_move = hash_info.Move;
-                            return in_alpha;
+info = null;
+                           return in_alpha;
                         } else if (hash_info.Lower >= in_beta) {
                             out_move = hash_info.Move;
+info = null;
                             return in_beta;
                         } else if (hash_info.Lower >= hash_info.Upper) {
                             out_move = hash_info.Move;
+info = null;
                             return hash_info.Lower;
                         }
                         if (hash_info.Upper < in_beta) {
@@ -406,7 +421,8 @@ namespace Othello2
                             hash_info.Lower = max;
                             hash_info.Move = (byte)out_move;
                             hash.Set(hash_value, hash_info);
-                            return in_beta;
+info = null;
+                           return in_beta;
                         }
                     }
                 }
@@ -430,7 +446,8 @@ namespace Othello2
                             max = value;
                             out_move = p.Pos;
                             if (max >= in_beta) {
-                                return in_beta;
+info = null;
+                               return in_beta;
                             }
                         }
                     }
@@ -446,6 +463,7 @@ namespace Othello2
                     max = -EndSearch(in_depth, -in_beta, -max, in_opponent, in_color, true, out move);
                 }
             }
+info = null;
             return max;
         }
 

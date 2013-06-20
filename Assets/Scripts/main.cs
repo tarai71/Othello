@@ -323,6 +323,7 @@ public class main : MonoBehaviour {
 		}
 		GUILayout.EndScrollView();
 		GUILayout.EndArea();
+	
 	}
 
 	public void SetGameEnd(GAME_STATUS status)

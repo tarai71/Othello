@@ -189,8 +189,11 @@ namespace OMS
 			}
 			websocket = null;
 			myname = "";
-			tm.Dispose();
-			tm = null;
+			if(tm != null)
+			{
+				tm.Dispose();
+				tm = null;
+			}
 #endif
 		}
 	
